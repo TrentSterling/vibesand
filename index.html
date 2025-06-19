@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VibeSand - GPU Falling Sand</title>
+    <style>
+        :root {
+            --base-padding: 10px;
+            --toggle-button-height: 2.5rem; 
+            --accent-color: #00aaff;
+            --panel-bg-color: rgba(40, 45, 55, 0.95);
+            --text-color-light: #ffffff;
+            --text-color-muted: #b0b0b0;
+            --info-color: #40d0ff;
+            --highlight-color: #ffae5a;
+            --border-radius: 0.3rem;
+            --box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.3);
+            --box-shadow-light: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.2);
+            --transition-speed: 0.3s;
+        }
+        html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background-color: #1a1a2e; font-family: sans-serif; color: white; font-size: 16px; }
+        #canvas-container { width: 100%; height: 100%; display: block; position: relative; } 
+        canvas { display: block; width: 100%; height: 100%; background-color: #0d0d1a; cursor: crosshair; }
+        
+        #info { 
+            position: absolute; top: calc(var(--base-padding) + var(--toggle-button-height) + var(--base-padding)); 
+            left: 10px; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 5px; font-size: 0.9em; z-index: 50; line-height: 1.6; 
+        }
+        #info button, #info select { margin-top: 5px; padding: 3px 6px; margin-right: 5px; background-color: #333; color: #fff; border: 1px solid #555; border-radius:var(--border-radius); }
+        #info .tool-buttons button.active { background-color: #4CAF50; color: white; border: 1px solid #3e8e41; }
+        #info label { display: block; margin-top: 8px; }
+        #info input[type="range"] { width: 100px; vertical-align: middle; margin-left: 5px;}
+        #info input[type="checkbox"] { vertical-align: middle; margin-right: 5px;}
+        #instructions { position: fixed; bottom: 10px; left: 10px; right: 10px; text-align: center; color: rgba(255, 255, 255, 0.7); font-size: 0.9em; z-index: 40;}
+
+        .info-toggle-button { 
+            position: fixed; top: var(--base-padding); left: var(--base-padding); 
+            background-color: rgba(50, 50, 55, 0.8); color: var(--text-color-light); 
+            border: 1px solid rgba(255, 255, 255, 0.15); padding: 0.5rem 1rem; 
+            border-radius: var(--border-radius); cursor: pointer; z-index: 102; 
+            font-size: 0.85em; transition: all var(--transition-speed) ease; 
+            backdrop-filter: blur(4px); box-shadow: var(--box-shadow-light); 
+            font-family: var(--font-family); line-height: 1.3; height: var(--toggle-button-height); 
+            box-sizing: border-box; display: flex; align-items: center; justify-content: center;
+        }
+        .info-toggle-button:hover { background-color: rgba(70, 70, 75, 0.9); box-shadow: 0 0.15rem 0.5rem rgba(0, 0, 0, 0.3); }
+        
+        #descriptionArea {
+            position: absolute; 
+            top: calc(var(--base-padding) * 2 + var(--toggle-button-height)); 
+            left: var(--base-padding); 
+            width: clamp(380px, 30vw, 520px); 
+            max-height: calc(100vh - (var(--base-padding) * 3 + var(--toggle-button-height)) - 50px);
+            background: var(--panel-bg-color); 
+            padding: 1.2rem 1.5rem; box-sizing: border-box; 
+            border-radius: var(--border-radius); border: 1px solid rgba(255, 255, 255, 0.1); 
+            z-index: 100; pointer-events: auto; font-size: 0.85em; 
+            overflow-y: auto; box-shadow: var(--box-shadow); line-height: 1.65; 
+            opacity: 1; visibility: visible; transform: translateY(0%); 
+            transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease, visibility 0s linear 0s;
+        }
+        #descriptionArea.hidden { 
+            opacity: 0 !important; 
+            transform: translateY(-20px); 
+            visibility: hidden !important; pointer-events: none !important; 
+            transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease, visibility 0s linear var(--transition-speed);
+        }
+        #descriptionArea h2 { margin-top: 0; margin-bottom: 0.8rem; color: var(--info-color); text-align: left; font-weight: 600; font-size: 1.2em; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.4em;}
+        #descriptionArea h4 { margin-top: 1em; margin-bottom: 0.5rem; color: var(--highlight-color); font-weight: 600; font-size: 1em; }
+        #descriptionArea p, #descriptionArea ul { margin-bottom: 0.8rem; color: var(--text-color-muted); }
+        #descriptionArea ul { list-style: disc; padding-left: 1.4rem; margin-top:0.2em; }
+        #descriptionArea li { margin-bottom: 0.4rem; }
+        #descriptionArea code { background-color: rgba(0,0,0,0.3); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.9em; color: var(--highlight-color); font-family: 'Consolas', 'Courier New', monospace; }
+        #descriptionArea a { color: var(--accent-color); text-decoration: none; }
+        #descriptionArea a:hover { text-decoration: underline; }
+        .credits { font-size: 0.9em; text-align: center; margin-top: 1.5rem; color: #888; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.8rem; }
+    </style>
+</head>
+<body>
+    <button id="infoToggleButton" class="info-toggle-button">Hide Info</button>
+
+    <div id="descriptionArea">
+        <h2>VibeSand</h2>
+        <p style="font-size: 0.9em; color: var(--text-color-muted); margin-top:-0.5em; margin-bottom:1em;">GPU-Powered Falling Sand Playground</p>
+        
+        <p><strong>VibeSand</strong> is a WebGPU-based voxel engine exploring high-performance, GPU-driven simulation for falling sand physics and interactive environment tooling.</p>
+
+        <h4>Technical Highlights & Key Features:</h4>
+        <ul>
+            <li><strong>100% GPU-Driven Pipeline:</strong>
+                <ul>
+                    <li>Compute Shaders: Handle physics (sand simulation), tool targeting (zero CPU readback), and voxel painting/destruction.</li>
+                    <li>Single-Pass Fragment "Uber Shader": Renders the DDA-raymarched voxel world, integrated dynamic skybox, and layered tool preview effects (voxel highlight, Fresnel sphere) in one pass.</li>
+                </ul>
+            </li>
+            <li>Advanced GPU Sand Physics:
+                <ul>
+                    <li>Direct fall & 8-way diagonal sliding.</li>
+                    <li>Frame-varied pseudo-randomness for natural flow.</li>
+                    <li>"Unsupported tumbling" logic for realistic pile edges.</li>
+                    <li>Sand disintegrates at world floor (y=0).</li>
+                </ul>
+            </li>
+            <li>GPU-Powered Voxel Tools:
+                <ul>
+                    <li>Paint (Sand/Stone) tools intelligently merge with existing air.</li>
+                    <li>Toggle: Near/Far face snap for air hits.</li>
+                </ul>
+            </li>
+            <li>Interactive Controls: Camera, Sun, Brush, Paint Mode, Resolution Scale, etc.</li>
+        </ul>
+
+        <h4>Controls:</h4>
+        <ul>
+            <li><strong>Left Click:</strong> Use selected tool.</li>
+            <li><strong>Right Click + Drag:</strong> Orbit camera.</li>
+            <li><strong>Middle Mouse + Drag</strong> (or <strong>Space + Left Click + Drag</strong>): Pan camera.</li>
+            <li><strong>Mouse Wheel:</strong> Zoom camera.</li>
+            <li>Use UI panel for other settings.</li>
+        </ul>
+
+        <h4>Development Notes:</h4>
+        <p>This project explores GPU-centric design for dynamic voxel environments, leveraging WebGPU for compute-heavy simulations and real-time interaction. The architecture prioritizes keeping critical loops (targeting, physics, rendering) entirely on the GPU.</p>
+        
+        <p class="credits">Vibecoded <span id="currentDate"></span> by <a href="https://tront.xyz" target="_blank" rel="noopener noreferrer">Trent Sterling</a> & AI Assistant.</p>
+        <p class="credits" style="font-size:0.8em; margin-top:0.2em;"><a href="https://blog.tront.xyz" target="_blank" rel="noopener noreferrer">blog.tront.xyz</a></p>
+    </div>
+
+    <div id="info">
+        <p>Voxels: <span id="voxelCount"></span></p>
+        <p>FPS: <span id="fps"></span></p>
+        <button id="resetSimButton">Reset Sim</button>
+        <div class="tool-buttons" style="margin-top: 10px;">
+            World Type:
+            <button id="worldTypeTerrain" class="active">Terrain</button>
+            <button id="worldTypeFlat">Flat</button>
+        </div>
+        <button id="clearSandButton">Clear Sand</button>
+        <div class="tool-buttons" style="margin-top: 10px;">
+            Paint Tool:
+            <button id="toolPaintSand" class="active">Sand</button>
+            <button id="toolPaintStone">Stone</button>
+            <button id="toolDestroy">Destroy</button>
+        </div>
+        <div>
+            <label for="sunSpeed">Sun Speed: <span id="sunSpeedValue">0.0200</span></label>
+            <input type="range" id="sunSpeed" min="0" max="0.02" step="0.0001" value="0.02">
+        </div>
+        <div>
+            <label for="brushSize">Brush Size: <span id="brushSizeValue">6.0</span></label>
+            <input type="range" id="brushSize" min="1" max="20" step="0.5" value="6.0">
+        </div>
+        <div>
+            <label for="resolutionScale">Render Scale: <span id="resolutionScaleValue">Native</span></label>
+            <select id="resolutionScale">
+                <option value="1.0">Native (100%)</option>
+                <option value="0.75">High (75%)</option>
+                <option value="0.5">Medium (50%)</option>
+                <option value="0.25">Low (25%)</option>
+            </select>
+        </div>
+        <div>
+            <label for="continuousPaintToggle">
+                <input type="checkbox" id="continuousPaintToggle" checked>Continuous Paint
+            </label>
+        </div>
+        <div>
+            <label for="targetFarFaceToggle">
+                <input type="checkbox" id="targetFarFaceToggle" checked>Target Far Face (on air)
+            </label>
+        </div>
+    </div>
+    <div id="canvas-container">
+        <canvas id="webgpu-canvas"></canvas>
+    </div>
+    <div id="instructions">
+        DDA Voxel Renderer. Right-click to orbit, Middle-mouse/Space+Left-click to pan.
+    </div>
+    <script type="module">
+        const canvas = document.getElementById('webgpu-canvas');
+        const adapter = await navigator.gpu.requestAdapter();
+        const device = await adapter.requestDevice();
+        const context = canvas.getContext('webgpu');
+        const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
+        
+        context.configure({
+            device,
+            format: presentationFormat,
+            alphaMode: 'premultiplied'
+        });
+        
+        const VOXEL_GRID_SIZE = 128;
+        const NUM_VOXELS = VOXEL_GRID_SIZE * VOXEL_GRID_SIZE * VOXEL_GRID_SIZE;
+        document.getElementById('voxelCount').textContent = NUM_VOXELS.toLocaleString();
+        const PAN_SENSITIVITY = 0.1;
+        
+        const TOOL_PAINT_SAND = 0;
+        const TOOL_PAINT_STONE = 1;
+        const TOOL_DESTROY = 2;
+
+        let sunAngle = Math.PI / 4; 
+        let currentTool = TOOL_PAINT_SAND;
+        let currentTerrainType = 1;
+        let uiControls = {
+            sunSpeed: 0.02,
+            brushSize: 6.0, 
+            continuousPaint: true,
+            targetFarFaceOnAirHit: true,
+            resolutionScale: 1.0,
+        };
+        let camera = {
+            alpha: -0.5, beta: 0.3, radius: VOXEL_GRID_SIZE * 1.8,
+            target: [VOXEL_GRID_SIZE / 2, 30, VOXEL_GRID_SIZE / 2],
+        };
+        let mouseState = {
+            buttons: [false, false, false], x: 0, y: 0,
+            lastX: 0, lastY: 0,
+            isPainting: false, isOrbiting: false, isPanning: false,
+            hasFiredSingleShot: false, 
+        };
+        let spacebarDown = false; 
+        let frameCount = 0;
+        let isPreviewVisible = true; 
+        let currentCamX=0, currentCamY=0, currentCamZ=0;
+        let currentForward=[0,0,0], currentRight=[0,0,0], currentUp=[0,1,0]; 
+
+        const commonShaderCode = `
+            struct Voxel { data: atomic<u32>, };
+            
+            struct RenderPassUniforms {
+                camera_position: vec3<f32>,
+                camera_zoom: f32,
+                camera_right: vec3<f32>,
+                _pad_right: f32,
+                camera_up: vec3<f32>,
+                _pad_up: f32,
+                camera_target_pos: vec3<f32>,
+                _pad_target: f32,
+                sun_direction: vec3<f32>, 
+                _pad_sun: f32,
+                canvas_actual_dims: vec2<f32>,
+            };
+
+            struct ComputePassUniforms { 
+                camera_position: vec3<f32>,
+                camera_zoom: f32,
+                camera_right: vec3<f32>,
+                _pad_right2: f32,
+                camera_up: vec3<f32>,
+                _pad_up2: f32,
+                camera_target_pos: vec3<f32>,
+                _pad_target2: f32,
+                mouse_pos: vec2<f32>,
+                canvas_dims: vec2<f32>, 
+                brush_size: f32, 
+                is_painting: u32,
+                tool_type: u32,
+                preview_active: u32,
+                target_far_face_on_air_hit: u32,
+                frame_num: u32,
+            };
+
+            struct TargetingOutput {
+                aim_pos: vec4<f32>,
+                hit: u32,
+            };
+
+            const VOXEL_TYPE_AIR   = 0u;
+            const VOXEL_TYPE_STONE = 1u;
+            const VOXEL_TYPE_SAND  = 2u;
+            const TOOL_TYPE_SAND = 0u;
+            const TOOL_TYPE_STONE = 1u;
+            const TOOL_TYPE_DESTROY = 2u;
+
+            fn unpack_type(data: u32) -> u32 { return (data >> 24u) & 0xFFu; }
+            fn unpack_color(data: u32) -> vec3<f32> {
+                let r = f32((data >> 16u) & 0xFFu) / 255.0;
+                let g = f32((data >> 8u) & 0xFFu) / 255.0;
+                let b = f32(data & 0xFFu) / 255.0;
+                return vec3(r, g, b);
+            }
+            fn pack_voxel(v_type: u32, color: vec3<f32>) -> u32 {
+                let r = u32(clamp(color.r, 0.0, 1.0) * 255.0);
+                let g = u32(clamp(color.g, 0.0, 1.0) * 255.0);
+                let b = u32(clamp(color.b, 0.0, 1.0) * 255.0);
+                return (v_type << 24u) | (r << 16u) | (g << 8u) | b;
+            }
+            fn pos_to_idx(pos: vec3<u32>) -> u32 {
+                let grid_dim = ${VOXEL_GRID_SIZE}u;
+                if (any(pos >= vec3<u32>(grid_dim))) { return 0xFFFFFFFFu; }
+                return pos.x + pos.y * grid_dim + pos.z * grid_dim * grid_dim;
+            }
+            fn hash3d_to_float(p: vec3<u32>) -> f32 {
+                var p_mut = p * vec3<u32>(374761393u, 668265263u, 104395301u);
+                p_mut = (p_mut ^ p_mut.yzx ^ p_mut.zxy) >> vec3<u32>(8u);
+                p_mut = p_mut * vec3<u32>(374761393u, 668265263u, 104395301u);
+                return f32(p_mut.x ^ p_mut.y ^ p_mut.z) / 4294967295.0;
+            }
+        `;
+
+        const targetingShaderCode = `
+            ${commonShaderCode}
+            @group(0) @binding(0) var<storage, read_write> voxels: array<Voxel>; 
+            @group(0) @binding(1) var<uniform> tool_info: ComputePassUniforms; 
+            @group(0) @binding(2) var<storage, read_write> output: TargetingOutput;
+
+            fn intersect_aabb(ro: vec3<f32>, rd: vec3<f32>, min_b: vec3<f32>, max_b: vec3<f32>) -> vec2<f32> {
+                let inv_rd = 1.0 / rd;
+                let t1 = (min_b - ro) * inv_rd;
+                let t2 = (max_b - ro) * inv_rd;
+                let t_min = max(max(min(t1.x, t2.x), min(t1.y, t2.y)), min(t1.z, t2.z));
+                let t_max = min(min(max(t1.x, t2.x), max(t1.y, t2.y)), max(t1.z, t2.z));
+                return vec2(t_min, t_max);
+            }
+
+            @compute @workgroup_size(1, 1, 1)
+            fn main() {
+                output.hit = 0u;
+                var ray_origin = tool_info.camera_position;
+                let cam_fwd = normalize(tool_info.camera_target_pos - ray_origin); 
+                let aspect_ratio = tool_info.canvas_dims.x / tool_info.canvas_dims.y;
+                let ray_dir = normalize(
+                    tool_info.camera_right * ((tool_info.mouse_pos.x / tool_info.canvas_dims.x) - 0.5) * 2.0 * aspect_ratio + 
+                    tool_info.camera_up * ((tool_info.mouse_pos.y / tool_info.canvas_dims.y) - 0.5) * -2.0 +
+                    cam_fwd * tool_info.camera_zoom 
+                );
+                
+                let t_bounds = intersect_aabb(ray_origin, ray_dir, vec3(0.0), vec3(${VOXEL_GRID_SIZE}.0));
+                if (t_bounds.x >= t_bounds.y || t_bounds.y < 0.0) { return; } 
+                
+                var dda_origin = ray_origin + ray_dir * (max(0.0, t_bounds.x) - 0.001);
+                var map_pos = vec3<i32>(floor(dda_origin));
+                let ray_step = vec3<i32>(sign(ray_dir));
+                let delta_dist = abs(1.0 / (ray_dir + 1e-6));
+                
+                var side_dist: vec3<f32>;
+                side_dist.x = (select(f32(map_pos.x) + 1.0 - dda_origin.x, dda_origin.x - f32(map_pos.x), ray_dir.x < 0.0)) * delta_dist.x;
+                side_dist.y = (select(f32(map_pos.y) + 1.0 - dda_origin.y, dda_origin.y - f32(map_pos.y), ray_dir.y < 0.0)) * delta_dist.y;
+                side_dist.z = (select(f32(map_pos.z) + 1.0 - dda_origin.z, dda_origin.z - f32(map_pos.z), ray_dir.z < 0.0)) * delta_dist.z;
+                
+                var last_map_pos = map_pos;
+                for (var i = 0; i < 384; i = i + 1) {
+                    last_map_pos = map_pos;
+                    if (side_dist.x < side_dist.y && side_dist.x < side_dist.z) { side_dist.x += delta_dist.x; map_pos.x += ray_step.x; } 
+                    else if (side_dist.y < side_dist.z) { side_dist.y += delta_dist.y; map_pos.y += ray_step.y; } 
+                    else { side_dist.z += delta_dist.z; map_pos.z += ray_step.z; }
+
+                    let idx = pos_to_idx(vec3<u32>(map_pos));
+                    if (idx != 0xFFFFFFFFu && unpack_type(atomicLoad(&voxels[idx].data)) != VOXEL_TYPE_AIR) {
+                        var hit_pos_f : vec3<f32>;
+                        if (tool_info.tool_type == TOOL_TYPE_DESTROY) {
+                            hit_pos_f = vec3<f32>(map_pos) + 0.5;
+                        } else {
+                            hit_pos_f = vec3<f32>(last_map_pos) + 0.5;
+                        }
+                        output.aim_pos = vec4(hit_pos_f, 0.0);
+                        output.hit = 1u;
+                        return;
+                    }
+                }
+                
+                var dist_to_bbox_hit: f32;
+                if (tool_info.target_far_face_on_air_hit == 1u) {
+                    dist_to_bbox_hit = t_bounds.y; 
+                } else {
+                    dist_to_bbox_hit = max(0.0, t_bounds.x); 
+                }
+
+                let hit_pos_on_bbox = ray_origin + ray_dir * dist_to_bbox_hit;
+                var target_point_for_placement: vec3<f32>;
+
+                if (tool_info.target_far_face_on_air_hit == 1u) {
+                    target_point_for_placement = hit_pos_on_bbox - ray_dir * 0.501; 
+                } else {
+                    target_point_for_placement = hit_pos_on_bbox + ray_dir * 0.501; 
+                }
+                output.aim_pos = vec4(clamp(target_point_for_placement, vec3(0.0), vec3(${VOXEL_GRID_SIZE}.0 - 1.0)), 0.0);
+                output.hit = 1u; 
+            }
+        `;
+
+        const generationShaderCode = `
+            ${commonShaderCode}
+            struct GenerationUniforms { terrain_type: u32, };
+            @group(0) @binding(0) var<storage, read_write> voxels: array<Voxel>;
+            @group(0) @binding(1) var<uniform> gen_uniforms: GenerationUniforms;
+            fn noise(p: vec2<f32>) -> f32 { return sin(p.x*0.1) * cos(p.y*0.1); }
+
+            @compute @workgroup_size(4, 4, 4)
+            fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
+                if (any(global_id >= vec3<u32>(${VOXEL_GRID_SIZE}u))) { return; }
+                let idx = pos_to_idx(global_id);
+                if (gen_uniforms.terrain_type == 1u) {
+                    let world_pos_f = vec2<f32>(global_id.xz);
+                    let height = 32.0 + noise(world_pos_f) * 10.0 + noise(world_pos_f * 2.5) * 4.0;
+                    if (f32(global_id.y) < height) {
+                        if (f32(global_id.y) < height - 4.0) {
+                            atomicStore(&voxels[idx].data, pack_voxel(VOXEL_TYPE_STONE, vec3(0.45) + hash3d_to_float(global_id) * 0.15));
+                        } else {
+                            atomicStore(&voxels[idx].data, pack_voxel(VOXEL_TYPE_SAND, vec3(0.8, 0.7, 0.4) + hash3d_to_float(global_id) * 0.1));
+                        }
+                    } else { atomicStore(&voxels[idx].data, 0u); }
+                } else { 
+                    if (global_id.y < 5u) { 
+                        atomicStore(&voxels[idx].data, pack_voxel(VOXEL_TYPE_STONE, vec3(0.45) + hash3d_to_float(global_id) * 0.15));
+                    } else { atomicStore(&voxels[idx].data, 0u); }
+                }
+            }
+        `;
+        const simulationShaderCode = `
+            ${commonShaderCode}
+            @group(0) @binding(0) var<storage, read_write> input_voxels: array<Voxel>;
+            @group(0) @binding(1) var<storage, read_write> output_voxels: array<Voxel>;
+            @group(0) @binding(2) var<uniform> tool_info: ComputePassUniforms; 
+
+            @compute @workgroup_size(4, 4, 4)
+            fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
+                let current_idx = pos_to_idx(global_id);
+                if (current_idx == 0xFFFFFFFFu) { return; }
+
+                let loaded_input_data = atomicLoad(&input_voxels[current_idx].data);
+                if (global_id.y == 0u && unpack_type(loaded_input_data) == VOXEL_TYPE_SAND) {
+                    atomicStore(&output_voxels[current_idx].data, 0u); 
+                    return;
+                }
+
+                let current_voxel_data = loaded_input_data;
+                let current_voxel_type = unpack_type(current_voxel_data);
+
+                if (current_voxel_type != VOXEL_TYPE_SAND) {
+                    atomicCompareExchangeWeak(&output_voxels[current_idx].data, 0u, current_voxel_data);
+                    return;
+                }
+
+                if (global_id.y > 0u) {
+                    let pos_below = global_id - vec3(0u, 1u, 0u);
+                    let idx_below = pos_to_idx(pos_below);
+                    if (idx_below != 0xFFFFFFFFu && unpack_type(atomicLoad(&input_voxels[idx_below].data)) == VOXEL_TYPE_AIR) {
+                        if (atomicCompareExchangeWeak(&output_voxels[idx_below].data, 0u, current_voxel_data).old_value == 0u) { return; }
+                    }
+                }
+
+                let positional_hash = (global_id.x * 19349663u) ^ (global_id.y * 668265263u) ^ (global_id.z * 374761393u);
+                let time_varied_hash = positional_hash ^ tool_info.frame_num;
+
+                if (global_id.y > 0u) {
+                    var available_slide_options_idx: array<u32, 8>;
+                    var available_slide_count = 0u;
+
+                    let DIAGONAL_SLIDES = array<vec3<i32>, 8>(
+                        vec3<i32>(1, -1, 0), vec3<i32>(-1, -1, 0), 
+                        vec3<i32>(0, -1, 1), vec3<i32>(0, -1, -1), 
+                        vec3<i32>(1, -1, 1), vec3<i32>(-1, -1, 1), 
+                        vec3<i32>(1, -1, -1), vec3<i32>(-1, -1, -1) 
+                    );
+                    
+                    let slide_check_order_offset = (time_varied_hash >> 2u) % 8u;
+
+                    for (var i_offset = 0u; i_offset < 8u; i_offset = i_offset + 1u) {
+                        let check_dir_idx = (i_offset + slide_check_order_offset) % 8u;
+                        let check_pos = vec3<i32>(global_id) + DIAGONAL_SLIDES[check_dir_idx];
+                        let check_idx = pos_to_idx(vec3<u32>(check_pos));
+                        if (check_idx != 0xFFFFFFFFu && unpack_type(atomicLoad(&input_voxels[check_idx].data)) == VOXEL_TYPE_AIR) {
+                            available_slide_options_idx[available_slide_count] = check_idx;
+                            available_slide_count = available_slide_count + 1u;
+                        }
+                    }
+
+                    if (available_slide_count > 0u) {
+                        let chosen_slide_idx_in_options = (time_varied_hash >> 5u) % available_slide_count; 
+                        let chosen_slide_target_idx = available_slide_options_idx[chosen_slide_idx_in_options];
+                        if (atomicCompareExchangeWeak(&output_voxels[chosen_slide_target_idx].data, 0u, current_voxel_data).old_value == 0u) {
+                            return; 
+                        }
+                    }
+
+                    var available_tumble_options_idx: array<u32, 4>;
+                    var available_tumble_count = 0u;
+                    let HORIZONTAL_NEIGHBORS = array<vec3<i32>, 4>(
+                        vec3<i32>(1,0,0), vec3<i32>(-1,0,0), vec3<i32>(0,0,1), vec3<i32>(0,0,-1)
+                    );
+
+                    for(var i = 0u; i < 4u; i = i+1u) {
+                        let horizontal_neighbor_pos = vec3<i32>(global_id) + HORIZONTAL_NEIGHBORS[i];
+                        let horizontal_neighbor_idx = pos_to_idx(vec3<u32>(horizontal_neighbor_pos));
+
+                        if (horizontal_neighbor_idx != 0xFFFFFFFFu && unpack_type(atomicLoad(&input_voxels[horizontal_neighbor_idx].data)) == VOXEL_TYPE_AIR) {
+                            let tumble_target_pos = horizontal_neighbor_pos - vec3<i32>(0,1,0); 
+                            if (tumble_target_pos.y >= 0) { 
+                                let tumble_target_idx = pos_to_idx(vec3<u32>(tumble_target_pos));
+                                if (tumble_target_idx != 0xFFFFFFFFu && unpack_type(atomicLoad(&input_voxels[tumble_target_idx].data)) == VOXEL_TYPE_AIR) {
+                                    available_tumble_options_idx[available_tumble_count] = tumble_target_idx;
+                                    available_tumble_count = available_tumble_count + 1u;
+                                }
+                            }
+                        }
+                    }
+
+                    if (available_tumble_count > 0u) {
+                        let chosen_tumble_idx_in_options = (time_varied_hash >> 8u) % available_tumble_count; 
+                        let chosen_tumble_target_idx = available_tumble_options_idx[chosen_tumble_idx_in_options];
+                        if (atomicCompareExchangeWeak(&output_voxels[chosen_tumble_target_idx].data, 0u, current_voxel_data).old_value == 0u) {
+                            return;
+                        }
+                    }
+                }
+                atomicCompareExchangeWeak(&output_voxels[current_idx].data, 0u, current_voxel_data);
+            }
+        `;
+        const paintShaderCode = `
+            ${commonShaderCode}
+            @group(0) @binding(0) var<storage, read_write> paint_voxels: array<Voxel>;
+            @group(0) @binding(1) var<uniform> tool_info: ComputePassUniforms;
+            @group(0) @binding(2) var<storage, read> targeting: TargetingOutput;
+
+            @compute @workgroup_size(4, 4, 4)
+            fn main(@builtin(global_invocation_id) global_id_in_brush: vec3<u32>) {
+                if(tool_info.is_painting == 0u || targeting.hit == 0u) { return; }
+                
+                let brush_radius_f = tool_info.brush_size;
+                let brush_center_world_f = targeting.aim_pos.xyz;
+                let local_pos_in_brush = vec3<f32>(global_id_in_brush) - vec3(brush_radius_f) + 0.5;
+
+                if (length(local_pos_in_brush) > brush_radius_f) { return; }
+
+                let p_world_u = vec3<u32>(floor(brush_center_world_f + local_pos_in_brush));
+                let idx = pos_to_idx(p_world_u);
+                
+                if (idx != 0xFFFFFFFFu) {
+                    if (tool_info.tool_type == TOOL_TYPE_DESTROY) {
+                        atomicStore(&paint_voxels[idx].data, 0u); 
+                    } else {
+                        let existing_voxel_data = atomicLoad(&paint_voxels[idx].data);
+                        if (unpack_type(existing_voxel_data) == VOXEL_TYPE_AIR) {
+                            var new_voxel_paint: u32;
+                            if (tool_info.tool_type == TOOL_TYPE_SAND) {
+                                new_voxel_paint = pack_voxel(VOXEL_TYPE_SAND, vec3(0.8, 0.7, 0.4) + hash3d_to_float(p_world_u) * 0.1);
+                            } else { 
+                                new_voxel_paint = pack_voxel(VOXEL_TYPE_STONE, vec3(0.45) + hash3d_to_float(p_world_u) * 0.15);
+                            }
+                            atomicStore(&paint_voxels[idx].data, new_voxel_paint);
+                        }
+                    }
+                }
+            }
+        `;
+        const clearSandShaderCode = `
+            ${commonShaderCode}
+            @group(0) @binding(0) var<storage, read_write> voxels: array<Voxel>;
+            @compute @workgroup_size(4, 4, 4)
+            fn main(@builtin(global_invocation_id) id: vec3<u32>) {
+                let idx = pos_to_idx(id);
+                if (idx != 0xFFFFFFFFu && unpack_type(atomicLoad(&voxels[idx].data)) == VOXEL_TYPE_SAND) {
+                    atomicStore(&voxels[idx].data, 0u);
+                }
+            }
+        `;
+        const renderShaderCode = ` 
+            ${commonShaderCode}
+            @group(0) @binding(0) var<storage, read_write> voxels: array<Voxel>; 
+            @group(0) @binding(1) var<uniform> scene: RenderPassUniforms;
+            @group(0) @binding(2) var<uniform> tool_info: ComputePassUniforms;
+            @group(0) @binding(3) var<storage, read> targeting: TargetingOutput;
+
+            fn intersect_aabb(ro: vec3<f32>, rd: vec3<f32>, min_b: vec3<f32>, max_b: vec3<f32>) -> vec2<f32> {
+                let t1 = (min_b - ro) / rd; let t2 = (max_b - ro) / rd;
+                return vec2(max(max(min(t1.x, t2.x), min(t1.y, t2.y)), min(t1.z, t2.z)), 
+                            min(min(max(t1.x, t2.x), max(t1.y, t2.y)), max(t1.z, t2.z)));
+            }
+            fn intersect_sphere(ro: vec3<f32>, rd: vec3<f32>, c: vec3<f32>, r: f32) -> f32 {
+                let oc = ro - c; let b = dot(oc, rd); let h = b*b - dot(oc, oc) + r*r;
+                if (h < 0.0) { return -1.0; } else { return -b - sqrt(h); }
+            }
+
+            @vertex fn vs_main(@builtin(vertex_index) vi: u32) -> @builtin(position) vec4<f32> {
+                return vec4(vec2(f32(vi/2u)*4.0-1.0, f32(vi%2u)*4.0-1.0), 0.0, 1.0);
+            }
+
+            @fragment fn fs_main(@builtin(position) fc: vec4<f32>) -> @location(0) vec4<f32> {
+                var ray_origin = scene.camera_position;
+                let cam_fwd = normalize(scene.camera_target_pos - ray_origin); 
+                let aspect_ratio = scene.canvas_actual_dims.x / scene.canvas_actual_dims.y;
+                let ray_dir = normalize(
+                    scene.camera_right * ((fc.x / scene.canvas_actual_dims.x) - 0.5) * 2.0 * aspect_ratio + 
+                    scene.camera_up * ((fc.y / scene.canvas_actual_dims.y) - 0.5) * -2.0 +
+                    cam_fwd * scene.camera_zoom 
+                );
+                
+                let t_bounds = intersect_aabb(ray_origin, ray_dir, vec3(0.0), vec3(${VOXEL_GRID_SIZE}.0));
+                var final_color_rgb = mix(vec3(0.1, 0.1, 0.2), vec3(0.5, 0.7, 1.0), max(ray_dir.y * 0.5 + 0.5, 0.0));
+                
+                var dda_hit_dist = -1.0;          
+                var dda_hit_map_pos = vec3<i32>(0); 
+                var dda_hit_this_ray = false;     
+
+                if (t_bounds.x < t_bounds.y && t_bounds.y > 0.0) {
+                    var dda_origin = ray_origin + ray_dir * (max(0.0, t_bounds.x) - 0.001);
+                    var map_pos_iter = vec3<i32>(floor(dda_origin)); 
+                    let ray_step = vec3<i32>(sign(ray_dir));
+                    let delta_dist = abs(1.0 / (ray_dir + 1e-6));
+                    var side_dist: vec3<f32>;
+                    side_dist.x = (select(f32(map_pos_iter.x) + 1.0 - dda_origin.x, dda_origin.x - f32(map_pos_iter.x), ray_dir.x < 0.0)) * delta_dist.x;
+                    side_dist.y = (select(f32(map_pos_iter.y) + 1.0 - dda_origin.y, dda_origin.y - f32(map_pos_iter.y), ray_dir.y < 0.0)) * delta_dist.y;
+                    side_dist.z = (select(f32(map_pos_iter.z) + 1.0 - dda_origin.z, dda_origin.z - f32(map_pos_iter.z), ray_dir.z < 0.0)) * delta_dist.z;
+                    
+                    var hit_normal: vec3<f32>;
+                    for (var i = 0; i < 384; i = i + 1) { 
+                        var current_dda_dist: f32;
+                        if (side_dist.x < side_dist.y && side_dist.x < side_dist.z) {
+                            current_dda_dist=side_dist.x; side_dist.x+=delta_dist.x; map_pos_iter.x+=ray_step.x; hit_normal=vec3(-f32(ray_step.x),0,0);
+                        } else if (side_dist.y < side_dist.z) {
+                            current_dda_dist=side_dist.y; side_dist.y+=delta_dist.y; map_pos_iter.y+=ray_step.y; hit_normal=vec3(0,-f32(ray_step.y),0);
+                        } else {
+                            current_dda_dist=side_dist.z; side_dist.z+=delta_dist.z; map_pos_iter.z+=ray_step.z; hit_normal=vec3(0,0,-f32(ray_step.z));
+                        }
+                        let idx = pos_to_idx(vec3<u32>(map_pos_iter));
+                        if (idx != 0xFFFFFFFFu && unpack_type(atomicLoad(&voxels[idx].data)) != VOXEL_TYPE_AIR) {
+                            let base_voxel_color = unpack_color(atomicLoad(&voxels[idx].data));
+                            let diffuse_lighting = max(dot(hit_normal, normalize(scene.sun_direction)), 0.0);
+                            final_color_rgb = base_voxel_color * (0.4 + diffuse_lighting * 0.6); 
+                            dda_hit_dist = current_dda_dist;
+                            dda_hit_map_pos = map_pos_iter;
+                            dda_hit_this_ray = true;
+                            break; 
+                        }
+                    }
+                }
+
+                if (dda_hit_this_ray && tool_info.preview_active == 1u && targeting.hit == 1u) {
+                    let hit_voxel_center = vec3<f32>(dda_hit_map_pos) + 0.5; 
+                    let dist_voxel_to_brush_center = length(hit_voxel_center - targeting.aim_pos.xyz);
+
+                    if (dist_voxel_to_brush_center <= tool_info.brush_size) { 
+                        var tool_color_indicator = vec3(0.0);
+                        var is_paint_tool_active = false;
+
+                        if (tool_info.tool_type == TOOL_TYPE_DESTROY) {
+                            tool_color_indicator = vec3(1.0, 0.2, 0.2); 
+                        } else {
+                            is_paint_tool_active = true;
+                            if (tool_info.tool_type == TOOL_TYPE_SAND) {
+                                tool_color_indicator = vec3(0.95, 0.85, 0.3); 
+                            } else { 
+                                tool_color_indicator = vec3(0.6, 0.7, 1.0); 
+                            }
+                        }
+                        
+                        let highlight_falloff = 1.0 - clamp(dist_voxel_to_brush_center / tool_info.brush_size, 0.0, 1.0);
+                        let highlight_intensity_mix = pow(highlight_falloff, 1.5) * 0.55 + 0.15; 
+                        final_color_rgb = mix(final_color_rgb, tool_color_indicator, highlight_intensity_mix);
+
+                        let core_radius_factor = 0.4; 
+                        if (dist_voxel_to_brush_center < tool_info.brush_size * core_radius_factor) {
+                            if (is_paint_tool_active) {
+                                final_color_rgb = mix(final_color_rgb, tool_color_indicator, 0.6); 
+                                final_color_rgb = clamp(final_color_rgb * 1.15, vec3(0.0), vec3(1.0)); 
+                            } else { 
+                                final_color_rgb *= 0.6; 
+                            }
+                        }
+                    }
+                }
+
+                if (tool_info.preview_active == 1u && targeting.hit == 1u) {
+                    let sphere_intersect_dist = intersect_sphere(ray_origin, ray_dir, targeting.aim_pos.xyz, tool_info.brush_size);
+
+                    if (sphere_intersect_dist > 0.0) {
+                        let hit_pos_on_sphere = ray_origin + ray_dir * sphere_intersect_dist;
+                        let sphere_normal = normalize(hit_pos_on_sphere - targeting.aim_pos.xyz);
+                        
+                        let view_dir_for_fresnel = -ray_dir; 
+                        let fresnel_N_dot_V = dot(sphere_normal, view_dir_for_fresnel);
+                        let fresnel_factor = pow(1.0 - abs(fresnel_N_dot_V), 4.0); 
+
+                        var sphere_base_tint_color = vec3(0.0);
+                        var sphere_fresnel_glow_color = vec3(0.0);
+
+                        if(tool_info.tool_type == TOOL_TYPE_DESTROY) { 
+                            sphere_base_tint_color = vec3(0.7, 0.15, 0.15);    
+                            sphere_fresnel_glow_color = vec3(1.0, 0.6, 0.6); 
+                        } else if (tool_info.tool_type == TOOL_TYPE_SAND) {
+                            sphere_base_tint_color = vec3(0.8, 0.7, 0.3);    
+                            sphere_fresnel_glow_color = vec3(1.0, 0.95, 0.7); 
+                        } else { 
+                            sphere_base_tint_color = vec3(0.5, 0.5, 0.6);   
+                            sphere_fresnel_glow_color = vec3(0.9, 0.9, 1.0); 
+                        }
+                        
+                        let sphere_sun_diffuse = max(0.3, dot(sphere_normal, normalize(scene.sun_direction)));
+                        
+                        let lit_sphere_surface_rgb = sphere_base_tint_color * sphere_sun_diffuse * 0.6 + 
+                                                   sphere_fresnel_glow_color * fresnel_factor * 3.0; 
+                        
+                        let sphere_blend_alpha = clamp(0.35 + fresnel_factor * 0.6, 0.1, 0.9); 
+
+                        final_color_rgb = mix(final_color_rgb, lit_sphere_surface_rgb, sphere_blend_alpha);
+                    }
+                }
+                return vec4(final_color_rgb, 1.0); 
+            }
+        `;
+        
+        const voxelBufferA = device.createBuffer({ size: NUM_VOXELS * 4, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST });
+        const voxelBufferB = device.createBuffer({ size: NUM_VOXELS * 4, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST });
+        const generationUniformsBuffer = device.createBuffer({ size: 4, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+        const renderPassUniformsBuffer = device.createBuffer({ size: 96, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST }); 
+        const computePassUniformsBuffer = device.createBuffer({ size: 136, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST }); 
+        const targetingOutputBuffer = device.createBuffer({ size: 32, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST });
+
+
+        const generationModule = device.createShaderModule({ code: generationShaderCode });
+        const simulationModule = device.createShaderModule({ code: simulationShaderCode });
+        const paintModule = device.createShaderModule({ code: paintShaderCode });      
+        const clearSandModule = device.createShaderModule({ code: clearSandShaderCode });
+        const targetingModule = device.createShaderModule({ code: targetingShaderCode });
+        const renderModule = device.createShaderModule({ code: renderShaderCode });
+
+        const generationPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: generationModule, entryPoint: 'main' }});
+        
+        const simulationPipelineLayout = device.createPipelineLayout({
+            bindGroupLayouts: [
+                device.createBindGroupLayout({ 
+                    entries: [
+                        { binding: 0, visibility: GPUShaderStage.COMPUTE, buffer: { type: "storage"} }, 
+                        { binding: 1, visibility: GPUShaderStage.COMPUTE, buffer: { type: "storage"} }, 
+                        { binding: 2, visibility: GPUShaderStage.COMPUTE, buffer: { type: "uniform"} }  
+                    ]
+                })
+            ]
+        });
+        const simulationPipeline = device.createComputePipeline({ layout: simulationPipelineLayout, compute: { module: simulationModule, entryPoint: 'main' }});
+
+        const paintPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: paintModule, entryPoint: 'main' }});
+        const clearSandPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: clearSandModule, entryPoint: 'main' }});
+        const targetingPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: targetingModule, entryPoint: 'main' }});
+        
+        let renderPipeline; 
+
+        function createRenderPipeline() {
+            renderPipeline = device.createRenderPipeline({
+                layout: 'auto',
+                vertex: { module: renderModule, entryPoint: 'vs_main' },
+                fragment: { module: renderModule, entryPoint: 'fs_main', targets: [{ format: presentationFormat, blend: {
+                    color: { srcFactor: 'src-alpha', dstFactor: 'one-minus-src-alpha', operation: 'add' },
+                    alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha', operation: 'add' }
+                }}] },
+                primitive: { topology: 'triangle-list' },
+            });
+        }
+
+        const generationBindGroup = device.createBindGroup({ layout: generationPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBufferA } }, { binding: 1, resource: { buffer: generationUniformsBuffer } } ]});
+        
+        const simBindGroupA = device.createBindGroup({ layout: simulationPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBufferA } }, { binding: 1, resource: { buffer: voxelBufferB } }, { binding: 2, resource: { buffer: computePassUniformsBuffer } }]});
+        const simBindGroupB = device.createBindGroup({ layout: simulationPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBufferB } }, { binding: 1, resource: { buffer: voxelBufferA } }, { binding: 2, resource: { buffer: computePassUniformsBuffer } }]});
+
+        const clearSandBindGroupA = device.createBindGroup({ layout: clearSandPipeline.getBindGroupLayout(0), entries: [{ binding: 0, resource: { buffer: voxelBufferA } }]});
+        const clearSandBindGroupB = device.createBindGroup({ layout: clearSandPipeline.getBindGroupLayout(0), entries: [{ binding: 0, resource: { buffer: voxelBufferB } }]});
+        
+        const targetingBindGroupA = device.createBindGroup({ layout: targetingPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBufferA } }, { binding: 1, resource: { buffer: computePassUniformsBuffer } }, { binding: 2, resource: { buffer: targetingOutputBuffer } }]});
+        const targetingBindGroupB = device.createBindGroup({ layout: targetingPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBufferB } }, { binding: 1, resource: { buffer: computePassUniformsBuffer } }, { binding: 2, resource: { buffer: targetingOutputBuffer } }]});
+        const paintBindGroupA = device.createBindGroup({ layout: paintPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBufferA } }, { binding: 1, resource: { buffer: computePassUniformsBuffer } }, { binding: 2, resource: { buffer: targetingOutputBuffer } }]});
+        const paintBindGroupB = device.createBindGroup({ layout: paintPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBufferB } }, { binding: 1, resource: { buffer: computePassUniformsBuffer } }, { binding: 2, resource: { buffer: targetingOutputBuffer } }]});
+        
+        let renderBindGroupA, renderBindGroupB;
+
+        function updateRenderBindGroups() {
+            if (!renderPipeline) createRenderPipeline();
+            renderBindGroupA = device.createBindGroup({ layout: renderPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBufferA } }, { binding: 1, resource: { buffer: renderPassUniformsBuffer } }, { binding: 2, resource: { buffer: computePassUniformsBuffer } }, { binding: 3, resource: { buffer: targetingOutputBuffer } } ]});
+            renderBindGroupB = device.createBindGroup({ layout: renderPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBufferB } }, { binding: 1, resource: { buffer: renderPassUniformsBuffer } }, { binding: 2, resource: { buffer: computePassUniformsBuffer } }, { binding: 3, resource: { buffer: targetingOutputBuffer } } ]});
+        }
+        
+        function resizeCanvasAndContext() {
+            const newScale = parseFloat(document.getElementById('resolutionScale').value);
+            uiControls.resolutionScale = newScale;
+            document.getElementById('resolutionScaleValue').textContent = `${(newScale * 100).toFixed(0)}%`;
+
+            const displayWidth = canvas.parentElement.clientWidth; 
+            const displayHeight = canvas.parentElement.clientHeight;
+            
+            const newWidth = Math.max(1, Math.floor(displayWidth * uiControls.resolutionScale)); 
+            const newHeight = Math.max(1, Math.floor(displayHeight * uiControls.resolutionScale));
+
+            if (canvas.width !== newWidth || canvas.height !== newHeight) {
+                canvas.width = newWidth;
+                canvas.height = newHeight;
+            }
+        }
+
+        window.addEventListener('resize', resizeCanvasAndContext);
+        
+        function runGeneration() {
+            device.queue.writeBuffer(generationUniformsBuffer, 0, new Uint32Array([currentTerrainType]));
+            const commandEncoder = device.createCommandEncoder();
+            const genPass = commandEncoder.beginComputePass();
+            genPass.setPipeline(generationPipeline); 
+            genPass.setBindGroup(0, generationBindGroup);
+            genPass.dispatchWorkgroups(VOXEL_GRID_SIZE / 4, VOXEL_GRID_SIZE / 4, VOXEL_GRID_SIZE / 4);
+            genPass.end();
+            commandEncoder.copyBufferToBuffer(voxelBufferA, 0, voxelBufferB, 0, NUM_VOXELS * 4);
+            device.queue.submit([commandEncoder.finish()]);
+            frameCount = 0; 
+        }
+        
+        createRenderPipeline(); 
+        updateRenderBindGroups(); 
+        resizeCanvasAndContext(); 
+        runGeneration();
+
+        document.getElementById('resetSimButton').addEventListener('click', runGeneration);
+        document.getElementById('worldTypeTerrain').addEventListener('click', () => { currentTerrainType = 1; runGeneration(); document.getElementById('worldTypeTerrain').classList.add('active'); document.getElementById('worldTypeFlat').classList.remove('active'); });
+        document.getElementById('worldTypeFlat').addEventListener('click', () => { currentTerrainType = 0; runGeneration(); document.getElementById('worldTypeFlat').classList.add('active'); document.getElementById('worldTypeTerrain').classList.remove('active'); });
+        document.getElementById('clearSandButton').addEventListener('click', () => {
+            const commandEncoder = device.createCommandEncoder();
+            const passClearA = commandEncoder.beginComputePass();
+            passClearA.setPipeline(clearSandPipeline);
+            passClearA.setBindGroup(0, clearSandBindGroupA);
+            passClearA.dispatchWorkgroups(VOXEL_GRID_SIZE / 4, VOXEL_GRID_SIZE / 4, VOXEL_GRID_SIZE / 4);
+            passClearA.end();
+            commandEncoder.copyBufferToBuffer(voxelBufferA, 0, voxelBufferB, 0, NUM_VOXELS * 4); 
+            device.queue.submit([commandEncoder.finish()]);
+        });
+        const toolButtons = { [TOOL_PAINT_SAND]: document.getElementById('toolPaintSand'), [TOOL_PAINT_STONE]: document.getElementById('toolPaintStone'), [TOOL_DESTROY]: document.getElementById('toolDestroy'), };
+        function setActiveToolButton(tool) { Object.values(toolButtons).forEach(b => b.classList.remove('active')); if(toolButtons[tool]) toolButtons[tool].classList.add('active'); }
+        setActiveToolButton(currentTool);
+        Object.entries(toolButtons).forEach(([tool, button]) => button.addEventListener('click', () => { currentTool = parseInt(tool); setActiveToolButton(currentTool); }));
+        document.getElementById('sunSpeed').addEventListener('input', (e) => { uiControls.sunSpeed = parseFloat(e.target.value); document.getElementById('sunSpeedValue').textContent = uiControls.sunSpeed.toFixed(4); });
+        document.getElementById('brushSize').addEventListener('input', (e) => { uiControls.brushSize = parseFloat(e.target.value); document.getElementById('brushSizeValue').textContent = uiControls.brushSize.toFixed(1); });
+        document.getElementById('continuousPaintToggle').addEventListener('change', (e) => { uiControls.continuousPaint = e.target.checked; });
+        document.getElementById('targetFarFaceToggle').addEventListener('change', (e) => { uiControls.targetFarFaceOnAirHit = e.target.checked; });
+        document.getElementById('resolutionScale').addEventListener('change', resizeCanvasAndContext);
+        
+        const infoToggleButton = document.getElementById('infoToggleButton');
+        const descriptionArea = document.getElementById('descriptionArea');
+        infoToggleButton.onclick = () => {
+            const isHidden = descriptionArea.classList.toggle('hidden');
+            infoToggleButton.textContent = isHidden ? 'Show Info' : 'Hide Info';
+        };
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        
+        function hideInfoPanel() {
+            if (!descriptionArea.classList.contains('hidden')) {
+                descriptionArea.classList.add('hidden');
+                infoToggleButton.textContent = 'Show Info';
+            }
+        }
+
+        canvas.addEventListener('contextmenu', e => {e.preventDefault(); hideInfoPanel(); });
+        canvas.addEventListener('mouseenter', () => isPreviewVisible = true);
+        canvas.addEventListener('mouseleave', () => isPreviewVisible = false);
+        window.addEventListener('keydown', (e) => { if (e.code === 'Space') spacebarDown = true; });
+        window.addEventListener('keyup', (e) => { if (e.code === 'Space') { spacebarDown = false; if (mouseState.isPanning && mouseState.buttons[0]) mouseState.isPanning = false; }});
+        
+        canvas.addEventListener('mousedown', (e) => {
+            hideInfoPanel(); 
+            mouseState.buttons[e.button] = true;
+            mouseState.lastX = e.clientX;
+            mouseState.lastY = e.clientY;
+
+            if (e.button === 0 && !spacebarDown) { 
+                if (uiControls.continuousPaint) {
+                    mouseState.isPainting = true;
+                } else { 
+                    if (!mouseState.hasFiredSingleShot) {
+                        mouseState.isPainting = true; 
+                        mouseState.hasFiredSingleShot = true;
+                    } else {
+                        mouseState.isPainting = false; 
+                    }
+                }
+            }
+            mouseState.isOrbiting = (e.button === 2);
+             mouseState.isPanning = (e.button === 1 || (spacebarDown && e.button === 0 && (!mouseState.isPainting || !uiControls.continuousPaint || mouseState.hasFiredSingleShot) ));
+        });
+
+        window.addEventListener('mouseup', (e) => {
+            mouseState.buttons[e.button] = false;
+            if (e.button === 0) { 
+                mouseState.isPainting = false; 
+                mouseState.hasFiredSingleShot = false; 
+            }
+            mouseState.isOrbiting = false;
+            mouseState.isPanning = false;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            const dx = e.clientX - mouseState.lastX; const dy = e.clientY - mouseState.lastY;
+            const rect = canvas.getBoundingClientRect(); 
+            mouseState.x = (e.clientX - rect.left); 
+            mouseState.y = (e.clientY - rect.top);
+
+            let newCursor = 'crosshair';
+            if (mouseState.isOrbiting) { camera.alpha -= dx * 0.005; camera.beta = Math.max(-1.57, Math.min(1.57, camera.beta + dy * 0.005)); newCursor = 'grabbing'; } 
+            else if (mouseState.isPanning) {
+                camera.target[0] -= (currentRight[0] * dx - currentUp[0] * dy) * PAN_SENSITIVITY;
+                camera.target[1] -= (currentRight[1] * dx - currentUp[1] * dy) * PAN_SENSITIVITY;
+                camera.target[2] -= (currentRight[2] * dx - currentUp[2] * dy) * PAN_SENSITIVITY;
+                newCursor = 'move';
+            }
+            if (canvas.style.cursor !== newCursor) canvas.style.cursor = newCursor;
+            mouseState.lastX = e.clientX; mouseState.lastY = e.clientY;
+        });
+        canvas.addEventListener('wheel', (e) => { e.preventDefault(); hideInfoPanel(); camera.radius = Math.max(10, Math.min(VOXEL_GRID_SIZE * 5, camera.radius + e.deltaY * 0.1)); });
+        
+        let lastFrameTime = performance.now(); 
+        async function frame() {
+            currentCamX = camera.target[0] + camera.radius * Math.cos(camera.beta) * Math.sin(camera.alpha);
+            currentCamY = camera.target[1] + camera.radius * Math.sin(camera.beta);
+            currentCamZ = camera.target[2] + camera.radius * Math.cos(camera.beta) * Math.cos(camera.alpha);
+            const fwd_unnorm = [camera.target[0]-currentCamX, camera.target[1]-currentCamY, camera.target[2]-currentCamZ];
+            let fwd_norm = Math.hypot(...fwd_unnorm); if(fwd_norm===0)fwd_norm=1;
+            currentForward = [fwd_unnorm[0]/fwd_norm, fwd_unnorm[1]/fwd_norm, fwd_unnorm[2]/fwd_norm];
+            const worldUp = [0, 1, 0];
+            currentRight = [currentForward[1]*worldUp[2] - currentForward[2]*worldUp[1], currentForward[2]*worldUp[0] - currentForward[0]*worldUp[2], currentForward[0]*worldUp[1] - currentForward[1]*worldUp[0]];
+            let r_norm = Math.hypot(...currentRight); if(r_norm===0)r_norm=1;
+            currentRight = [currentRight[0]/r_norm, currentRight[1]/r_norm, currentRight[2]/r_norm];
+            currentUp = [currentRight[1]*currentForward[2] - currentRight[2]*currentForward[1], currentRight[2]*currentForward[0] - currentRight[0]*currentForward[2], currentRight[0]*currentForward[1] - currentRight[1]*currentForward[0]];
+
+            sunAngle += uiControls.sunSpeed * 0.2;
+            const sunDirection = [Math.cos(sunAngle), 0.707, Math.sin(sunAngle)];
+
+            const readBufferIsA = frameCount % 2 === 0;
+            const currentSimBindGroup = readBufferIsA ? simBindGroupA : simBindGroupB;
+            const currentRenderBindGroup = readBufferIsA ? renderBindGroupB : renderBindGroupA; 
+            const currentTargetingBindGroup = readBufferIsA ? targetingBindGroupA : targetingBindGroupB; 
+            const currentPaintBindGroup = readBufferIsA ? paintBindGroupB : paintBindGroupA; 
+            const writeBuffer = readBufferIsA ? voxelBufferB : voxelBufferA; 
+
+            const renderUniformsData = new Float32Array(renderPassUniformsBuffer.size / 4);
+            renderUniformsData.set([currentCamX, currentCamY, currentCamZ], 0); renderUniformsData.set([2.0], 3);
+            renderUniformsData.set(currentRight, 4); renderUniformsData.set(currentUp, 8);
+            renderUniformsData.set(camera.target, 12); renderUniformsData.set(sunDirection, 16);
+            renderUniformsData.set([canvas.width, canvas.height], 20); 
+            device.queue.writeBuffer(renderPassUniformsBuffer, 0, renderUniformsData);
+            
+            const computeUniformsData = new Float32Array(computePassUniformsBuffer.size / 4);
+            const computeUniformsUintView = new Uint32Array(computeUniformsData.buffer);
+            computeUniformsData.set([currentCamX, currentCamY, currentCamZ], 0); computeUniformsData.set([2.0], 3);
+            computeUniformsData.set(currentRight, 4); computeUniformsData.set(currentUp, 8);
+            computeUniformsData.set(camera.target, 12); 
+            
+            const { clientWidth, clientHeight } = canvas.parentElement;
+            const mouseRenderX = mouseState.x * (canvas.width / clientWidth); // Scale mouse X to render target resolution
+            const mouseRenderY = mouseState.y * (canvas.height / clientHeight); // Scale mouse Y to render target resolution
+            computeUniformsData.set([mouseRenderX, mouseRenderY ], 16);
+            computeUniformsData.set([canvas.width, canvas.height], 18); 
+            computeUniformsData.set([uiControls.brushSize], 20);
+            
+            let isPaintingForGPUThisFrame = false;
+            if (mouseState.buttons[0] && !spacebarDown) { 
+                if (uiControls.continuousPaint) {
+                    isPaintingForGPUThisFrame = true;
+                } else { 
+                    isPaintingForGPUThisFrame = mouseState.isPainting; 
+                }
+            }
+            computeUniformsUintView[21] = isPaintingForGPUThisFrame ? 1 : 0;
+
+            computeUniformsUintView[22] = currentTool;
+            computeUniformsUintView[23] = isPreviewVisible ? 1 : 0; 
+            computeUniformsUintView[24] = uiControls.targetFarFaceOnAirHit ? 1 : 0; 
+            computeUniformsUintView[25] = frameCount; 
+            device.queue.writeBuffer(computePassUniformsBuffer, 0, computeUniformsData);
+
+            if (!uiControls.continuousPaint && mouseState.isPainting) {
+                mouseState.isPainting = false; 
+            }
+
+            const commandEncoder = device.createCommandEncoder();
+            commandEncoder.clearBuffer(writeBuffer); 
+            commandEncoder.clearBuffer(targetingOutputBuffer, 0, 4); 
+
+            const passTarget = commandEncoder.beginComputePass();
+            passTarget.setPipeline(targetingPipeline); passTarget.setBindGroup(0, currentTargetingBindGroup);
+            passTarget.dispatchWorkgroups(1); passTarget.end();
+            
+            const passSim = commandEncoder.beginComputePass();
+            passSim.setPipeline(simulationPipeline); passSim.setBindGroup(0, currentSimBindGroup);
+            passSim.dispatchWorkgroups(VOXEL_GRID_SIZE/4, VOXEL_GRID_SIZE/4, VOXEL_GRID_SIZE/4); passSim.end();
+            
+            const passPaint = commandEncoder.beginComputePass();
+            passPaint.setPipeline(paintPipeline); passPaint.setBindGroup(0, currentPaintBindGroup);
+            const paintBrushDiameter = Math.ceil(uiControls.brushSize * 2.0);
+            passPaint.dispatchWorkgroups(Math.ceil(paintBrushDiameter/4), Math.ceil(paintBrushDiameter/4), Math.ceil(paintBrushDiameter/4)); passPaint.end();
+            
+            const passRender = commandEncoder.beginRenderPass({ colorAttachments: [{ view: context.getCurrentTexture().createView(), clearValue: [0.1, 0.1, 0.2, 1.0], loadOp: 'clear', storeOp: 'store' }] });
+            passRender.setPipeline(renderPipeline); passRender.setBindGroup(0, currentRenderBindGroup); 
+            passRender.draw(3); passRender.end();
+            
+            device.queue.submit([commandEncoder.finish()]);
+
+            const currentTime = performance.now();
+            document.getElementById('fps').textContent = (1000 / (currentTime - lastFrameTime)).toFixed(1); 
+            lastFrameTime = currentTime;
+            frameCount++;
+            requestAnimationFrame(frame);
+        }
+        frame();
+    </script>
+</body>
+</html>
