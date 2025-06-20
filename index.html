@@ -8,7 +8,7 @@
       <style>
          :root {
          --base-padding: 10px;
-         --toggle-button-height: 2.5rem; 
+         --toggle-button-height: 2.5rem;
          --accent-color: #00aaff;
          --panel-bg-color: rgba(40, 45, 55, 0.95);
          --text-color-light: #ffffff;
@@ -21,11 +21,11 @@
          --transition-speed: 0.3s;
          }
          html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background-color: #1a1a2e; font-family: sans-serif; color: white; font-size: 16px; }
-         #canvas-container { width: 100%; height: 100%; display: block; position: relative; } 
+         #canvas-container { width: 100%; height: 100%; display: block; position: relative; }
          canvas { display: block; width: 100%; height: 100%; background-color: #0d0d1a; cursor: crosshair; }
-         #info { 
-         position: absolute; top: calc(var(--base-padding) + var(--toggle-button-height) + var(--base-padding)); 
-         left: 10px; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 5px; font-size: 0.9em; z-index: 50; line-height: 1.6; 
+         #info {
+         position: absolute; top: calc(var(--base-padding) + var(--toggle-button-height) + var(--base-padding));
+         left: 10px; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 5px; font-size: 0.9em; z-index: 50; line-height: 1.6;
          }
          #info button, #info select, #info input[type="range"] { margin-top: 5px; padding: 3px 6px; margin-right: 5px; background-color: #333; color: #fff; border: 1px solid #555; border-radius:var(--border-radius); }
          #info .tool-buttons button.active { background-color: #4CAF50; color: white; border: 1px solid #3e8e41; }
@@ -33,35 +33,35 @@
          #info input[type="range"] { width: 100px; vertical-align: middle; margin-left: 5px;}
          #info input[type="checkbox"] { vertical-align: middle; margin-right: 5px;}
          #instructions { position: fixed; bottom: 10px; left: 10px; right: 10px; text-align: center; color: rgba(255, 255, 255, 0.7); font-size: 0.9em; z-index: 40;}
-         .info-toggle-button { 
-         position: fixed; top: var(--base-padding); left: var(--base-padding); 
-         background-color: rgba(50, 50, 55, 0.8); color: var(--text-color-light); 
-         border: 1px solid rgba(255, 255, 255, 0.15); padding: 0.5rem 1rem; 
-         border-radius: var(--border-radius); cursor: pointer; z-index: 102; 
-         font-size: 0.85em; transition: all var(--transition-speed) ease; 
-         backdrop-filter: blur(4px); box-shadow: var(--box-shadow-light); 
-         font-family: var(--font-family); line-height: 1.3; height: var(--toggle-button-height); 
+         .info-toggle-button {
+         position: fixed; top: var(--base-padding); left: var(--base-padding);
+         background-color: rgba(50, 50, 55, 0.8); color: var(--text-color-light);
+         border: 1px solid rgba(255, 255, 255, 0.15); padding: 0.5rem 1rem;
+         border-radius: var(--border-radius); cursor: pointer; z-index: 102;
+         font-size: 0.85em; transition: all var(--transition-speed) ease;
+         backdrop-filter: blur(4px); box-shadow: var(--box-shadow-light);
+         font-family: var(--font-family); line-height: 1.3; height: var(--toggle-button-height);
          box-sizing: border-box; display: flex; align-items: center; justify-content: center;
          }
          .info-toggle-button:hover { background-color: rgba(70, 70, 75, 0.9); box-shadow: 0 0.15rem 0.5rem rgba(0, 0, 0, 0.3); }
          #descriptionArea {
-         position: absolute; 
-         top: calc(var(--base-padding) * 2 + var(--toggle-button-height)); 
-         left: var(--base-padding); 
-         width: clamp(380px, 30vw, 520px); 
+         position: absolute;
+         top: calc(var(--base-padding) * 2 + var(--toggle-button-height));
+         left: var(--base-padding);
+         width: clamp(380px, 30vw, 520px);
          max-height: calc(100vh - (var(--base-padding) * 3 + var(--toggle-button-height)) - 50px);
-         background: var(--panel-bg-color); 
-         padding: 1.2rem 1.5rem; box-sizing: border-box; 
-         border-radius: var(--border-radius); border: 1px solid rgba(255, 255, 255, 0.1); 
-         z-index: 100; pointer-events: auto; font-size: 0.85em; 
-         overflow-y: auto; box-shadow: var(--box-shadow); line-height: 1.65; 
-         opacity: 1; visibility: visible; transform: translateY(0%); 
+         background: var(--panel-bg-color);
+         padding: 1.2rem 1.5rem; box-sizing: border-box;
+         border-radius: var(--border-radius); border: 1px solid rgba(255, 255, 255, 0.1);
+         z-index: 100; pointer-events: auto; font-size: 0.85em;
+         overflow-y: auto; box-shadow: var(--box-shadow); line-height: 1.65;
+         opacity: 1; visibility: visible; transform: translateY(0%);
          transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease, visibility 0s linear 0s;
          }
-         #descriptionArea.hidden { 
-         opacity: 0 !important; 
-         transform: translateY(-20px); 
-         visibility: hidden !important; pointer-events: none !important; 
+         #descriptionArea.hidden {
+         opacity: 0 !important;
+         transform: translateY(-20px);
+         visibility: hidden !important; pointer-events: none !important;
          transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease, visibility 0s linear var(--transition-speed);
          }
          #descriptionArea h2 { margin-top: 0; margin-bottom: 0.8rem; color: var(--info-color); text-align: left; font-weight: 600; font-size: 1.2em; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.4em;}
@@ -162,9 +162,9 @@
          </div>
          <button id="clearLooseButton">Clear Loose</button>
          <div class="tool-buttons" style="margin-top: 10px;">
-            Paint Tool: 
-            <button id="toolPaintSand" class="active">Sand</button> 
-            <button id="toolPaintStone">Stone</button> 
+            Paint Tool:
+            <button id="toolPaintSand" class="active">Sand</button>
+            <button id="toolPaintStone">Stone</button>
             <button id="toolPaintWater">Water</button>
             <button id="toolDestroy">Destroy</button>
          </div>
@@ -178,11 +178,11 @@
          </div>
          <div>
             <label for="simSteps">Sim Steps: <span id="simStepsValue">1</span></label>
-            <input type="range" id="simSteps" min="0" max="25" step="1" value="1"> 
+            <input type="range" id="simSteps" min="0" max="25" step="1" value="1">
          </div>
          <div>
             <label for="maxRaySteps">Max Ray Steps: <span id="maxRayStepsValue">384</span></label>
-            <input type="range" id="maxRaySteps" min="64" max="384" step="32" value="384"> 
+            <input type="range" id="maxRaySteps" min="64" max="384" step="32" value="384">
          </div>
          <div>
             <label for="resolutionScale">Render Scale: <span id="resolutionScaleValue">Native</span></label>
@@ -201,891 +201,971 @@
       </div>
       <div id="instructions">DDA Voxel Renderer. Right-click to orbit, Middle-mouse/Space+Left-click to pan.</div>
       <script type="module">
-         const canvas = document.getElementById('webgpu-canvas');
-         const adapter = await navigator.gpu.requestAdapter();
-         const device = await adapter.requestDevice();
-         const context = canvas.getContext('webgpu');
-         const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
-         context.configure({ device, format: presentationFormat, alphaMode: 'premultiplied' });
-         
-         const VOXEL_GRID_SIZE = 128;
-         const NUM_VOXELS = VOXEL_GRID_SIZE ** 3;
-         document.getElementById('voxelCount').textContent = NUM_VOXELS.toLocaleString();
-         const PAN_SENSITIVITY = 0.1;
-         
-         const TOOL_PAINT_SAND = 0;
-         const TOOL_PAINT_STONE = 1;
-         const TOOL_DESTROY = 2;
-         const TOOL_PAINT_WATER = 3; 
-         
-         const NUM_LIGHTS = 32;
-         const lights = [];
-         function HSVtoRGB(h, s, v) {
-             let r, g, b, i, f, p, q, t;
-             i = Math.floor(h * 6); f = h * 6 - i;
-             p = v * (1 - s); q = v * (1 - f * s); t = v * (1 - (1 - f) * s);
-             switch (i % 6) {
-                 case 0: r = v, g = t, b = p; break; case 1: r = q, g = v, b = p; break;
-                 case 2: r = p, g = v, b = t; break; case 3: r = p, g = q, b = v; break;
-                 case 4: r = t, g = p, b = v; break; case 5: r = v, g = p, b = q; break;
-             }
-             return [r, g, b];
+         // --- Start of UI elements that can be initialized without WebGPU ---
+         const infoToggleButtonElement = document.getElementById('infoToggleButton'); // Renamed to avoid conflict
+         const descriptionAreaElement = document.getElementById('descriptionArea'); // Renamed to avoid conflict
+         if (infoToggleButtonElement && descriptionAreaElement) {
+             infoToggleButtonElement.onclick = () => {
+                 descriptionAreaElement.classList.toggle('hidden');
+                 infoToggleButtonElement.textContent = descriptionAreaElement.classList.contains('hidden') ? 'Show Info' : 'Hide Info';
+             };
          }
-         for (let i = 0; i < NUM_LIGHTS; i++) {
-             lights.push({
-                 position: [Math.random() * VOXEL_GRID_SIZE, Math.random() * VOXEL_GRID_SIZE, Math.random() * VOXEL_GRID_SIZE], 
-                 color: HSVtoRGB(Math.random(), 0.9, 1.0), 
-                 radius: 20.0 + Math.random() * 15,
-                 velocity: -20.0 - Math.random() * 20.0,
-             });
+
+         const currentDateEl = document.getElementById('currentDate');
+         if (currentDateEl) {
+            try {
+                currentDateEl.textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            } catch (e) {
+                console.warn("Could not set date:", e);
+                currentDateEl.textContent = "Today"; // Fallback
+            }
          }
-         
-         let sunAngle = Math.PI / 4; 
-         let currentTool = TOOL_PAINT_SAND;
-         let currentTerrainType = 1; 
-         let uiControls = {
-             sunSpeed: 0.02, brushSize: 10.5, continuousPaint: true, targetFarFaceOnAirHit: true, resolutionScale: 1.0, simSteps: 1, maxRaySteps: 384,
-         };
-         let camera = {
-             alpha: -0.5, beta: 0.3, radius: VOXEL_GRID_SIZE * 1.8, target: [VOXEL_GRID_SIZE / 2, 30, VOXEL_GRID_SIZE / 2],
-         };
-         let mouseState = {
-             buttons: [false, false, false], x: 0, y: 0, lastX: 0, lastY: 0, isPainting: false, isOrbiting: false, isPanning: false, hasFiredSingleShot: false, 
-         };
-         let spacebarDown = false; 
-         let frameCount = 0;
-         let isPreviewVisible = true; 
-         let currentCamX=0, currentCamY=0, currentCamZ=0;
-         let currentForward=[0,0,1], currentRight=[1,0,0], currentUp=[0,1,0]; 
-         
-         const commonShaderCode = `
-             struct VoxelData {
-                 data: atomic<u32>,
-             };
-         
-             struct PointLight {
-                 pos: vec3<f32>, radius: f32,
-                 color: vec3<f32>, intensity: f32,
-             };
-             struct SceneUniforms {
-                 lights: array<PointLight, ${NUM_LIGHTS}>,
-                 light_count: u32,
-             };
-             
-             struct RenderPassUniforms {
-                 camera_position: vec3<f32>, camera_zoom: f32,
-                 camera_right: vec3<f32>, _padr: f32,
-                 camera_up: vec3<f32>, _padu: f32,
-                 camera_target_pos: vec3<f32>, _padt: f32,
-                 sun_direction: vec3<f32>,  _pads: f32,
-                 canvas_actual_dims: vec2<f32>,
-                 max_ray_steps: u32, _pad_mrs: u32, 
-             };
-         
-             struct ComputePassUniforms { 
-                 camera_position: vec3<f32>, camera_zoom: f32,
-                 camera_right: vec3<f32>, _padr2: f32,
-                 camera_up: vec3<f32>, _padu2: f32,
-                 camera_target_pos: vec3<f32>, _padt2: f32,
-                 mouse_pos: vec2<f32>, canvas_dims: vec2<f32>, 
-                 brush_size: f32, is_painting: u32,
-                 tool_type: u32, preview_active: u32,
-                 target_far_face_on_air_hit: u32, frame_num: u32,
-                 max_ray_steps_compute: u32, _pad_mrs_compute: u32, 
-             };
-         
-             struct TargetingOutput { aim_pos: vec4<f32>, hit: u32 };
-         
-             const VOXEL_TYPE_AIR = 0u;
-             const VOXEL_TYPE_STONE = 1u;
-             const VOXEL_TYPE_SAND = 2u;
-             const VOXEL_TYPE_WATER = 3u;
-             
-             const TOOL_TYPE_SAND = 0u;
-             const TOOL_TYPE_STONE = 1u;
-             const TOOL_TYPE_DESTROY = 2u;
-             const TOOL_TYPE_WATER = 3u;
-         
-             const GRID_DIM = ${VOXEL_GRID_SIZE}u;
-         
-             const MASK_TYPE = 7u;
-             const SHIFT_TYPE = 0u;
-             const MASK_VARIANT = 7u;
-             const SHIFT_VARIANT = 3u;
-             const MASK_UPDATED = 1u;
-             const SHIFT_UPDATED = 6u;
-             
-             const MASK_LIGHT = 255u;
-             const SHIFT_LIGHT_R = 8u;
-             const SHIFT_LIGHT_G = 16u;
-             const SHIFT_LIGHT_B = 24u;
-             
-             struct UnpackedVoxel {
-                 v_type: u32, v_variant: u32,
-                 is_updated: u32,
-                 light: vec3<f32>,
-             };
-         
-             fn unpackVoxel(data: u32) -> UnpackedVoxel {
-                 var result: UnpackedVoxel;
-                 result.v_type = (data >> SHIFT_TYPE) & MASK_TYPE;
-                 result.v_variant = (data >> SHIFT_VARIANT) & MASK_VARIANT;
-                 result.is_updated = (data >> SHIFT_UPDATED) & MASK_UPDATED;
-                 let r = f32((data >> SHIFT_LIGHT_R) & MASK_LIGHT);
-                 let g = f32((data >> SHIFT_LIGHT_G) & MASK_LIGHT);
-                 let b = f32((data >> SHIFT_LIGHT_B) & MASK_LIGHT);
-                 result.light = vec3(r, g, b) / 255.0;
-                 return result;
+
+         function displayErrorAndStop(title, message) {
+             console.error(`VibeSand Error: ${title} - ${message}`);
+             document.body.innerHTML = `
+                 <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #1a1a2e; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif; padding: 20px; box-sizing: border-box; text-align: center; z-index: 200;">
+                     <h1 style="color: var(--highlight-color, #ffae5a); margin-bottom: 20px;">${title}</h1>
+                     <p style="font-size: 1.1em; max-width: 600px; line-height: 1.6;">${message}</p>
+                     <p style="margin-top: 25px; font-size: 0.9em;">Please ensure your browser (e.g., Chrome, Edge) is up-to-date and WebGPU is enabled. You can check <a href="https://webgpureport.org" target="_blank" style="color: var(--accent-color, #00aaff); text-decoration: underline;">WebGPUReport.org</a> for your browser's status.</p>
+                     <p style="margin-top: 15px; font-size: 0.9em;">On systems with multiple GPUs (like laptops), make sure your browser is using the dedicated (high-performance) graphics card for WebGPU.</p>
+                 </div>`;
+             throw new Error(`VibeSand HALTED: ${title}`); // Stop further script execution
+         }
+         // --- End of non-WebGPU UI ---
+
+         async function initAndRun() {
+             const canvas = document.getElementById('webgpu-canvas');
+             if (!canvas) {
+                 displayErrorAndStop("Initialization Error", "The canvas element (#webgpu-canvas) was not found in the HTML. The page structure might be broken.");
+                 return; // Will not be reached
              }
-         
-             fn packVoxel(v_type: u32, v_variant: u32, is_updated: u32, light: vec3<f32>) -> u32 {
-                 let r = u32(clamp(light.r * 255.0, 0.0, 255.0));
-                 let g = u32(clamp(light.g * 255.0, 0.0, 255.0));
-                 let b = u32(clamp(light.b * 255.0, 0.0, 255.0));
-                 return ((v_type & MASK_TYPE) << SHIFT_TYPE) |
-                        ((v_variant & MASK_VARIANT) << SHIFT_VARIANT) |
-                        ((is_updated & MASK_UPDATED) << SHIFT_UPDATED) |
-                        ((r & MASK_LIGHT) << SHIFT_LIGHT_R) | 
-                        ((g & MASK_LIGHT) << SHIFT_LIGHT_G) | 
-                        ((b & MASK_LIGHT) << SHIFT_LIGHT_B);
+
+             if (!navigator.gpu) {
+                 displayErrorAndStop("WebGPU Not Supported", "Your browser does not support WebGPU, or it is disabled. VibeSand requires WebGPU to run.");
+                 return;
              }
-         
-             fn getVoxelType(data: u32) -> u32 { return (data >> SHIFT_TYPE) & MASK_TYPE; }
-             fn getVoxelIsUpdated(data: u32) -> u32 { return (data >> SHIFT_UPDATED) & MASK_UPDATED; }
-         
-             fn pos_to_idx(pos: vec3<u32>) -> u32 {
-                 if (any(pos >= vec3(GRID_DIM))) { return 0xFFFFFFFFu; }
-                 return pos.x + pos.y * GRID_DIM + pos.z * GRID_DIM * GRID_DIM;
+
+             let adapter;
+             try {
+                 adapter = await navigator.gpu.requestAdapter();
+             } catch (e) {
+                 displayErrorAndStop("WebGPU Adapter Error", `Failed to request a WebGPU adapter. This could be due to outdated drivers, or your browser/OS configuration. Error: ${e.message || e}`);
+                 return;
              }
-              fn pos_to_idx_i32(pos: vec3<i32>) -> u32 { 
-                 if (any(pos < vec3(0)) || any(pos >= vec3<i32>(i32(GRID_DIM)))) { return 0xFFFFFFFFu; }
-                 return u32(pos.x + pos.y * i32(GRID_DIM) + pos.z * i32(GRID_DIM) * i32(GRID_DIM));
+
+             if (!adapter) {
+                 displayErrorAndStop("No WebGPU Adapter Found", "No suitable GPU was found for WebGPU. Your GPU might not support WebGPU, it might be disabled in your browser settings, or your graphics drivers need an update.");
+                 return;
              }
-             fn hash3d_to_float(p: vec3<u32>) -> f32 {
-                 var p_mut = p * vec3(374761393u, 668265263u, 104395301u);
-                 p_mut = (p_mut ^ p_mut.yzx ^ p_mut.zxy) >> vec3(8u);
-                 p_mut = p_mut * vec3(374761393u, 668265263u, 104395301u);
-                 return f32(p_mut.x ^ p_mut.y ^ p_mut.z) / 4294967295.0;
+
+             let device;
+             try {
+                 device = await adapter.requestDevice();
+             } catch (e) {
+                 displayErrorAndStop("WebGPU Device Error", `Failed to obtain a WebGPU device from the adapter. This can happen if the GPU is not fully compatible, due to driver issues, or if the system is under heavy load. Error: ${e.message || e}`);
+                 return;
              }
-         `;
-         
-         const generationShaderCode = `
-             ${commonShaderCode}
-             struct GenerationUniforms { terrain_type: u32 };
-             @group(0) @binding(0) var<storage, read_write> voxels: array<VoxelData>;
-             @group(0) @binding(1) var<uniform> gen_uniforms: GenerationUniforms;
-             fn noise(p: vec2<f32>) -> f32 { return sin(p.x*0.1) * cos(p.y*0.1); }
-             @compute @workgroup_size(4, 4, 4)
-             fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
-                 let idx = pos_to_idx(global_id);
-                 if (idx == 0xFFFFFFFFu) { return; }
-                 var v_type = VOXEL_TYPE_AIR;
-                 let variant = u32(hash3d_to_float(global_id) * 8.0);
-                 
-                 if (gen_uniforms.terrain_type == 1u) { 
-                     let h = 32.0 + noise(vec2<f32>(global_id.xz)) * 10.0 + noise(vec2<f32>(global_id.xz) * 2.5) * 4.0;
-                     if (f32(global_id.y) < h) {
-                         v_type = select(VOXEL_TYPE_SAND, VOXEL_TYPE_STONE, f32(global_id.y) < h - 4.0);
+
+             if (!device) {
+                 displayErrorAndStop("WebGPU Device Error", "Failed to obtain a WebGPU device (requestDevice returned null/undefined without rejecting). Please check the browser console for more details.");
+                 return;
+             }
+
+             // --- Original script from this point onwards ---
+             const context = canvas.getContext('webgpu');
+             const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
+             context.configure({ device, format: presentationFormat, alphaMode: 'premultiplied' });
+
+             const VOXEL_GRID_SIZE = 128;
+             const NUM_VOXELS = VOXEL_GRID_SIZE ** 3;
+             document.getElementById('voxelCount').textContent = NUM_VOXELS.toLocaleString();
+             const PAN_SENSITIVITY = 0.1;
+
+             const TOOL_PAINT_SAND = 0;
+             const TOOL_PAINT_STONE = 1;
+             const TOOL_DESTROY = 2;
+             const TOOL_PAINT_WATER = 3;
+
+             const NUM_LIGHTS = 32;
+             const lights = [];
+             function HSVtoRGB(h, s, v) {
+                 let r, g, b, i, f, p, q, t;
+                 i = Math.floor(h * 6); f = h * 6 - i;
+                 p = v * (1 - s); q = v * (1 - f * s); t = v * (1 - (1 - f) * s);
+                 switch (i % 6) {
+                     case 0: r = v, g = t, b = p; break; case 1: r = q, g = v, b = p; break;
+                     case 2: r = p, g = v, b = t; break; case 3: r = p, g = q, b = v; break;
+                     case 4: r = t, g = p, b = v; break; case 5: r = v, g = p, b = q; break;
+                 }
+                 return [r, g, b];
+             }
+             for (let i = 0; i < NUM_LIGHTS; i++) {
+                 lights.push({
+                     position: [Math.random() * VOXEL_GRID_SIZE, Math.random() * VOXEL_GRID_SIZE, Math.random() * VOXEL_GRID_SIZE],
+                     color: HSVtoRGB(Math.random(), 0.9, 1.0),
+                     radius: 20.0 + Math.random() * 15,
+                     velocity: -20.0 - Math.random() * 20.0,
+                 });
+             }
+
+             let sunAngle = Math.PI / 4;
+             let currentTool = TOOL_PAINT_SAND;
+             let currentTerrainType = 1;
+             let uiControls = {
+                 sunSpeed: 0.02, brushSize: 10.5, continuousPaint: true, targetFarFaceOnAirHit: true, resolutionScale: 1.0, simSteps: 1, maxRaySteps: 384,
+             };
+             let camera = {
+                 alpha: -0.5, beta: 0.3, radius: VOXEL_GRID_SIZE * 1.8, target: [VOXEL_GRID_SIZE / 2, 30, VOXEL_GRID_SIZE / 2],
+             };
+             let mouseState = {
+                 buttons: [false, false, false], x: 0, y: 0, lastX: 0, lastY: 0, isPainting: false, isOrbiting: false, isPanning: false, hasFiredSingleShot: false,
+             };
+             let spacebarDown = false;
+             let frameCount = 0;
+             let isPreviewVisible = true;
+             let currentCamX=0, currentCamY=0, currentCamZ=0;
+             let currentForward=[0,0,1], currentRight=[1,0,0], currentUp=[0,1,0];
+
+             const commonShaderCode = `
+                 struct VoxelData {
+                     data: atomic<u32>,
+                 };
+
+                 struct PointLight {
+                     pos: vec3<f32>, radius: f32,
+                     color: vec3<f32>, intensity: f32,
+                 };
+                 struct SceneUniforms {
+                     lights: array<PointLight, ${NUM_LIGHTS}>,
+                     light_count: u32,
+                 };
+
+                 struct RenderPassUniforms {
+                     camera_position: vec3<f32>, camera_zoom: f32,
+                     camera_right: vec3<f32>, _padr: f32,
+                     camera_up: vec3<f32>, _padu: f32,
+                     camera_target_pos: vec3<f32>, _padt: f32,
+                     sun_direction: vec3<f32>,  _pads: f32,
+                     canvas_actual_dims: vec2<f32>,
+                     max_ray_steps: u32, _pad_mrs: u32,
+                 };
+
+                 struct ComputePassUniforms {
+                     camera_position: vec3<f32>, camera_zoom: f32,
+                     camera_right: vec3<f32>, _padr2: f32,
+                     camera_up: vec3<f32>, _padu2: f32,
+                     camera_target_pos: vec3<f32>, _padt2: f32,
+                     mouse_pos: vec2<f32>, canvas_dims: vec2<f32>,
+                     brush_size: f32, is_painting: u32,
+                     tool_type: u32, preview_active: u32,
+                     target_far_face_on_air_hit: u32, frame_num: u32,
+                     max_ray_steps_compute: u32, _pad_mrs_compute: u32,
+                 };
+
+                 struct TargetingOutput { aim_pos: vec4<f32>, hit: u32 };
+
+                 const VOXEL_TYPE_AIR = 0u;
+                 const VOXEL_TYPE_STONE = 1u;
+                 const VOXEL_TYPE_SAND = 2u;
+                 const VOXEL_TYPE_WATER = 3u;
+
+                 const TOOL_TYPE_SAND = 0u;
+                 const TOOL_TYPE_STONE = 1u;
+                 const TOOL_TYPE_DESTROY = 2u;
+                 const TOOL_TYPE_WATER = 3u;
+
+                 const GRID_DIM = ${VOXEL_GRID_SIZE}u;
+
+                 const MASK_TYPE = 7u;
+                 const SHIFT_TYPE = 0u;
+                 const MASK_VARIANT = 7u;
+                 const SHIFT_VARIANT = 3u;
+                 const MASK_UPDATED = 1u;
+                 const SHIFT_UPDATED = 6u;
+
+                 const MASK_LIGHT = 255u;
+                 const SHIFT_LIGHT_R = 8u;
+                 const SHIFT_LIGHT_G = 16u;
+                 const SHIFT_LIGHT_B = 24u;
+
+                 struct UnpackedVoxel {
+                     v_type: u32, v_variant: u32,
+                     is_updated: u32,
+                     light: vec3<f32>,
+                 };
+
+                 fn unpackVoxel(data: u32) -> UnpackedVoxel {
+                     var result: UnpackedVoxel;
+                     result.v_type = (data >> SHIFT_TYPE) & MASK_TYPE;
+                     result.v_variant = (data >> SHIFT_VARIANT) & MASK_VARIANT;
+                     result.is_updated = (data >> SHIFT_UPDATED) & MASK_UPDATED;
+                     let r = f32((data >> SHIFT_LIGHT_R) & MASK_LIGHT);
+                     let g = f32((data >> SHIFT_LIGHT_G) & MASK_LIGHT);
+                     let b = f32((data >> SHIFT_LIGHT_B) & MASK_LIGHT);
+                     result.light = vec3(r, g, b) / 255.0;
+                     return result;
+                 }
+
+                 fn packVoxel(v_type: u32, v_variant: u32, is_updated: u32, light: vec3<f32>) -> u32 {
+                     let r = u32(clamp(light.r * 255.0, 0.0, 255.0));
+                     let g = u32(clamp(light.g * 255.0, 0.0, 255.0));
+                     let b = u32(clamp(light.b * 255.0, 0.0, 255.0));
+                     return ((v_type & MASK_TYPE) << SHIFT_TYPE) |
+                            ((v_variant & MASK_VARIANT) << SHIFT_VARIANT) |
+                            ((is_updated & MASK_UPDATED) << SHIFT_UPDATED) |
+                            ((r & MASK_LIGHT) << SHIFT_LIGHT_R) |
+                            ((g & MASK_LIGHT) << SHIFT_LIGHT_G) |
+                            ((b & MASK_LIGHT) << SHIFT_LIGHT_B);
+                 }
+
+                 fn getVoxelType(data: u32) -> u32 { return (data >> SHIFT_TYPE) & MASK_TYPE; }
+                 fn getVoxelIsUpdated(data: u32) -> u32 { return (data >> SHIFT_UPDATED) & MASK_UPDATED; }
+
+                 fn pos_to_idx(pos: vec3<u32>) -> u32 {
+                     if (any(pos >= vec3(GRID_DIM))) { return 0xFFFFFFFFu; }
+                     return pos.x + pos.y * GRID_DIM + pos.z * GRID_DIM * GRID_DIM;
+                 }
+                  fn pos_to_idx_i32(pos: vec3<i32>) -> u32 {
+                     if (any(pos < vec3(0)) || any(pos >= vec3<i32>(i32(GRID_DIM)))) { return 0xFFFFFFFFu; }
+                     return u32(pos.x + pos.y * i32(GRID_DIM) + pos.z * i32(GRID_DIM) * i32(GRID_DIM));
+                 }
+                 fn hash3d_to_float(p: vec3<u32>) -> f32 {
+                     var p_mut = p * vec3(374761393u, 668265263u, 104395301u);
+                     p_mut = (p_mut ^ p_mut.yzx ^ p_mut.zxy) >> vec3(8u);
+                     p_mut = p_mut * vec3(374761393u, 668265263u, 104395301u);
+                     return f32(p_mut.x ^ p_mut.y ^ p_mut.z) / 4294967295.0;
+                 }
+             `;
+
+             const generationShaderCode = `
+                 ${commonShaderCode}
+                 struct GenerationUniforms { terrain_type: u32 };
+                 @group(0) @binding(0) var<storage, read_write> voxels: array<VoxelData>;
+                 @group(0) @binding(1) var<uniform> gen_uniforms: GenerationUniforms;
+                 fn noise(p: vec2<f32>) -> f32 { return sin(p.x*0.1) * cos(p.y*0.1); }
+                 @compute @workgroup_size(4, 4, 4)
+                 fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
+                     let idx = pos_to_idx(global_id);
+                     if (idx == 0xFFFFFFFFu) { return; }
+                     var v_type = VOXEL_TYPE_AIR;
+                     let variant = u32(hash3d_to_float(global_id) * 8.0);
+
+                     if (gen_uniforms.terrain_type == 1u) {
+                         let h = 32.0 + noise(vec2<f32>(global_id.xz)) * 10.0 + noise(vec2<f32>(global_id.xz) * 2.5) * 4.0;
+                         if (f32(global_id.y) < h) {
+                             v_type = select(VOXEL_TYPE_SAND, VOXEL_TYPE_STONE, f32(global_id.y) < h - 4.0);
+                         }
+                     } else {
+                         if (global_id.y < 5u) {
+                             v_type = VOXEL_TYPE_STONE;
+                         } else if (global_id.y < 10u && global_id.x > 10u && global_id.x < GRID_DIM - 10u && global_id.z > 10u && global_id.z < GRID_DIM - 10u) {
+                             v_type = VOXEL_TYPE_WATER;
+                         }
                      }
-                 } else { 
-                     if (global_id.y < 5u) { 
-                         v_type = VOXEL_TYPE_STONE;
-                     } else if (global_id.y < 10u && global_id.x > 10u && global_id.x < GRID_DIM - 10u && global_id.z > 10u && global_id.z < GRID_DIM - 10u) {
-                         v_type = VOXEL_TYPE_WATER;
-                     }
+                     atomicStore(&voxels[idx].data, packVoxel(v_type, variant, 0u, vec3(0.0)));
                  }
-                 atomicStore(&voxels[idx].data, packVoxel(v_type, variant, 0u, vec3(0.0)));
-             }
-         `;
-         
-         const simulationShaderCode = `
-             ${commonShaderCode}
-             @group(0) @binding(0) var<storage, read_write> voxels: array<VoxelData>;
-             @group(0) @binding(1) var<uniform> tool_info: ComputePassUniforms; 
-         
-             fn attempt_move(current_idx: u32, target_idx: u32, current_data: u32) -> bool {
-                 let target_initial_data = atomicLoad(&voxels[target_idx].data);
-                 if (getVoxelType(target_initial_data) != VOXEL_TYPE_AIR || getVoxelIsUpdated(target_initial_data) == 1u) {
-                     return false;
-                 }
-                 let data_to_write = current_data | (1u << SHIFT_UPDATED); 
-                 let ex = atomicCompareExchangeWeak(&voxels[target_idx].data, target_initial_data, data_to_write);
-                 if (ex.exchanged) {
-                     atomicStore(&voxels[current_idx].data, 0u); 
-                     return true;
-                 }
-                 return false;
-             }
-         
-             fn attempt_swap(current_idx: u32, target_idx: u32, current_data: u32) -> bool {
-                 let target_initial_data = atomicLoad(&voxels[target_idx].data);
-                 if (getVoxelIsUpdated(target_initial_data) == 1u) { return false; }
-         
-                 let marked_current_data = current_data | (1u << SHIFT_UPDATED);
-                 let marked_target_data = target_initial_data | (1u << SHIFT_UPDATED);
-         
-                 let ex = atomicCompareExchangeWeak(&voxels[target_idx].data, target_initial_data, marked_current_data);
-                 if (ex.exchanged) {
-                     let ex2 = atomicCompareExchangeWeak(&voxels[current_idx].data, current_data, marked_target_data);
-                     if (!ex2.exchanged) {
-                         atomicStore(&voxels[target_idx].data, target_initial_data);
+             `;
+
+             const simulationShaderCode = `
+                 ${commonShaderCode}
+                 @group(0) @binding(0) var<storage, read_write> voxels: array<VoxelData>;
+                 @group(0) @binding(1) var<uniform> tool_info: ComputePassUniforms;
+
+                 fn attempt_move(current_idx: u32, target_idx: u32, current_data: u32) -> bool {
+                     let target_initial_data = atomicLoad(&voxels[target_idx].data);
+                     if (getVoxelType(target_initial_data) != VOXEL_TYPE_AIR || getVoxelIsUpdated(target_initial_data) == 1u) {
                          return false;
                      }
-                     return true;
-                 }
-                 return false;
-             }
-         
-             @compute @workgroup_size(4, 4, 4)
-             fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
-                 let current_idx = pos_to_idx(global_id);
-                 if (current_idx == 0xFFFFFFFFu) { return; }
-         
-                 let initial_data = atomicLoad(&voxels[current_idx].data);
-                 let current_type = getVoxelType(initial_data);
-         
-                 if (getVoxelIsUpdated(initial_data) == 1u || current_type == VOXEL_TYPE_AIR || current_type == VOXEL_TYPE_STONE) {
-                     return;
-                 }
-                 
-                 if (global_id.y == 0u) { 
-                     atomicStore(&voxels[current_idx].data, 0u);
-                     return;
-                 }
-         
-                 // PRIORITY 1: Direct Vertical Fall
-                 let pos_below = global_id - vec3(0u, 1u, 0u);
-                 let idx_below = pos_to_idx(pos_below);
-                 if (idx_below != 0xFFFFFFFFu) {
-                     let type_below = getVoxelType(atomicLoad(&voxels[idx_below].data));
-                     if (type_below == VOXEL_TYPE_AIR) {
-                         if (attempt_move(current_idx, idx_below, initial_data)) { return; }
-                     } else if (current_type == VOXEL_TYPE_SAND && type_below == VOXEL_TYPE_WATER) {
-                         if (attempt_swap(current_idx, idx_below, initial_data)) { return; }
+                     let data_to_write = current_data | (1u << SHIFT_UPDATED);
+                     let ex = atomicCompareExchangeWeak(&voxels[target_idx].data, target_initial_data, data_to_write);
+                     if (ex.exchanged) {
+                         atomicStore(&voxels[current_idx].data, 0u);
+                         return true;
                      }
+                     return false;
                  }
-         
-                 let time_varied_hash = (global_id.x * 19349663u) ^ (global_id.y * 668265263u) ^ (global_id.z * 374761393u) ^ tool_info.frame_num;
-                 
-                 // PRIORITY 2: Diagonal Fall 
-                 if (global_id.y > 0u) {
-                     if (current_type == VOXEL_TYPE_SAND) {
-                         let DIAGONAL_SLIDES_SAND = array<vec3<i32>, 8>(
-                             vec3(1,-1,0), vec3(-1,-1,0), vec3(0,-1,1), vec3(0,-1,-1),
-                             vec3(1,-1,1), vec3(-1,-1,1), vec3(1,-1,-1), vec3(-1,-1,-1)
-                         );
-                         let offset_diag_sand = time_varied_hash % 8u;
-                         for(var i_ds = 0u; i_ds < 8u; i_ds = i_ds + 1u) {
-                             let check_pos = vec3<i32>(global_id) + DIAGONAL_SLIDES_SAND[(i_ds + offset_diag_sand) % 8u];
-                             let check_idx = pos_to_idx_i32(check_pos);
-                             if (check_idx != 0xFFFFFFFFu) {
-                                 let type_diag = getVoxelType(atomicLoad(&voxels[check_idx].data));
-                                 if (type_diag == VOXEL_TYPE_AIR) {
-                                     if(attempt_move(current_idx, check_idx, initial_data)) { return; }
-                                 } else if (type_diag == VOXEL_TYPE_WATER) { // Sand swaps with water diagonally
-                                     if(attempt_swap(current_idx, check_idx, initial_data)) { return; }
-                                 }
-                             }
+
+                 fn attempt_swap(current_idx: u32, target_idx: u32, current_data: u32) -> bool {
+                     let target_initial_data = atomicLoad(&voxels[target_idx].data);
+                     if (getVoxelIsUpdated(target_initial_data) == 1u) { return false; }
+
+                     let marked_current_data = current_data | (1u << SHIFT_UPDATED);
+                     let marked_target_data = target_initial_data | (1u << SHIFT_UPDATED);
+
+                     let ex = atomicCompareExchangeWeak(&voxels[target_idx].data, target_initial_data, marked_current_data);
+                     if (ex.exchanged) {
+                         let ex2 = atomicCompareExchangeWeak(&voxels[current_idx].data, current_data, marked_target_data);
+                         if (!ex2.exchanged) {
+                             atomicStore(&voxels[target_idx].data, target_initial_data);
+                             return false;
                          }
-                     } else if (current_type == VOXEL_TYPE_WATER) { 
-                          let DIAGONAL_DIRS_WATER = array<vec3<i32>, 4>(vec3(-1,-1,0), vec3(1,-1,0), vec3(0,-1,-1), vec3(0,-1,1));
-                          let offset_diag_water = time_varied_hash % 4u;
-                          for(var i_dw = 0u; i_dw < 4u; i_dw = i_dw + 1u) {
-                             let check_pos = vec3<i32>(global_id) + DIAGONAL_DIRS_WATER[(i_dw + offset_diag_water) % 4u];
-                             let check_idx = pos_to_idx_i32(check_pos);
-                              if (check_idx != 0xFFFFFFFFu) {
-                                 if (getVoxelType(atomicLoad(&voxels[check_idx].data)) == VOXEL_TYPE_AIR) { // Water only moves into air diagonally
-                                    if(attempt_move(current_idx, check_idx, initial_data)) { return; }
-                                 }
-                             }
-                         }
+                         return true;
                      }
+                     return false;
                  }
-                 
-                 // PRIORITY 3: Tumbling (Sand and Water)
-                 if (global_id.y > 0u) { 
-                     let HORIZONTAL_TUMBLE_DIRS = array<vec3<i32>,4>(vec3(1,0,0),vec3(-1,0,0),vec3(0,0,1),vec3(0,0,-1));
-                     let offset_tumble = (time_varied_hash >> 3u) % 4u; 
-                     for(var i_t=0u; i_t<4u; i_t++){
-                         let horizontal_dir = HORIZONTAL_TUMBLE_DIRS[(i_t + offset_tumble) % 4u];
-                         let h_n_pos = vec3<i32>(global_id) + horizontal_dir; 
-                         let h_n_idx = pos_to_idx_i32(h_n_pos);
-         
-                         if(h_n_idx != 0xFFFFFFFFu && getVoxelType(atomicLoad(&voxels[h_n_idx].data)) == VOXEL_TYPE_AIR){
-                             let tumble_target_pos = h_n_pos - vec3(0,1,0); 
-                             if(tumble_target_pos.y >= 0){ 
-                                 let tumble_target_idx = pos_to_idx_i32(tumble_target_pos);
-                                 if(tumble_target_idx != 0xFFFFFFFFu && getVoxelType(atomicLoad(&voxels[tumble_target_idx].data)) == VOXEL_TYPE_AIR){
-                                    if(attempt_move(current_idx, tumble_target_idx, initial_data)) { return; }
-                                 }
-                             }
-                         }
-                     }
-                 }
-         
-                 // PRIORITY 4: Water Horizontal Spread (specific to water)
-                 if (current_type == VOXEL_TYPE_WATER) {
-                     let HORIZONTAL_SPREAD_DIRS_WATER = array<vec3<i32>, 4>(vec3(-1,0,0), vec3(1,0,0), vec3(0,0,-1), vec3(0,0,1));
-                     let offset_h_water = (time_varied_hash >> 4u) % 4u; 
-                      for(var i_hw = 0u; i_hw < 4u; i_hw = i_hw + 1u) {
-                         let dir = HORIZONTAL_SPREAD_DIRS_WATER[(i_hw + offset_h_water) % 4u];
-                         let neighbor_idx_1 = pos_to_idx_i32(vec3<i32>(global_id) + dir);
-                         if (neighbor_idx_1 != 0xFFFFFFFFu) {
-                             let neighbor_type_1 = getVoxelType(atomicLoad(&voxels[neighbor_idx_1].data));
-                             if (neighbor_type_1 == VOXEL_TYPE_AIR) {
-                                 if (attempt_move(current_idx, neighbor_idx_1, initial_data)) { return; }
-                             } else if (neighbor_type_1 == VOXEL_TYPE_WATER) { 
-                                 let neighbor_idx_2 = pos_to_idx_i32(vec3<i32>(global_id) + dir * 2);
-                                 if (neighbor_idx_2 != 0xFFFFFFFFu && getVoxelType(atomicLoad(&voxels[neighbor_idx_2].data)) == VOXEL_TYPE_AIR) {
-                                      if (attempt_move(current_idx, neighbor_idx_2, initial_data)) { return; }
-                                 }
-                             }
-                         }
-                     }
-                 }
-             }
-         `;
-         
-         const resetFlagsShaderCode = `
-             ${commonShaderCode}
-             @group(0) @binding(0) var<storage, read_write> voxels: array<VoxelData>;
-             @compute @workgroup_size(8, 8, 4)
-             fn main(@builtin(global_invocation_id) id: vec3<u32>) {
-                 let idx = pos_to_idx(id);
-                 if (idx != 0xFFFFFFFFu) {
-                     atomicAnd(&voxels[idx].data, ~((1u) << SHIFT_UPDATED));
-                 }
-             }
-         `;
-         
-         const lightingShaderCode = `
-             ${commonShaderCode}
-             @group(0) @binding(0) var<storage, read_write> voxels: array<VoxelData>;
-             @group(0) @binding(1) var<uniform> scene: SceneUniforms;
-             @compute @workgroup_size(4, 4, 4)
-             fn main(@builtin(global_invocation_id) id: vec3<u32>) {
-                 let idx = pos_to_idx(id);
-                 if (idx == 0xFFFFFFFFu) { return; }
-         
-                 let current_packed = unpackVoxel(atomicLoad(&voxels[idx].data));
-                 if (current_packed.v_type == VOXEL_TYPE_STONE || current_packed.v_type == VOXEL_TYPE_AIR) {
-                     let packed_no_light = packVoxel(current_packed.v_type, current_packed.v_variant, 0u, vec3(0.0));
-                     atomicStore(&voxels[idx].data, packed_no_light);
-                     return;
-                 }
-         
-                 var final_light_color = vec3(0.0);
-                 let voxel_pos = vec3<f32>(id) + 0.5;
-                 for (var i = 0u; i < scene.light_count; i = i + 1u) {
-                     let light = scene.lights[i];
-                     let dist_sq = dot(voxel_pos - light.pos, voxel_pos - light.pos);
-                     let radius_sq = light.radius * light.radius;
-                     if (dist_sq < radius_sq) {
-                         let falloff = pow(1.0 - (dist_sq / radius_sq), 2.0);
-                         final_light_color += light.color * falloff * light.intensity;
-                     }
-                 }
-                 atomicStore(&voxels[idx].data, packVoxel(current_packed.v_type, current_packed.v_variant, 0u, final_light_color));
-             }
-         `;
-         
-         const paintShaderCode = `
-             ${commonShaderCode}
-             @group(0) @binding(0) var<storage, read_write> voxels: array<VoxelData>;
-             @group(0) @binding(1) var<uniform> tool_info: ComputePassUniforms;
-             @group(0) @binding(2) var<storage, read> targeting: TargetingOutput;
-             @compute @workgroup_size(4, 4, 4)
-             fn main(@builtin(global_invocation_id) global_id_in_brush: vec3<u32>) {
-                 if(tool_info.is_painting == 0u || targeting.hit == 0u) { return; }
-                 let brush_radius_f = tool_info.brush_size;
-                 let brush_center_world_f = targeting.aim_pos.xyz;
-                 let local_pos_in_brush = vec3<f32>(global_id_in_brush) - vec3(brush_radius_f) + 0.5;
-                 if (length(local_pos_in_brush) > brush_radius_f) { return; }
-                 let p_world_u = vec3<u32>(floor(brush_center_world_f + local_pos_in_brush));
-                 let idx = pos_to_idx(p_world_u);
-                 if (idx != 0xFFFFFFFFu) {
-                     if (tool_info.tool_type == TOOL_TYPE_DESTROY) {
-                         atomicStore(&voxels[idx].data, 0u);
-                     } else {
-                         if (getVoxelType(atomicLoad(&voxels[idx].data)) == VOXEL_TYPE_AIR) {
-                             var new_voxel_type: u32;
-                             if (tool_info.tool_type == TOOL_TYPE_SAND) { new_voxel_type = VOXEL_TYPE_SAND; }
-                             else if (tool_info.tool_type == TOOL_TYPE_WATER) { new_voxel_type = VOXEL_TYPE_WATER; }
-                             else { new_voxel_type = VOXEL_TYPE_STONE; }
-                             let variant = u32(hash3d_to_float(p_world_u) * 8.0);
-                             atomicStore(&voxels[idx].data, packVoxel(new_voxel_type, variant, 1u, vec3(0.0)));
-                         }
-                     }
-                 }
-             }
-         `;
-         
-         const clearLooseVoxelsShaderCode = `
-             ${commonShaderCode}
-             @group(0) @binding(0) var<storage, read_write> voxels: array<VoxelData>;
-             @compute @workgroup_size(4, 4, 4)
-             fn main(@builtin(global_invocation_id) id: vec3<u32>) {
-                 let idx = pos_to_idx(id);
-                 if (idx != 0xFFFFFFFFu) {
-                     let v_type = getVoxelType(atomicLoad(&voxels[idx].data));
-                     if(v_type == VOXEL_TYPE_SAND || v_type == VOXEL_TYPE_WATER){
-                         atomicStore(&voxels[idx].data, 0u);
-                     }
-                 }
-             }
-         `;
-         
-         const targetingShaderCode = `
-             ${commonShaderCode}
-             @group(0) @binding(0) var<storage, read_write> voxels: array<VoxelData>; 
-             @group(0) @binding(1) var<uniform> tool_info: ComputePassUniforms; 
-             @group(0) @binding(2) var<storage, read_write> output: TargetingOutput;
-             fn intersect_aabb(ro: vec3<f32>, rd: vec3<f32>, min_b: vec3<f32>, max_b: vec3<f32>) -> vec2<f32> {
-                 let inv_rd = 1.0 / rd; let t1 = (min_b - ro) * inv_rd; let t2 = (max_b - ro) * inv_rd;
-                 let t_min = max(max(min(t1.x, t2.x), min(t1.y, t2.y)), min(t1.z, t2.z));
-                 let t_max = min(min(max(t1.x, t2.x), max(t1.y, t2.y)), max(t1.z, t2.z));
-                 return vec2(t_min, t_max);
-             }
-             @compute @workgroup_size(1, 1, 1)
-             fn main() {
-                 output.hit = 0u;
-                 var ray_origin = tool_info.camera_position;
-                 let cam_fwd = normalize(tool_info.camera_target_pos - ray_origin); 
-                 let aspect_ratio = tool_info.canvas_dims.x / tool_info.canvas_dims.y;
-                 let ray_dir = normalize(tool_info.camera_right * ((tool_info.mouse_pos.x/tool_info.canvas_dims.x)-0.5)*2.0*aspect_ratio + tool_info.camera_up * ((tool_info.mouse_pos.y/tool_info.canvas_dims.y)-0.5)*-2.0 + cam_fwd*tool_info.camera_zoom);
-                 let t_bounds = intersect_aabb(ray_origin, ray_dir, vec3(0.0), vec3(f32(GRID_DIM)));
-                 
-                 if (t_bounds.x >= t_bounds.y || t_bounds.y < 0.0 ) { return; } 
-                 
-                 var dda_pos = ray_origin + ray_dir * (max(0.0, t_bounds.x) - 0.001); 
-                 var map_pos = vec3<i32>(floor(dda_pos));
-                 let step = vec3<i32>(sign(ray_dir));
-                 let delta = abs(1.0 / (ray_dir + 1e-6));
-                 var side = (sign(ray_dir) * (vec3<f32>(map_pos) - dda_pos) + (sign(ray_dir) * 0.5 + 0.5)) * delta;
-                 var last_map_pos = map_pos;
-         
-                 for (var i = 0u; i < tool_info.max_ray_steps_compute; i = i + 1u) { 
-                     last_map_pos = map_pos;
-                     if (side.x < side.y && side.x < side.z) { side.x += delta.x; map_pos.x += step.x; } 
-                     else if (side.y < side.z) { side.y += delta.y; map_pos.y += step.y; } 
-                     else { side.z += delta.z; map_pos.z += step.z; }
-         
-                     let idx = pos_to_idx(vec3<u32>(map_pos));
-                     if (idx != 0xFFFFFFFFu && getVoxelType(atomicLoad(&voxels[idx].data)) != VOXEL_TYPE_AIR) {
-                         var hit_pos_f = select(vec3<f32>(last_map_pos), vec3<f32>(map_pos), tool_info.tool_type == TOOL_TYPE_DESTROY);
-                         output.aim_pos = vec4(hit_pos_f + 0.5, 0.0);
-                         output.hit = 1u;
+
+                 @compute @workgroup_size(4, 4, 4)
+                 fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
+                     let current_idx = pos_to_idx(global_id);
+                     if (current_idx == 0xFFFFFFFFu) { return; }
+
+                     let initial_data = atomicLoad(&voxels[current_idx].data);
+                     let current_type = getVoxelType(initial_data);
+
+                     if (getVoxelIsUpdated(initial_data) == 1u || current_type == VOXEL_TYPE_AIR || current_type == VOXEL_TYPE_STONE) {
                          return;
                      }
-                     if (any(map_pos < vec3<i32>(0)) || any(map_pos >= vec3<i32>(i32(GRID_DIM)))) { break; }
+
+                     if (global_id.y == 0u) {
+                         atomicStore(&voxels[current_idx].data, 0u);
+                         return;
+                     }
+
+                     // PRIORITY 1: Direct Vertical Fall
+                     let pos_below = global_id - vec3(0u, 1u, 0u);
+                     let idx_below = pos_to_idx(pos_below);
+                     if (idx_below != 0xFFFFFFFFu) {
+                         let type_below = getVoxelType(atomicLoad(&voxels[idx_below].data));
+                         if (type_below == VOXEL_TYPE_AIR) {
+                             if (attempt_move(current_idx, idx_below, initial_data)) { return; }
+                         } else if (current_type == VOXEL_TYPE_SAND && type_below == VOXEL_TYPE_WATER) {
+                             if (attempt_swap(current_idx, idx_below, initial_data)) { return; }
+                         }
+                     }
+
+                     let time_varied_hash = (global_id.x * 19349663u) ^ (global_id.y * 668265263u) ^ (global_id.z * 374761393u) ^ tool_info.frame_num;
+
+                     // PRIORITY 2: Diagonal Fall
+                     if (global_id.y > 0u) {
+                         if (current_type == VOXEL_TYPE_SAND) {
+                             let DIAGONAL_SLIDES_SAND = array<vec3<i32>, 8>(
+                                 vec3(1,-1,0), vec3(-1,-1,0), vec3(0,-1,1), vec3(0,-1,-1),
+                                 vec3(1,-1,1), vec3(-1,-1,1), vec3(1,-1,-1), vec3(-1,-1,-1)
+                             );
+                             let offset_diag_sand = time_varied_hash % 8u;
+                             for(var i_ds = 0u; i_ds < 8u; i_ds = i_ds + 1u) {
+                                 let check_pos = vec3<i32>(global_id) + DIAGONAL_SLIDES_SAND[(i_ds + offset_diag_sand) % 8u];
+                                 let check_idx = pos_to_idx_i32(check_pos);
+                                 if (check_idx != 0xFFFFFFFFu) {
+                                     let type_diag = getVoxelType(atomicLoad(&voxels[check_idx].data));
+                                     if (type_diag == VOXEL_TYPE_AIR) {
+                                         if(attempt_move(current_idx, check_idx, initial_data)) { return; }
+                                     } else if (type_diag == VOXEL_TYPE_WATER) { // Sand swaps with water diagonally
+                                         if(attempt_swap(current_idx, check_idx, initial_data)) { return; }
+                                     }
+                                 }
+                             }
+                         } else if (current_type == VOXEL_TYPE_WATER) {
+                              let DIAGONAL_DIRS_WATER = array<vec3<i32>, 4>(vec3(-1,-1,0), vec3(1,-1,0), vec3(0,-1,-1), vec3(0,-1,1));
+                              let offset_diag_water = time_varied_hash % 4u;
+                              for(var i_dw = 0u; i_dw < 4u; i_dw = i_dw + 1u) {
+                                 let check_pos = vec3<i32>(global_id) + DIAGONAL_DIRS_WATER[(i_dw + offset_diag_water) % 4u];
+                                 let check_idx = pos_to_idx_i32(check_pos);
+                                  if (check_idx != 0xFFFFFFFFu) {
+                                     if (getVoxelType(atomicLoad(&voxels[check_idx].data)) == VOXEL_TYPE_AIR) { // Water only moves into air diagonally
+                                        if(attempt_move(current_idx, check_idx, initial_data)) { return; }
+                                     }
+                                 }
+                             }
+                         }
+                     }
+
+                     // PRIORITY 3: Tumbling (Sand and Water)
+                     if (global_id.y > 0u) {
+                         let HORIZONTAL_TUMBLE_DIRS = array<vec3<i32>,4>(vec3(1,0,0),vec3(-1,0,0),vec3(0,0,1),vec3(0,0,-1));
+                         let offset_tumble = (time_varied_hash >> 3u) % 4u;
+                         for(var i_t=0u; i_t<4u; i_t++){
+                             let horizontal_dir = HORIZONTAL_TUMBLE_DIRS[(i_t + offset_tumble) % 4u];
+                             let h_n_pos = vec3<i32>(global_id) + horizontal_dir;
+                             let h_n_idx = pos_to_idx_i32(h_n_pos);
+
+                             if(h_n_idx != 0xFFFFFFFFu && getVoxelType(atomicLoad(&voxels[h_n_idx].data)) == VOXEL_TYPE_AIR){
+                                 let tumble_target_pos = h_n_pos - vec3(0,1,0);
+                                 if(tumble_target_pos.y >= 0){
+                                     let tumble_target_idx = pos_to_idx_i32(tumble_target_pos);
+                                     if(tumble_target_idx != 0xFFFFFFFFu && getVoxelType(atomicLoad(&voxels[tumble_target_idx].data)) == VOXEL_TYPE_AIR){
+                                        if(attempt_move(current_idx, tumble_target_idx, initial_data)) { return; }
+                                     }
+                                 }
+                             }
+                         }
+                     }
+
+                     // PRIORITY 4: Water Horizontal Spread (specific to water)
+                     if (current_type == VOXEL_TYPE_WATER) {
+                         let HORIZONTAL_SPREAD_DIRS_WATER = array<vec3<i32>, 4>(vec3(-1,0,0), vec3(1,0,0), vec3(0,0,-1), vec3(0,0,1));
+                         let offset_h_water = (time_varied_hash >> 4u) % 4u;
+                          for(var i_hw = 0u; i_hw < 4u; i_hw = i_hw + 1u) {
+                             let dir = HORIZONTAL_SPREAD_DIRS_WATER[(i_hw + offset_h_water) % 4u];
+                             let neighbor_idx_1 = pos_to_idx_i32(vec3<i32>(global_id) + dir);
+                             if (neighbor_idx_1 != 0xFFFFFFFFu) {
+                                 let neighbor_type_1 = getVoxelType(atomicLoad(&voxels[neighbor_idx_1].data));
+                                 if (neighbor_type_1 == VOXEL_TYPE_AIR) {
+                                     if (attempt_move(current_idx, neighbor_idx_1, initial_data)) { return; }
+                                 } else if (neighbor_type_1 == VOXEL_TYPE_WATER) {
+                                     let neighbor_idx_2 = pos_to_idx_i32(vec3<i32>(global_id) + dir * 2);
+                                     if (neighbor_idx_2 != 0xFFFFFFFFu && getVoxelType(atomicLoad(&voxels[neighbor_idx_2].data)) == VOXEL_TYPE_AIR) {
+                                          if (attempt_move(current_idx, neighbor_idx_2, initial_data)) { return; }
+                                     }
+                                 }
+                             }
+                         }
+                     }
                  }
-                 
-                 let dist_to_bbox_hit: f32 = select(max(0.0, t_bounds.x), t_bounds.y, tool_info.target_far_face_on_air_hit == 1u);
-                 let hit_pos_on_bbox = ray_origin + ray_dir * dist_to_bbox_hit;
-                 let target_point_for_placement: vec3<f32> = select(hit_pos_on_bbox + ray_dir * 0.501, hit_pos_on_bbox - ray_dir * 0.501, tool_info.target_far_face_on_air_hit == 1u);
-                 output.aim_pos = vec4(clamp(target_point_for_placement, vec3(0.0), vec3(f32(GRID_DIM) - 1.0)), 0.0);
-                 output.hit = 1u;
-             }
-         `;
-         
-         const renderShaderCode = ` 
-             ${commonShaderCode}
-             @group(0) @binding(0) var<storage, read_write> voxels: array<VoxelData>; 
-             @group(0) @binding(1) var<uniform> scene: RenderPassUniforms;
-             @group(0) @binding(2) var<uniform> tool_info: ComputePassUniforms;
-             @group(0) @binding(3) var<storage, read> targeting: TargetingOutput;
-         
-             fn getColorFromVoxel(voxel: UnpackedVoxel, is_water: bool) -> vec3<f32> { 
-                 let variant_f = f32(voxel.v_variant) / 7.0; 
-                 if (voxel.v_type == VOXEL_TYPE_STONE) {
-                     return vec3(0.45) + (variant_f - 0.5) * 0.15;
+             `;
+
+             const resetFlagsShaderCode = `
+                 ${commonShaderCode}
+                 @group(0) @binding(0) var<storage, read_write> voxels: array<VoxelData>;
+                 @compute @workgroup_size(8, 8, 4)
+                 fn main(@builtin(global_invocation_id) id: vec3<u32>) {
+                     let idx = pos_to_idx(id);
+                     if (idx != 0xFFFFFFFFu) {
+                         atomicAnd(&voxels[idx].data, ~((1u) << SHIFT_UPDATED));
+                     }
                  }
-                 if (voxel.v_type == VOXEL_TYPE_SAND) {
-                     return vec3(0.8, 0.7, 0.4) + (variant_f - 0.5) * 0.1;
+             `;
+
+             const lightingShaderCode = `
+                 ${commonShaderCode}
+                 @group(0) @binding(0) var<storage, read_write> voxels: array<VoxelData>;
+                 @group(0) @binding(1) var<uniform> scene: SceneUniforms;
+                 @compute @workgroup_size(4, 4, 4)
+                 fn main(@builtin(global_invocation_id) id: vec3<u32>) {
+                     let idx = pos_to_idx(id);
+                     if (idx == 0xFFFFFFFFu) { return; }
+
+                     let current_packed = unpackVoxel(atomicLoad(&voxels[idx].data));
+                     if (current_packed.v_type == VOXEL_TYPE_STONE || current_packed.v_type == VOXEL_TYPE_AIR) {
+                         let packed_no_light = packVoxel(current_packed.v_type, current_packed.v_variant, 0u, vec3(0.0));
+                         atomicStore(&voxels[idx].data, packed_no_light);
+                         return;
+                     }
+
+                     var final_light_color = vec3(0.0);
+                     let voxel_pos = vec3<f32>(id) + 0.5;
+                     for (var i = 0u; i < scene.light_count; i = i + 1u) {
+                         let light = scene.lights[i];
+                         let dist_sq = dot(voxel_pos - light.pos, voxel_pos - light.pos);
+                         let radius_sq = light.radius * light.radius;
+                         if (dist_sq < radius_sq) {
+                             let falloff = pow(1.0 - (dist_sq / radius_sq), 2.0);
+                             final_light_color += light.color * falloff * light.intensity;
+                         }
+                     }
+                     atomicStore(&voxels[idx].data, packVoxel(current_packed.v_type, current_packed.v_variant, 0u, final_light_color));
                  }
-                 if (is_water) { 
-                     return vec3(0.15, 0.45, 0.85); // Flat base color for water, variant removed
+             `;
+
+             const paintShaderCode = `
+                 ${commonShaderCode}
+                 @group(0) @binding(0) var<storage, read_write> voxels: array<VoxelData>;
+                 @group(0) @binding(1) var<uniform> tool_info: ComputePassUniforms;
+                 @group(0) @binding(2) var<storage, read> targeting: TargetingOutput;
+                 @compute @workgroup_size(4, 4, 4)
+                 fn main(@builtin(global_invocation_id) global_id_in_brush: vec3<u32>) {
+                     if(tool_info.is_painting == 0u || targeting.hit == 0u) { return; }
+                     let brush_radius_f = tool_info.brush_size;
+                     let brush_center_world_f = targeting.aim_pos.xyz;
+                     let local_pos_in_brush = vec3<f32>(global_id_in_brush) - vec3(brush_radius_f) + 0.5;
+                     if (length(local_pos_in_brush) > brush_radius_f) { return; }
+                     let p_world_u = vec3<u32>(floor(brush_center_world_f + local_pos_in_brush));
+                     let idx = pos_to_idx(p_world_u);
+                     if (idx != 0xFFFFFFFFu) {
+                         if (tool_info.tool_type == TOOL_TYPE_DESTROY) {
+                             atomicStore(&voxels[idx].data, 0u);
+                         } else {
+                             if (getVoxelType(atomicLoad(&voxels[idx].data)) == VOXEL_TYPE_AIR) {
+                                 var new_voxel_type: u32;
+                                 if (tool_info.tool_type == TOOL_TYPE_SAND) { new_voxel_type = VOXEL_TYPE_SAND; }
+                                 else if (tool_info.tool_type == TOOL_TYPE_WATER) { new_voxel_type = VOXEL_TYPE_WATER; }
+                                 else { new_voxel_type = VOXEL_TYPE_STONE; }
+                                 let variant = u32(hash3d_to_float(p_world_u) * 8.0);
+                                 atomicStore(&voxels[idx].data, packVoxel(new_voxel_type, variant, 1u, vec3(0.0)));
+                             }
+                         }
+                     }
                  }
-                 // This should not be reached for water if logic is correct, but acts as a fallback.
-                 return vec3(0.15, 0.45, 0.85) + (variant_f - 0.5) * vec3(0.05, 0.05, 0.1); 
-             }
-         
-             fn intersect_aabb(ro: vec3<f32>, rd: vec3<f32>, min_b: vec3<f32>, max_b: vec3<f32>) -> vec2<f32> {
-                 let t1=(min_b-ro)/rd; let t2=(max_b-ro)/rd;
-                 return vec2(max(max(min(t1.x,t2.x),min(t1.y,t2.y)),min(t1.z,t2.z)),min(min(max(t1.x,t2.x),max(t1.y,t2.y)),max(t1.z,t2.z)));
-             }
-             fn intersect_sphere(ro: vec3<f32>, rd: vec3<f32>, c: vec3<f32>, r: f32) -> f32 {
-                 let oc = ro - c; let b = dot(oc, rd); let h = b*b - dot(oc, oc) + r*r;
-                 if (h < 0.0) { return -1.0; } else { return -b - sqrt(h); }
-             }
-             @vertex fn vs_main(@builtin(vertex_index) vi: u32) -> @builtin(position) vec4<f32> {
-                 return vec4(vec2(f32(vi/2u)*4.0-1.0, f32(vi%2u)*4.0-1.0), 0.0, 1.0);
-             }
-             @fragment fn fs_main(@builtin(position) fc: vec4<f32>) -> @location(0) vec4<f32> {
-                 let cam_fwd = normalize(scene.camera_target_pos - scene.camera_position); 
-                 let aspect = scene.canvas_actual_dims.x / scene.canvas_actual_dims.y;
-                 let ray_dir = normalize(scene.camera_right*((fc.x/scene.canvas_actual_dims.x)-0.5)*2.0*aspect + scene.camera_up*((fc.y/scene.canvas_actual_dims.y)-0.5)*-2.0 + cam_fwd*scene.camera_zoom);
-                 let t_bounds = intersect_aabb(scene.camera_position, ray_dir, vec3(0.0), vec3(f32(GRID_DIM)));
-                 
-                 var sky_color = mix(vec3(0.1, 0.1, 0.2), vec3(0.5, 0.7, 1.0), max(ray_dir.y * 0.5 + 0.5, 0.0));
-                 var final_color = vec4(sky_color, 1.0);
-                 
-                 var dda_hit_this_ray = false;
-                 var dda_hit_map_pos = vec3<i32>(0); 
-         
-                 if (t_bounds.x < t_bounds.y && t_bounds.y > 0.0) {
-                     var dda_pos = scene.camera_position + ray_dir * (max(0.0, t_bounds.x) - 0.001);
+             `;
+
+             const clearLooseVoxelsShaderCode = `
+                 ${commonShaderCode}
+                 @group(0) @binding(0) var<storage, read_write> voxels: array<VoxelData>;
+                 @compute @workgroup_size(4, 4, 4)
+                 fn main(@builtin(global_invocation_id) id: vec3<u32>) {
+                     let idx = pos_to_idx(id);
+                     if (idx != 0xFFFFFFFFu) {
+                         let v_type = getVoxelType(atomicLoad(&voxels[idx].data));
+                         if(v_type == VOXEL_TYPE_SAND || v_type == VOXEL_TYPE_WATER){
+                             atomicStore(&voxels[idx].data, 0u);
+                         }
+                     }
+                 }
+             `;
+
+             const targetingShaderCode = `
+                 ${commonShaderCode}
+                 @group(0) @binding(0) var<storage, read_write> voxels: array<VoxelData>;
+                 @group(0) @binding(1) var<uniform> tool_info: ComputePassUniforms;
+                 @group(0) @binding(2) var<storage, read_write> output: TargetingOutput;
+                 fn intersect_aabb(ro: vec3<f32>, rd: vec3<f32>, min_b: vec3<f32>, max_b: vec3<f32>) -> vec2<f32> {
+                     let inv_rd = 1.0 / rd; let t1 = (min_b - ro) * inv_rd; let t2 = (max_b - ro) * inv_rd;
+                     let t_min = max(max(min(t1.x, t2.x), min(t1.y, t2.y)), min(t1.z, t2.z));
+                     let t_max = min(min(max(t1.x, t2.x), max(t1.y, t2.y)), max(t1.z, t2.z));
+                     return vec2(t_min, t_max);
+                 }
+                 @compute @workgroup_size(1, 1, 1)
+                 fn main() {
+                     output.hit = 0u;
+                     var ray_origin = tool_info.camera_position;
+                     let cam_fwd = normalize(tool_info.camera_target_pos - ray_origin);
+                     let aspect_ratio = tool_info.canvas_dims.x / tool_info.canvas_dims.y;
+                     let ray_dir = normalize(tool_info.camera_right * ((tool_info.mouse_pos.x/tool_info.canvas_dims.x)-0.5)*2.0*aspect_ratio + tool_info.camera_up * ((tool_info.mouse_pos.y/tool_info.canvas_dims.y)-0.5)*-2.0 + cam_fwd*tool_info.camera_zoom);
+                     let t_bounds = intersect_aabb(ray_origin, ray_dir, vec3(0.0), vec3(f32(GRID_DIM)));
+
+                     if (t_bounds.x >= t_bounds.y || t_bounds.y < 0.0 ) { return; }
+
+                     var dda_pos = ray_origin + ray_dir * (max(0.0, t_bounds.x) - 0.001);
                      var map_pos = vec3<i32>(floor(dda_pos));
                      let step = vec3<i32>(sign(ray_dir));
                      let delta = abs(1.0 / (ray_dir + 1e-6));
                      var side = (sign(ray_dir) * (vec3<f32>(map_pos) - dda_pos) + (sign(ray_dir) * 0.5 + 0.5)) * delta;
-                     
-                     for (var i = 0u; i < scene.max_ray_steps; i = i + 1u) { 
-                         var normal: vec3<f32>;
-                         if (side.x < side.y && side.x < side.z) { side.x+=delta.x; map_pos.x+=step.x; normal=vec3(-f32(step.x),0,0); }
-                         else if (side.y < side.z) { side.y+=delta.y; map_pos.y+=step.y; normal=vec3(0,-f32(step.y),0); }
-                         else { side.z+=delta.z; map_pos.z+=step.z; normal=vec3(0,0,-f32(step.z)); }
-         
+                     var last_map_pos = map_pos;
+
+                     for (var i = 0u; i < tool_info.max_ray_steps_compute; i = i + 1u) {
+                         last_map_pos = map_pos;
+                         if (side.x < side.y && side.x < side.z) { side.x += delta.x; map_pos.x += step.x; }
+                         else if (side.y < side.z) { side.y += delta.y; map_pos.y += step.y; }
+                         else { side.z += delta.z; map_pos.z += step.z; }
+
                          let idx = pos_to_idx(vec3<u32>(map_pos));
-                         if (idx != 0xFFFFFFFFu) {
-                             let voxel = unpackVoxel(atomicLoad(&voxels[idx].data));
-                             if (voxel.v_type != VOXEL_TYPE_AIR) {
-                                 var base_color = getColorFromVoxel(voxel, voxel.v_type == VOXEL_TYPE_WATER); 
-                                 
-                                 let sun_diffuse = max(dot(normal, normalize(scene.sun_direction)), 0.0) * 0.5 + 0.5;
-                                 var y_bright: f32;
+                         if (idx != 0xFFFFFFFFu && getVoxelType(atomicLoad(&voxels[idx].data)) != VOXEL_TYPE_AIR) {
+                             var hit_pos_f = select(vec3<f32>(last_map_pos), vec3<f32>(map_pos), tool_info.tool_type == TOOL_TYPE_DESTROY);
+                             output.aim_pos = vec4(hit_pos_f + 0.5, 0.0);
+                             output.hit = 1u;
+                             return;
+                         }
+                         if (any(map_pos < vec3<i32>(0)) || any(map_pos >= vec3<i32>(i32(GRID_DIM)))) { break; }
+                     }
 
-                                 if (voxel.v_type == VOXEL_TYPE_WATER) {
-                                     // Surface shimmer
-                                     let time_factor_surface = f32(tool_info.frame_num) * 0.05;
-                                     let spatial_factor_surface = f32(map_pos.x) * 0.3 + f32(map_pos.z) * 0.3;
-                                     let surface_shimmer_val = (sin(spatial_factor_surface + time_factor_surface) + cos(spatial_factor_surface * 0.7)) * 0.025 + 0.01;
-                                     base_color += vec3(surface_shimmer_val * 0.5, surface_shimmer_val * 0.7, surface_shimmer_val);
-                                     
-                                     // Per-voxel internal body oscillation
-                                     let internal_time = f32(tool_info.frame_num) * 0.11 + f32(map_pos.y) * 0.07; 
-                                     let p_hash_x = sin(f32(map_pos.x) * 0.61 + internal_time + f32(map_pos.z) * 0.23);
-                                     let p_hash_y = cos(f32(map_pos.y) * 0.73 - internal_time * 0.71 + f32(map_pos.x) * 0.19);
-                                     let p_hash_z = sin(f32(map_pos.z) * 0.57 + internal_time * 1.13 + f32(map_pos.y) * 0.29);
-                                     let internal_oscillation = (p_hash_x * p_hash_y * p_hash_z) * 0.045; 
-                                     base_color += vec3(internal_oscillation * 0.3, internal_oscillation * 0.4, internal_oscillation * 0.7);
-                                     
-                                     // Enhanced Y-brightness for water
-                                     let normalized_y = f32(map_pos.y) / f32(GRID_DIM - 1u);
-                                     y_bright = pow(normalized_y, 2.5) * 2.8 + 0.2; // Darker bottom, much brighter top (target ~0.2 to 3.0 range)
-                                 } else {
-                                     // Original y_bright for other materials
-                                     y_bright = pow(f32(map_pos.y) / f32(GRID_DIM), 0.75) * 1.25 + 0.25;
+                     let dist_to_bbox_hit: f32 = select(max(0.0, t_bounds.x), t_bounds.y, tool_info.target_far_face_on_air_hit == 1u);
+                     let hit_pos_on_bbox = ray_origin + ray_dir * dist_to_bbox_hit;
+                     let target_point_for_placement: vec3<f32> = select(hit_pos_on_bbox + ray_dir * 0.501, hit_pos_on_bbox - ray_dir * 0.501, tool_info.target_far_face_on_air_hit == 1u);
+                     output.aim_pos = vec4(clamp(target_point_for_placement, vec3(0.0), vec3(f32(GRID_DIM) - 1.0)), 0.0);
+                     output.hit = 1u;
+                 }
+             `;
+
+             const renderShaderCode = `
+                 ${commonShaderCode}
+                 @group(0) @binding(0) var<storage, read_write> voxels: array<VoxelData>;
+                 @group(0) @binding(1) var<uniform> scene: RenderPassUniforms;
+                 @group(0) @binding(2) var<uniform> tool_info: ComputePassUniforms;
+                 @group(0) @binding(3) var<storage, read> targeting: TargetingOutput;
+
+                 fn getColorFromVoxel(voxel: UnpackedVoxel, is_water: bool) -> vec3<f32> {
+                     let variant_f = f32(voxel.v_variant) / 7.0;
+                     if (voxel.v_type == VOXEL_TYPE_STONE) {
+                         return vec3(0.45) + (variant_f - 0.5) * 0.15;
+                     }
+                     if (voxel.v_type == VOXEL_TYPE_SAND) {
+                         return vec3(0.8, 0.7, 0.4) + (variant_f - 0.5) * 0.1;
+                     }
+                     if (is_water) {
+                         return vec3(0.15, 0.45, 0.85); // Flat base color for water, variant removed
+                     }
+                     // This should not be reached for water if logic is correct, but acts as a fallback.
+                     return vec3(0.15, 0.45, 0.85) + (variant_f - 0.5) * vec3(0.05, 0.05, 0.1);
+                 }
+
+                 fn intersect_aabb(ro: vec3<f32>, rd: vec3<f32>, min_b: vec3<f32>, max_b: vec3<f32>) -> vec2<f32> {
+                     let t1=(min_b-ro)/rd; let t2=(max_b-ro)/rd;
+                     return vec2(max(max(min(t1.x,t2.x),min(t1.y,t2.y)),min(t1.z,t2.z)),min(min(max(t1.x,t2.x),max(t1.y,t2.y)),max(t1.z,t2.z)));
+                 }
+                 fn intersect_sphere(ro: vec3<f32>, rd: vec3<f32>, c: vec3<f32>, r: f32) -> f32 {
+                     let oc = ro - c; let b = dot(oc, rd); let h = b*b - dot(oc, oc) + r*r;
+                     if (h < 0.0) { return -1.0; } else { return -b - sqrt(h); }
+                 }
+                 @vertex fn vs_main(@builtin(vertex_index) vi: u32) -> @builtin(position) vec4<f32> {
+                     return vec4(vec2(f32(vi/2u)*4.0-1.0, f32(vi%2u)*4.0-1.0), 0.0, 1.0);
+                 }
+                 @fragment fn fs_main(@builtin(position) fc: vec4<f32>) -> @location(0) vec4<f32> {
+                     let cam_fwd = normalize(scene.camera_target_pos - scene.camera_position);
+                     let aspect = scene.canvas_actual_dims.x / scene.canvas_actual_dims.y;
+                     let ray_dir = normalize(scene.camera_right*((fc.x/scene.canvas_actual_dims.x)-0.5)*2.0*aspect + scene.camera_up*((fc.y/scene.canvas_actual_dims.y)-0.5)*-2.0 + cam_fwd*scene.camera_zoom);
+                     let t_bounds = intersect_aabb(scene.camera_position, ray_dir, vec3(0.0), vec3(f32(GRID_DIM)));
+
+                     var sky_color = mix(vec3(0.1, 0.1, 0.2), vec3(0.5, 0.7, 1.0), max(ray_dir.y * 0.5 + 0.5, 0.0));
+                     var final_color = vec4(sky_color, 1.0);
+
+                     var dda_hit_this_ray = false;
+                     var dda_hit_map_pos = vec3<i32>(0);
+
+                     if (t_bounds.x < t_bounds.y && t_bounds.y > 0.0) {
+                         var dda_pos = scene.camera_position + ray_dir * (max(0.0, t_bounds.x) - 0.001);
+                         var map_pos = vec3<i32>(floor(dda_pos));
+                         let step = vec3<i32>(sign(ray_dir));
+                         let delta = abs(1.0 / (ray_dir + 1e-6));
+                         var side = (sign(ray_dir) * (vec3<f32>(map_pos) - dda_pos) + (sign(ray_dir) * 0.5 + 0.5)) * delta;
+
+                         for (var i = 0u; i < scene.max_ray_steps; i = i + 1u) {
+                             var normal: vec3<f32>;
+                             if (side.x < side.y && side.x < side.z) { side.x+=delta.x; map_pos.x+=step.x; normal=vec3(-f32(step.x),0,0); }
+                             else if (side.y < side.z) { side.y+=delta.y; map_pos.y+=step.y; normal=vec3(0,-f32(step.y),0); }
+                             else { side.z+=delta.z; map_pos.z+=step.z; normal=vec3(0,0,-f32(step.z)); }
+
+                             let idx = pos_to_idx(vec3<u32>(map_pos));
+                             if (idx != 0xFFFFFFFFu) {
+                                 let voxel = unpackVoxel(atomicLoad(&voxels[idx].data));
+                                 if (voxel.v_type != VOXEL_TYPE_AIR) {
+                                     var base_color = getColorFromVoxel(voxel, voxel.v_type == VOXEL_TYPE_WATER);
+
+                                     let sun_diffuse = max(dot(normal, normalize(scene.sun_direction)), 0.0) * 0.5 + 0.5;
+                                     var y_bright: f32;
+
+                                     if (voxel.v_type == VOXEL_TYPE_WATER) {
+                                         // Surface shimmer
+                                         let time_factor_surface = f32(tool_info.frame_num) * 0.05;
+                                         let spatial_factor_surface = f32(map_pos.x) * 0.3 + f32(map_pos.z) * 0.3;
+                                         let surface_shimmer_val = (sin(spatial_factor_surface + time_factor_surface) + cos(spatial_factor_surface * 0.7)) * 0.025 + 0.01;
+                                         base_color += vec3(surface_shimmer_val * 0.5, surface_shimmer_val * 0.7, surface_shimmer_val);
+
+                                         // Per-voxel internal body oscillation
+                                         let internal_time = f32(tool_info.frame_num) * 0.11 + f32(map_pos.y) * 0.07;
+                                         let p_hash_x = sin(f32(map_pos.x) * 0.61 + internal_time + f32(map_pos.z) * 0.23);
+                                         let p_hash_y = cos(f32(map_pos.y) * 0.73 - internal_time * 0.71 + f32(map_pos.x) * 0.19);
+                                         let p_hash_z = sin(f32(map_pos.z) * 0.57 + internal_time * 1.13 + f32(map_pos.y) * 0.29);
+                                         let internal_oscillation = (p_hash_x * p_hash_y * p_hash_z) * 0.045;
+                                         base_color += vec3(internal_oscillation * 0.3, internal_oscillation * 0.4, internal_oscillation * 0.7);
+
+                                         // Enhanced Y-brightness for water
+                                         let normalized_y = f32(map_pos.y) / f32(GRID_DIM - 1u);
+                                         y_bright = pow(normalized_y, 2.5) * 2.8 + 0.2; // Darker bottom, much brighter top (target ~0.2 to 3.0 range)
+                                     } else {
+                                         // Original y_bright for other materials
+                                         y_bright = pow(f32(map_pos.y) / f32(GRID_DIM), 0.75) * 1.25 + 0.25;
+                                     }
+
+                                     var lit_color = base_color * sun_diffuse * y_bright + voxel.light;
+                                     // No general water multiplier here anymore, y_bright handles it.
+
+                                     final_color = vec4(clamp(lit_color, vec3(0.0), vec3(1.0)), 1.0);
+                                     dda_hit_this_ray = true;
+                                     dda_hit_map_pos = map_pos;
+                                     break;
                                  }
-                                 
-                                 var lit_color = base_color * sun_diffuse * y_bright + voxel.light;
-                                 // No general water multiplier here anymore, y_bright handles it.
-
-                                 final_color = vec4(clamp(lit_color, vec3(0.0), vec3(1.0)), 1.0);
-                                 dda_hit_this_ray = true;
-                                 dda_hit_map_pos = map_pos;
-                                 break; 
                              }
-                         } 
+                         }
                      }
-                 }
-                 
-                 if (dda_hit_this_ray && tool_info.preview_active == 1u && targeting.hit == 1u) {
-                     let hit_center = vec3<f32>(dda_hit_map_pos) + 0.5; 
-                     let dist_to_brush = length(hit_center - targeting.aim_pos.xyz);
-                     if (dist_to_brush <= tool_info.brush_size) {
-                        var tool_color_indicator = vec3(0.0);
-                        if (tool_info.tool_type == TOOL_TYPE_DESTROY) { tool_color_indicator = vec3(1.0, 0.2, 0.2); }
-                        else if (tool_info.tool_type == TOOL_TYPE_WATER) { tool_color_indicator = vec3(0.3, 0.6, 1.0); }
-                        else if (tool_info.tool_type == TOOL_TYPE_SAND) { tool_color_indicator = vec3(0.95, 0.85, 0.3); }
-                        else { tool_color_indicator = vec3(0.6, 0.7, 1.0); } 
-                        let falloff = pow(1.0 - clamp(dist_to_brush/tool_info.brush_size, 0.0, 1.0), 1.5);
-                        final_color = vec4<f32>(mix(final_color.rgb, tool_color_indicator, falloff * 0.6), final_color.a);
+
+                     if (dda_hit_this_ray && tool_info.preview_active == 1u && targeting.hit == 1u) {
+                         let hit_center = vec3<f32>(dda_hit_map_pos) + 0.5;
+                         let dist_to_brush = length(hit_center - targeting.aim_pos.xyz);
+                         if (dist_to_brush <= tool_info.brush_size) {
+                            var tool_color_indicator = vec3(0.0);
+                            if (tool_info.tool_type == TOOL_TYPE_DESTROY) { tool_color_indicator = vec3(1.0, 0.2, 0.2); }
+                            else if (tool_info.tool_type == TOOL_TYPE_WATER) { tool_color_indicator = vec3(0.3, 0.6, 1.0); }
+                            else if (tool_info.tool_type == TOOL_TYPE_SAND) { tool_color_indicator = vec3(0.95, 0.85, 0.3); }
+                            else { tool_color_indicator = vec3(0.6, 0.7, 1.0); }
+                            let falloff = pow(1.0 - clamp(dist_to_brush/tool_info.brush_size, 0.0, 1.0), 1.5);
+                            final_color = vec4<f32>(mix(final_color.rgb, tool_color_indicator, falloff * 0.6), final_color.a);
+                         }
                      }
-                 }
-         
-                 if (tool_info.preview_active == 1u && targeting.hit == 1u) {
-                     let t_sphere = intersect_sphere(scene.camera_position, ray_dir, targeting.aim_pos.xyz, tool_info.brush_size);
-                     if (t_sphere > 0.0) {
-                         let hit_pos_on_sphere = scene.camera_position + ray_dir * t_sphere;
-                         let sphere_normal = normalize(hit_pos_on_sphere - targeting.aim_pos.xyz);
-                         let fresnel = pow(1.0 - abs(dot(sphere_normal, -ray_dir)), 4.0);
-                         var sphere_base_tint = vec3(0.0);
-                         if(tool_info.tool_type == TOOL_TYPE_DESTROY) { sphere_base_tint=vec3(1.0,0.2,0.2); } 
-                         else if (tool_info.tool_type == TOOL_TYPE_WATER) { sphere_base_tint=vec3(0.3, 0.6, 1.0); }
-                         else if (tool_info.tool_type == TOOL_TYPE_SAND) { sphere_base_tint=vec3(0.95, 0.85, 0.3); } 
-                         else { sphere_base_tint=vec3(0.6, 0.7, 1.0); }
-                         let sphere_blend_alpha = clamp(0.35 + fresnel * 0.6, 0.1, 0.9);
-                         final_color = vec4<f32>(mix(final_color.rgb, sphere_base_tint, sphere_blend_alpha), final_color.a);
+
+                     if (tool_info.preview_active == 1u && targeting.hit == 1u) {
+                         let t_sphere = intersect_sphere(scene.camera_position, ray_dir, targeting.aim_pos.xyz, tool_info.brush_size);
+                         if (t_sphere > 0.0) {
+                             let hit_pos_on_sphere = scene.camera_position + ray_dir * t_sphere;
+                             let sphere_normal = normalize(hit_pos_on_sphere - targeting.aim_pos.xyz);
+                             let fresnel = pow(1.0 - abs(dot(sphere_normal, -ray_dir)), 4.0);
+                             var sphere_base_tint = vec3(0.0);
+                             if(tool_info.tool_type == TOOL_TYPE_DESTROY) { sphere_base_tint=vec3(1.0,0.2,0.2); }
+                             else if (tool_info.tool_type == TOOL_TYPE_WATER) { sphere_base_tint=vec3(0.3, 0.6, 1.0); }
+                             else if (tool_info.tool_type == TOOL_TYPE_SAND) { sphere_base_tint=vec3(0.95, 0.85, 0.3); }
+                             else { sphere_base_tint=vec3(0.6, 0.7, 1.0); }
+                             let sphere_blend_alpha = clamp(0.35 + fresnel * 0.6, 0.1, 0.9);
+                             final_color = vec4<f32>(mix(final_color.rgb, sphere_base_tint, sphere_blend_alpha), final_color.a);
+                         }
                      }
+                     return final_color;
                  }
-                 return final_color;
-             }
-         `;
-         
-         const VOXEL_BUFFER_SIZE = NUM_VOXELS * 4;
-         const voxelBuffer = device.createBuffer({ size: VOXEL_BUFFER_SIZE, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST });
-         const generationUniformsBuffer = device.createBuffer({ size: 4, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
-         const renderPassUniformsBuffer = device.createBuffer({ size: 104, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST }); 
-         const computePassUniformsBuffer = device.createBuffer({ size: 144, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST }); 
-         const targetingOutputBuffer = device.createBuffer({ size: 32, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | GPUBufferUsage.COPY_SRC });
-         const lightsUniformBuffer = device.createBuffer({ size: 32 * NUM_LIGHTS + 16, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
-         
-         const generationPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: generationShaderCode }), entryPoint: 'main' }});
-         const simulationPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: simulationShaderCode }), entryPoint: 'main' }});
-         const resetFlagsPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: resetFlagsShaderCode }), entryPoint: 'main' }});
-         const lightingPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: lightingShaderCode }), entryPoint: 'main' }});
-         const paintPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: paintShaderCode }), entryPoint: 'main' }});
-         const clearLooseVoxelsPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: clearLooseVoxelsShaderCode }), entryPoint: 'main' }});
-         const targetingPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: targetingShaderCode }), entryPoint: 'main' }});
-         let renderPipeline = device.createRenderPipeline({
-             layout: 'auto',
-             vertex: { module: device.createShaderModule({ code: renderShaderCode }), entryPoint: 'vs_main' },
-             fragment: { module: device.createShaderModule({ code: renderShaderCode }), entryPoint: 'fs_main', targets: [{ format: presentationFormat,
-                 blend: {
-                     color: { srcFactor: 'src-alpha', dstFactor: 'one-minus-src-alpha', operation: 'add' },
-                     alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha', operation: 'add' }
-                 }
-              }] },
-             primitive: { topology: 'triangle-list' },
-         });
-         
-         const generationBindGroup = device.createBindGroup({ layout: generationPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }, { binding: 1, resource: { buffer: generationUniformsBuffer } } ]});
-         const simulationBindGroup = device.createBindGroup({ layout: simulationPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }, { binding: 1, resource: { buffer: computePassUniformsBuffer } }]});
-         const resetFlagsBindGroup = device.createBindGroup({ layout: resetFlagsPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }]});
-         const lightBindGroup = device.createBindGroup({ layout: lightingPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }, { binding: 1, resource: { buffer: lightsUniformBuffer } }]});
-         const paintBindGroup = device.createBindGroup({ layout: paintPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }, { binding: 1, resource: { buffer: computePassUniformsBuffer } }, { binding: 2, resource: { buffer: targetingOutputBuffer } }]});
-         const clearLooseBindGroup = device.createBindGroup({ layout: clearLooseVoxelsPipeline.getBindGroupLayout(0), entries: [{ binding: 0, resource: { buffer: voxelBuffer } }]});
-         const targetingBindGroup = device.createBindGroup({ layout: targetingPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }, { binding: 1, resource: { buffer: computePassUniformsBuffer } }, { binding: 2, resource: { buffer: targetingOutputBuffer } }]});
-         const renderBindGroup = device.createBindGroup({ layout: renderPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }, { binding: 1, resource: { buffer: renderPassUniformsBuffer } }, { binding: 2, resource: { buffer: computePassUniformsBuffer } }, { binding: 3, resource: { buffer: targetingOutputBuffer } } ]});
-         
-         function resizeCanvasAndContext() {
-             const newScale = parseFloat(document.getElementById('resolutionScale').value);
-             uiControls.resolutionScale = newScale;
-             document.getElementById('resolutionScaleValue').textContent = `${(newScale * 100).toFixed(0)}%`;
-             const displayWidth = canvas.parentElement.clientWidth; 
-             const displayHeight = canvas.parentElement.clientHeight;
-             const newWidth = Math.max(1, Math.floor(displayWidth * uiControls.resolutionScale)); 
-             const newHeight = Math.max(1, Math.floor(displayHeight * uiControls.resolutionScale));
-             if (canvas.width !== newWidth || canvas.height !== newHeight) {
-                 canvas.width = newWidth;
-                 canvas.height = newHeight;
-             }
-         }
-         
-         function runGeneration() {
-             device.queue.writeBuffer(generationUniformsBuffer, 0, new Uint32Array([currentTerrainType]));
-             const commandEncoder = device.createCommandEncoder();
-             const genPass = commandEncoder.beginComputePass();
-             genPass.setPipeline(generationPipeline); 
-             genPass.setBindGroup(0, generationBindGroup);
-             genPass.dispatchWorkgroups(VOXEL_GRID_SIZE / 4, VOXEL_GRID_SIZE / 4, VOXEL_GRID_SIZE / 4);
-             genPass.end();
-             device.queue.submit([commandEncoder.finish()]);
-             frameCount = 0; 
-         }
-         
-         runGeneration();
-         
-         document.getElementById('resetSimButton').addEventListener('click', runGeneration);
-         document.getElementById('worldTypeTerrain').addEventListener('click', () => { currentTerrainType = 1; runGeneration(); document.getElementById('worldTypeTerrain').classList.add('active'); document.getElementById('worldTypeFlat').classList.remove('active'); });
-         document.getElementById('worldTypeFlat').addEventListener('click', () => { currentTerrainType = 0; runGeneration(); document.getElementById('worldTypeFlat').classList.add('active'); document.getElementById('worldTypeTerrain').classList.remove('active'); });
-         document.getElementById('clearLooseButton').addEventListener('click', () => {
-             const commandEncoder = device.createCommandEncoder();
-             const passClear = commandEncoder.beginComputePass();
-             passClear.setPipeline(clearLooseVoxelsPipeline);
-             passClear.setBindGroup(0, clearLooseBindGroup); 
-             passClear.dispatchWorkgroups(VOXEL_GRID_SIZE / 4, VOXEL_GRID_SIZE / 4, VOXEL_GRID_SIZE / 4);
-             passClear.end();
-             device.queue.submit([commandEncoder.finish()]);
-         });
-         
-         const toolButtonsMap = { 
-             [TOOL_PAINT_SAND]: document.getElementById('toolPaintSand'), 
-             [TOOL_PAINT_STONE]: document.getElementById('toolPaintStone'), 
-             [TOOL_PAINT_WATER]: document.getElementById('toolPaintWater'),
-             [TOOL_DESTROY]: document.getElementById('toolDestroy') 
-         };
-         function setActiveToolButton(tool) { 
-             Object.values(toolButtonsMap).forEach(button => button.classList.remove('active')); 
-             if(toolButtonsMap[tool]) toolButtonsMap[tool].classList.add('active'); 
-         }
-         Object.entries(toolButtonsMap).forEach(([toolId, buttonElement]) => {
-             buttonElement.addEventListener('click', () => { 
-                 currentTool = parseInt(toolId); 
-                 setActiveToolButton(currentTool); 
+             `;
+
+             const VOXEL_BUFFER_SIZE = NUM_VOXELS * 4;
+             const voxelBuffer = device.createBuffer({ size: VOXEL_BUFFER_SIZE, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST });
+             const generationUniformsBuffer = device.createBuffer({ size: 4, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+             const renderPassUniformsBuffer = device.createBuffer({ size: 104, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+             const computePassUniformsBuffer = device.createBuffer({ size: 144, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+             const targetingOutputBuffer = device.createBuffer({ size: 32, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | GPUBufferUsage.COPY_SRC });
+             const lightsUniformBuffer = device.createBuffer({ size: 32 * NUM_LIGHTS + 16, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+
+             const generationPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: generationShaderCode }), entryPoint: 'main' }});
+             const simulationPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: simulationShaderCode }), entryPoint: 'main' }});
+             const resetFlagsPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: resetFlagsShaderCode }), entryPoint: 'main' }});
+             const lightingPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: lightingShaderCode }), entryPoint: 'main' }});
+             const paintPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: paintShaderCode }), entryPoint: 'main' }});
+             const clearLooseVoxelsPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: clearLooseVoxelsShaderCode }), entryPoint: 'main' }});
+             const targetingPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: targetingShaderCode }), entryPoint: 'main' }});
+             let renderPipeline = device.createRenderPipeline({
+                 layout: 'auto',
+                 vertex: { module: device.createShaderModule({ code: renderShaderCode }), entryPoint: 'vs_main' },
+                 fragment: { module: device.createShaderModule({ code: renderShaderCode }), entryPoint: 'fs_main', targets: [{ format: presentationFormat,
+                     blend: {
+                         color: { srcFactor: 'src-alpha', dstFactor: 'one-minus-src-alpha', operation: 'add' },
+                         alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha', operation: 'add' }
+                     }
+                  }] },
+                 primitive: { topology: 'triangle-list' },
              });
-         });
-         setActiveToolButton(currentTool); 
-         
-         document.getElementById('sunSpeed').addEventListener('input', (e) => { uiControls.sunSpeed = parseFloat(e.target.value); document.getElementById('sunSpeedValue').textContent = uiControls.sunSpeed.toFixed(4); });
-         document.getElementById('brushSize').addEventListener('input', (e) => { uiControls.brushSize = parseFloat(e.target.value); document.getElementById('brushSizeValue').textContent = uiControls.brushSize.toFixed(1); });
-         document.getElementById('simSteps').addEventListener('input', (e) => { uiControls.simSteps = parseInt(e.target.value); document.getElementById('simStepsValue').textContent = uiControls.simSteps.toString(); });
-         document.getElementById('maxRaySteps').addEventListener('input', (e) => { uiControls.maxRaySteps = parseInt(e.target.value); document.getElementById('maxRayStepsValue').textContent = uiControls.maxRaySteps.toString(); });
-         document.getElementById('continuousPaintToggle').addEventListener('change', (e) => { uiControls.continuousPaint = e.target.checked; });
-         document.getElementById('targetFarFaceToggle').addEventListener('change', (e) => { uiControls.targetFarFaceOnAirHit = e.target.checked; });
-         document.getElementById('resolutionScale').addEventListener('change', resizeCanvasAndContext);
-         
-         const infoToggleButton = document.getElementById('infoToggleButton');
-         const descriptionArea = document.getElementById('descriptionArea');
-         infoToggleButton.onclick = () => { descriptionArea.classList.toggle('hidden'); infoToggleButton.textContent = descriptionArea.classList.contains('hidden') ? 'Show Info' : 'Hide Info'; };
-         document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-         function hideInfoPanel() { if (!descriptionArea.classList.contains('hidden')) { infoToggleButton.click(); } }
-         
-         canvas.addEventListener('contextmenu', e => {e.preventDefault(); hideInfoPanel(); });
-         canvas.addEventListener('mouseenter', () => isPreviewVisible = true);
-         canvas.addEventListener('mouseleave', () => isPreviewVisible = false);
-         window.addEventListener('keydown', (e) => { if (e.code === 'Space') spacebarDown = true; });
-         window.addEventListener('keyup', (e) => { if (e.code === 'Space') { spacebarDown = false; if (mouseState.isPanning && mouseState.buttons[0]) mouseState.isPanning = false; }});
-         canvas.addEventListener('mousedown', (e) => {
-             hideInfoPanel(); 
-             mouseState.buttons[e.button] = true;
-             mouseState.lastX = e.clientX; mouseState.lastY = e.clientY;
-             if (e.button === 0 && !spacebarDown) { 
-                 if (uiControls.continuousPaint) mouseState.isPainting = true;
-                 else if (!mouseState.hasFiredSingleShot) { mouseState.isPainting = true; mouseState.hasFiredSingleShot = true; } 
-                 else { mouseState.isPainting = false; }
-             }
-             mouseState.isOrbiting = (e.button === 2);
-             mouseState.isPanning = (e.button === 1 || (spacebarDown && e.button === 0));
-         });
-         window.addEventListener('mouseup', (e) => {
-             mouseState.buttons[e.button] = false;
-             if (e.button === 0) { mouseState.isPainting = false; mouseState.hasFiredSingleShot = false; }
-             mouseState.isOrbiting = false;
-             mouseState.isPanning = false;
-         });
-         window.addEventListener('mousemove', (e) => {
-             const dx = e.clientX - mouseState.lastX; const dy = e.clientY - mouseState.lastY;
-             const rect = canvas.getBoundingClientRect(); 
-             mouseState.x = (e.clientX - rect.left); mouseState.y = (e.clientY - rect.top);
-             if (mouseState.isOrbiting) { 
-                 camera.alpha -= dx * 0.005; 
-                 camera.beta = Math.max(-1.56, Math.min(1.56, camera.beta + dy * 0.005));
-             } 
-             else if (mouseState.isPanning) {
-                 camera.target[0] -= (currentRight[0]*dx - currentUp[0]*dy) * PAN_SENSITIVITY;
-                 camera.target[1] -= (currentRight[1]*dx - currentUp[1]*dy) * PAN_SENSITIVITY;
-                 camera.target[2] -= (currentRight[2]*dx - currentUp[2]*dy) * PAN_SENSITIVITY;
-             }
-             mouseState.lastX = e.clientX; mouseState.lastY = e.clientY;
-         });
-         canvas.addEventListener('wheel', (e) => { e.preventDefault(); camera.radius=Math.max(10, Math.min(VOXEL_GRID_SIZE*5, camera.radius+e.deltaY*0.1)); }, {passive: false});
-         
-         const resizeObserver = new ResizeObserver(entries => {
-             for (let entry of entries) { resizeCanvasAndContext(); }
-         });
-         resizeObserver.observe(canvas.parentElement);
-         resizeCanvasAndContext();
-         
-         let lastFrameTime = performance.now(); 
-         async function frame() {
-             currentCamX = camera.target[0] + camera.radius * Math.cos(camera.beta) * Math.sin(camera.alpha);
-             currentCamY = camera.target[1] + camera.radius * Math.sin(camera.beta);
-             currentCamZ = camera.target[2] + camera.radius * Math.cos(camera.beta) * Math.cos(camera.alpha);
-             
-             const fwd_un = [camera.target[0]-currentCamX, camera.target[1]-currentCamY, camera.target[2]-currentCamZ];
-             let fwd_n_raw = Math.hypot(...fwd_un);
-             let fwd_n_val = fwd_n_raw === 0 ? 1.0 : fwd_n_raw; 
-             currentForward = [fwd_un[0]/fwd_n_val, fwd_un[1]/fwd_n_val, fwd_un[2]/fwd_n_val];
-         
-             const wUp = [0,1,0]; 
-             currentRight = [currentForward[1]*wUp[2]-currentForward[2]*wUp[1], currentForward[2]*wUp[0]-currentForward[0]*wUp[2], currentForward[0]*wUp[1]-currentForward[1]*wUp[0]];
-             let r_n_raw = Math.hypot(...currentRight);
-             let r_n_val = r_n_raw === 0 ? 1.0 : r_n_raw; 
-             currentRight = [currentRight[0]/r_n_val, currentRight[1]/r_n_val, currentRight[2]/r_n_val];
-         
-             currentUp = [currentRight[1]*currentForward[2]-currentRight[2]*currentForward[1], currentRight[2]*currentForward[0]-currentRight[0]*currentForward[2], currentRight[0]*currentForward[1]-currentRight[1]*currentForward[0]];
-             let up_n_raw = Math.hypot(...currentUp);
-             let up_n_val = up_n_raw === 0 ? 1.0 : up_n_raw; 
-             currentUp = [currentUp[0]/up_n_val, currentUp[1]/up_n_val, currentUp[2]/up_n_val];
-         
-             sunAngle += uiControls.sunSpeed * 0.2;
-             const sunDirection = [Math.cos(sunAngle), 0.707, Math.sin(sunAngle)];
-             const now = performance.now();
-             const deltaTime = (now - lastFrameTime) / 1000.0;
-             const lightData = new Float32Array(8 * NUM_LIGHTS);
-             for(let i = 0; i < NUM_LIGHTS; i++) {
-                 lights[i].position[1] += lights[i].velocity * deltaTime;
-                 if (lights[i].position[1] < -lights[i].radius) {
-                     lights[i].position[0] = Math.random() * VOXEL_GRID_SIZE;
-                     lights[i].position[1] = VOXEL_GRID_SIZE + lights[i].radius;
-                     lights[i].position[2] = Math.random() * VOXEL_GRID_SIZE;
-                 }
-                 const offset = i * 8;
-                 lightData.set(lights[i].position, offset); lightData[offset + 3] = lights[i].radius;
-                 lightData.set(lights[i].color, offset + 4); lightData[offset + 7] = 1.0;
-             }
-             device.queue.writeBuffer(lightsUniformBuffer, 0, lightData.buffer);
-             device.queue.writeBuffer(lightsUniformBuffer, 32 * NUM_LIGHTS, new Uint32Array([NUM_LIGHTS]));
-         
-             const renderUBO = new Float32Array(renderPassUniformsBuffer.size/4);
-             const renderUBOInt = new Uint32Array(renderUBO.buffer);
-             renderUBO.set([currentCamX,currentCamY,currentCamZ], 0); renderUBO.set([2.0], 3); renderUBO.set(currentRight, 4); renderUBO.set(currentUp, 8);
-             renderUBO.set(camera.target, 12); renderUBO.set(sunDirection, 16); renderUBO.set([canvas.width,canvas.height], 20); 
-             renderUBOInt[22] = uiControls.maxRaySteps; 
-             device.queue.writeBuffer(renderPassUniformsBuffer, 0, renderUBO);
-             
-             const computeUBO = new Float32Array(computePassUniformsBuffer.size/4);
-             const computeUBOInt = new Uint32Array(computeUBO.buffer);
-             computeUBO.set([currentCamX,currentCamY,currentCamZ], 0); computeUBO.set([2.0], 3); computeUBO.set(currentRight, 4); computeUBO.set(currentUp, 8);
-             computeUBO.set(camera.target, 12); 
-             const mx = mouseState.x * (canvas.width / canvas.clientWidth);
-             const my = mouseState.y * (canvas.height / canvas.clientHeight);
-             computeUBO.set([mx, my], 16); computeUBO.set([canvas.width, canvas.height], 18); computeUBO.set([uiControls.brushSize], 20);
-             let paintingGPU = (mouseState.buttons[0] && !spacebarDown) && (uiControls.continuousPaint || mouseState.isPainting);
-             computeUBOInt[21] = paintingGPU ? 1:0;
-             computeUBOInt[22] = currentTool; computeUBOInt[23] = isPreviewVisible ? 1:0; 
-             computeUBOInt[24] = uiControls.targetFarFaceOnAirHit ? 1:0; 
-             computeUBOInt[25] = frameCount; 
-             computeUBOInt[26] = uiControls.maxRaySteps; 
-             device.queue.writeBuffer(computePassUniformsBuffer, 0, computeUBO);
-             if (!uiControls.continuousPaint && mouseState.isPainting) mouseState.isPainting = false;
-         
-             const commandEncoder = device.createCommandEncoder();
-             
-             const passTarget = commandEncoder.beginComputePass();
-             passTarget.setPipeline(targetingPipeline); passTarget.setBindGroup(0, targetingBindGroup);
-             passTarget.dispatchWorkgroups(1); passTarget.end();
-             
-             if (uiControls.simSteps > 0) {
-                 for (let i = 0; i < uiControls.simSteps; i++) {
-                     const passReset = commandEncoder.beginComputePass();
-                     passReset.setPipeline(resetFlagsPipeline); passReset.setBindGroup(0, resetFlagsBindGroup);
-                     passReset.dispatchWorkgroups(VOXEL_GRID_SIZE / 8, VOXEL_GRID_SIZE / 8, VOXEL_GRID_SIZE / 4); passReset.end();
-                     
-                     const passSim = commandEncoder.beginComputePass();
-                     passSim.setPipeline(simulationPipeline); passSim.setBindGroup(0, simulationBindGroup);
-                     passSim.dispatchWorkgroups(VOXEL_GRID_SIZE/4, VOXEL_GRID_SIZE/4, VOXEL_GRID_SIZE/4); passSim.end();
+
+             const generationBindGroup = device.createBindGroup({ layout: generationPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }, { binding: 1, resource: { buffer: generationUniformsBuffer } } ]});
+             const simulationBindGroup = device.createBindGroup({ layout: simulationPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }, { binding: 1, resource: { buffer: computePassUniformsBuffer } }]});
+             const resetFlagsBindGroup = device.createBindGroup({ layout: resetFlagsPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }]});
+             const lightBindGroup = device.createBindGroup({ layout: lightingPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }, { binding: 1, resource: { buffer: lightsUniformBuffer } }]});
+             const paintBindGroup = device.createBindGroup({ layout: paintPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }, { binding: 1, resource: { buffer: computePassUniformsBuffer } }, { binding: 2, resource: { buffer: targetingOutputBuffer } }]});
+             const clearLooseBindGroup = device.createBindGroup({ layout: clearLooseVoxelsPipeline.getBindGroupLayout(0), entries: [{ binding: 0, resource: { buffer: voxelBuffer } }]});
+             const targetingBindGroup = device.createBindGroup({ layout: targetingPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }, { binding: 1, resource: { buffer: computePassUniformsBuffer } }, { binding: 2, resource: { buffer: targetingOutputBuffer } }]});
+             const renderBindGroup = device.createBindGroup({ layout: renderPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }, { binding: 1, resource: { buffer: renderPassUniformsBuffer } }, { binding: 2, resource: { buffer: computePassUniformsBuffer } }, { binding: 3, resource: { buffer: targetingOutputBuffer } } ]});
+
+             function resizeCanvasAndContext() {
+                 const newScale = parseFloat(document.getElementById('resolutionScale').value);
+                 uiControls.resolutionScale = newScale;
+                 document.getElementById('resolutionScaleValue').textContent = `${(newScale * 100).toFixed(0)}%`;
+                 const displayWidth = canvas.parentElement.clientWidth;
+                 const displayHeight = canvas.parentElement.clientHeight;
+                 const newWidth = Math.max(1, Math.floor(displayWidth * uiControls.resolutionScale));
+                 const newHeight = Math.max(1, Math.floor(displayHeight * uiControls.resolutionScale));
+                 if (canvas.width !== newWidth || canvas.height !== newHeight) {
+                     canvas.width = newWidth;
+                     canvas.height = newHeight;
                  }
              }
-             
-             if (paintingGPU) {
-                 const passPaint = commandEncoder.beginComputePass();
-                 passPaint.setPipeline(paintPipeline); passPaint.setBindGroup(0, paintBindGroup);
-                 const d = Math.ceil(uiControls.brushSize * 2.0);
-                 passPaint.dispatchWorkgroups(Math.ceil(d/4), Math.ceil(d/4), Math.ceil(d/4));
-                 passPaint.end();
+
+             function runGeneration() {
+                 device.queue.writeBuffer(generationUniformsBuffer, 0, new Uint32Array([currentTerrainType]));
+                 const commandEncoder = device.createCommandEncoder();
+                 const genPass = commandEncoder.beginComputePass();
+                 genPass.setPipeline(generationPipeline);
+                 genPass.setBindGroup(0, generationBindGroup);
+                 genPass.dispatchWorkgroups(VOXEL_GRID_SIZE / 4, VOXEL_GRID_SIZE / 4, VOXEL_GRID_SIZE / 4);
+                 genPass.end();
+                 device.queue.submit([commandEncoder.finish()]);
+                 frameCount = 0;
              }
-         
-             const passLight = commandEncoder.beginComputePass();
-             passLight.setPipeline(lightingPipeline); passLight.setBindGroup(0, lightBindGroup);
-             passLight.dispatchWorkgroups(VOXEL_GRID_SIZE/4, VOXEL_GRID_SIZE/4, VOXEL_GRID_SIZE/4);
-             passLight.end();
-             
-             const passRender = commandEncoder.beginRenderPass({ colorAttachments: [{ view: context.getCurrentTexture().createView(), clearValue: [0.1, 0.1, 0.2, 1.0], loadOp: 'clear', storeOp: 'store' }] });
-             passRender.setPipeline(renderPipeline); passRender.setBindGroup(0, renderBindGroup); 
-             passRender.draw(3);
-             passRender.end();
-             
-             device.queue.submit([commandEncoder.finish()]);
-         
-             document.getElementById('fps').textContent = (1000 / (now - lastFrameTime)).toFixed(1); 
-             lastFrameTime = now;
-             frameCount++;
-             requestAnimationFrame(frame);
-         }
-         frame();
+
+             runGeneration();
+
+             document.getElementById('resetSimButton').addEventListener('click', runGeneration);
+             document.getElementById('worldTypeTerrain').addEventListener('click', () => { currentTerrainType = 1; runGeneration(); document.getElementById('worldTypeTerrain').classList.add('active'); document.getElementById('worldTypeFlat').classList.remove('active'); });
+             document.getElementById('worldTypeFlat').addEventListener('click', () => { currentTerrainType = 0; runGeneration(); document.getElementById('worldTypeFlat').classList.add('active'); document.getElementById('worldTypeTerrain').classList.remove('active'); });
+             document.getElementById('clearLooseButton').addEventListener('click', () => {
+                 const commandEncoder = device.createCommandEncoder();
+                 const passClear = commandEncoder.beginComputePass();
+                 passClear.setPipeline(clearLooseVoxelsPipeline);
+                 passClear.setBindGroup(0, clearLooseBindGroup);
+                 passClear.dispatchWorkgroups(VOXEL_GRID_SIZE / 4, VOXEL_GRID_SIZE / 4, VOXEL_GRID_SIZE / 4);
+                 passClear.end();
+                 device.queue.submit([commandEncoder.finish()]);
+             });
+
+             const toolButtonsMap = {
+                 [TOOL_PAINT_SAND]: document.getElementById('toolPaintSand'),
+                 [TOOL_PAINT_STONE]: document.getElementById('toolPaintStone'),
+                 [TOOL_PAINT_WATER]: document.getElementById('toolPaintWater'),
+                 [TOOL_DESTROY]: document.getElementById('toolDestroy')
+             };
+             function setActiveToolButton(tool) {
+                 Object.values(toolButtonsMap).forEach(button => button.classList.remove('active'));
+                 if(toolButtonsMap[tool]) toolButtonsMap[tool].classList.add('active');
+             }
+             Object.entries(toolButtonsMap).forEach(([toolId, buttonElement]) => {
+                 buttonElement.addEventListener('click', () => {
+                     currentTool = parseInt(toolId);
+                     setActiveToolButton(currentTool);
+                 });
+             });
+             setActiveToolButton(currentTool);
+
+             document.getElementById('sunSpeed').addEventListener('input', (e) => { uiControls.sunSpeed = parseFloat(e.target.value); document.getElementById('sunSpeedValue').textContent = uiControls.sunSpeed.toFixed(4); });
+             document.getElementById('brushSize').addEventListener('input', (e) => { uiControls.brushSize = parseFloat(e.target.value); document.getElementById('brushSizeValue').textContent = uiControls.brushSize.toFixed(1); });
+             document.getElementById('simSteps').addEventListener('input', (e) => { uiControls.simSteps = parseInt(e.target.value); document.getElementById('simStepsValue').textContent = uiControls.simSteps.toString(); });
+             document.getElementById('maxRaySteps').addEventListener('input', (e) => { uiControls.maxRaySteps = parseInt(e.target.value); document.getElementById('maxRayStepsValue').textContent = uiControls.maxRaySteps.toString(); });
+             document.getElementById('continuousPaintToggle').addEventListener('change', (e) => { uiControls.continuousPaint = e.target.checked; });
+             document.getElementById('targetFarFaceToggle').addEventListener('change', (e) => { uiControls.targetFarFaceOnAirHit = e.target.checked; });
+             document.getElementById('resolutionScale').addEventListener('change', resizeCanvasAndContext);
+
+             // Use the specific element references from the top for these two
+             const localInfoToggleButton = document.getElementById('infoToggleButton'); // This one is already setup at the top
+             const localDescriptionArea = document.getElementById('descriptionArea'); // This one is already setup at the top
+             // The onclick for infoToggleButton is already set up globally.
+
+             function hideInfoPanel() { if (localDescriptionArea && !localDescriptionArea.classList.contains('hidden') && localInfoToggleButton) { localInfoToggleButton.click(); } }
+
+             canvas.addEventListener('contextmenu', e => {e.preventDefault(); hideInfoPanel(); });
+             canvas.addEventListener('mouseenter', () => isPreviewVisible = true);
+             canvas.addEventListener('mouseleave', () => isPreviewVisible = false);
+             window.addEventListener('keydown', (e) => { if (e.code === 'Space') spacebarDown = true; });
+             window.addEventListener('keyup', (e) => { if (e.code === 'Space') { spacebarDown = false; if (mouseState.isPanning && mouseState.buttons[0]) mouseState.isPanning = false; }});
+             canvas.addEventListener('mousedown', (e) => {
+                 hideInfoPanel();
+                 mouseState.buttons[e.button] = true;
+                 mouseState.lastX = e.clientX; mouseState.lastY = e.clientY;
+                 if (e.button === 0 && !spacebarDown) {
+                     if (uiControls.continuousPaint) mouseState.isPainting = true;
+                     else if (!mouseState.hasFiredSingleShot) { mouseState.isPainting = true; mouseState.hasFiredSingleShot = true; }
+                     else { mouseState.isPainting = false; }
+                 }
+                 mouseState.isOrbiting = (e.button === 2);
+                 mouseState.isPanning = (e.button === 1 || (spacebarDown && e.button === 0));
+             });
+             window.addEventListener('mouseup', (e) => {
+                 mouseState.buttons[e.button] = false;
+                 if (e.button === 0) { mouseState.isPainting = false; mouseState.hasFiredSingleShot = false; }
+                 mouseState.isOrbiting = false;
+                 mouseState.isPanning = false;
+             });
+             window.addEventListener('mousemove', (e) => {
+                 const dx = e.clientX - mouseState.lastX; const dy = e.clientY - mouseState.lastY;
+                 const rect = canvas.getBoundingClientRect();
+                 mouseState.x = (e.clientX - rect.left); mouseState.y = (e.clientY - rect.top);
+                 if (mouseState.isOrbiting) {
+                     camera.alpha -= dx * 0.005;
+                     camera.beta = Math.max(-1.56, Math.min(1.56, camera.beta + dy * 0.005));
+                 }
+                 else if (mouseState.isPanning) {
+                     camera.target[0] -= (currentRight[0]*dx - currentUp[0]*dy) * PAN_SENSITIVITY;
+                     camera.target[1] -= (currentRight[1]*dx - currentUp[1]*dy) * PAN_SENSITIVITY;
+                     camera.target[2] -= (currentRight[2]*dx - currentUp[2]*dy) * PAN_SENSITIVITY;
+                 }
+                 mouseState.lastX = e.clientX; mouseState.lastY = e.clientY;
+             });
+             canvas.addEventListener('wheel', (e) => { e.preventDefault(); camera.radius=Math.max(10, Math.min(VOXEL_GRID_SIZE*5, camera.radius+e.deltaY*0.1)); }, {passive: false});
+
+             const resizeObserver = new ResizeObserver(entries => {
+                 for (let entry of entries) { resizeCanvasAndContext(); }
+             });
+             if (canvas.parentElement) {
+                resizeObserver.observe(canvas.parentElement);
+             } else {
+                 console.warn("Canvas parent element not found for ResizeObserver.");
+             }
+             resizeCanvasAndContext();
+
+             let lastFrameTime = performance.now();
+             async function frame() {
+                 currentCamX = camera.target[0] + camera.radius * Math.cos(camera.beta) * Math.sin(camera.alpha);
+                 currentCamY = camera.target[1] + camera.radius * Math.sin(camera.beta);
+                 currentCamZ = camera.target[2] + camera.radius * Math.cos(camera.beta) * Math.cos(camera.alpha);
+
+                 const fwd_un = [camera.target[0]-currentCamX, camera.target[1]-currentCamY, camera.target[2]-currentCamZ];
+                 let fwd_n_raw = Math.hypot(...fwd_un);
+                 let fwd_n_val = fwd_n_raw === 0 ? 1.0 : fwd_n_raw;
+                 currentForward = [fwd_un[0]/fwd_n_val, fwd_un[1]/fwd_n_val, fwd_un[2]/fwd_n_val];
+
+                 const wUp = [0,1,0];
+                 currentRight = [currentForward[1]*wUp[2]-currentForward[2]*wUp[1], currentForward[2]*wUp[0]-currentForward[0]*wUp[2], currentForward[0]*wUp[1]-currentForward[1]*wUp[0]];
+                 let r_n_raw = Math.hypot(...currentRight);
+                 let r_n_val = r_n_raw === 0 ? 1.0 : r_n_raw;
+                 currentRight = [currentRight[0]/r_n_val, currentRight[1]/r_n_val, currentRight[2]/r_n_val];
+
+                 currentUp = [currentRight[1]*currentForward[2]-currentRight[2]*currentForward[1], currentRight[2]*currentForward[0]-currentRight[0]*currentForward[2], currentRight[0]*currentForward[1]-currentRight[1]*currentForward[0]];
+                 let up_n_raw = Math.hypot(...currentUp);
+                 let up_n_val = up_n_raw === 0 ? 1.0 : up_n_raw;
+                 currentUp = [currentUp[0]/up_n_val, currentUp[1]/up_n_val, currentUp[2]/up_n_val];
+
+                 sunAngle += uiControls.sunSpeed * 0.2;
+                 const sunDirection = [Math.cos(sunAngle), 0.707, Math.sin(sunAngle)];
+                 const now = performance.now();
+                 const deltaTime = (now - lastFrameTime) / 1000.0;
+                 const lightData = new Float32Array(8 * NUM_LIGHTS);
+                 for(let i = 0; i < NUM_LIGHTS; i++) {
+                     lights[i].position[1] += lights[i].velocity * deltaTime;
+                     if (lights[i].position[1] < -lights[i].radius) {
+                         lights[i].position[0] = Math.random() * VOXEL_GRID_SIZE;
+                         lights[i].position[1] = VOXEL_GRID_SIZE + lights[i].radius;
+                         lights[i].position[2] = Math.random() * VOXEL_GRID_SIZE;
+                     }
+                     const offset = i * 8;
+                     lightData.set(lights[i].position, offset); lightData[offset + 3] = lights[i].radius;
+                     lightData.set(lights[i].color, offset + 4); lightData[offset + 7] = 1.0;
+                 }
+                 device.queue.writeBuffer(lightsUniformBuffer, 0, lightData.buffer);
+                 device.queue.writeBuffer(lightsUniformBuffer, 32 * NUM_LIGHTS, new Uint32Array([NUM_LIGHTS]));
+
+                 const renderUBO = new Float32Array(renderPassUniformsBuffer.size/4);
+                 const renderUBOInt = new Uint32Array(renderUBO.buffer);
+                 renderUBO.set([currentCamX,currentCamY,currentCamZ], 0); renderUBO.set([2.0], 3); renderUBO.set(currentRight, 4); renderUBO.set(currentUp, 8);
+                 renderUBO.set(camera.target, 12); renderUBO.set(sunDirection, 16); renderUBO.set([canvas.width,canvas.height], 20);
+                 renderUBOInt[22] = uiControls.maxRaySteps;
+                 device.queue.writeBuffer(renderPassUniformsBuffer, 0, renderUBO);
+
+                 const computeUBO = new Float32Array(computePassUniformsBuffer.size/4);
+                 const computeUBOInt = new Uint32Array(computeUBO.buffer);
+                 computeUBO.set([currentCamX,currentCamY,currentCamZ], 0); computeUBO.set([2.0], 3); computeUBO.set(currentRight, 4); computeUBO.set(currentUp, 8);
+                 computeUBO.set(camera.target, 12);
+                 const mx = mouseState.x * (canvas.width / canvas.clientWidth);
+                 const my = mouseState.y * (canvas.height / canvas.clientHeight);
+                 computeUBO.set([mx, my], 16); computeUBO.set([canvas.width, canvas.height], 18); computeUBO.set([uiControls.brushSize], 20);
+                 let paintingGPU = (mouseState.buttons[0] && !spacebarDown) && (uiControls.continuousPaint || mouseState.isPainting);
+                 computeUBOInt[21] = paintingGPU ? 1:0;
+                 computeUBOInt[22] = currentTool; computeUBOInt[23] = isPreviewVisible ? 1:0;
+                 computeUBOInt[24] = uiControls.targetFarFaceOnAirHit ? 1:0;
+                 computeUBOInt[25] = frameCount;
+                 computeUBOInt[26] = uiControls.maxRaySteps;
+                 device.queue.writeBuffer(computePassUniformsBuffer, 0, computeUBO);
+                 if (!uiControls.continuousPaint && mouseState.isPainting) mouseState.isPainting = false;
+
+                 const commandEncoder = device.createCommandEncoder();
+
+                 const passTarget = commandEncoder.beginComputePass();
+                 passTarget.setPipeline(targetingPipeline); passTarget.setBindGroup(0, targetingBindGroup);
+                 passTarget.dispatchWorkgroups(1); passTarget.end();
+
+                 if (uiControls.simSteps > 0) {
+                     for (let i = 0; i < uiControls.simSteps; i++) {
+                         const passReset = commandEncoder.beginComputePass();
+                         passReset.setPipeline(resetFlagsPipeline); passReset.setBindGroup(0, resetFlagsBindGroup);
+                         passReset.dispatchWorkgroups(VOXEL_GRID_SIZE / 8, VOXEL_GRID_SIZE / 8, VOXEL_GRID_SIZE / 4); passReset.end();
+
+                         const passSim = commandEncoder.beginComputePass();
+                         passSim.setPipeline(simulationPipeline); passSim.setBindGroup(0, simulationBindGroup);
+                         passSim.dispatchWorkgroups(VOXEL_GRID_SIZE/4, VOXEL_GRID_SIZE/4, VOXEL_GRID_SIZE/4); passSim.end();
+                     }
+                 }
+
+                 if (paintingGPU) {
+                     const passPaint = commandEncoder.beginComputePass();
+                     passPaint.setPipeline(paintPipeline); passPaint.setBindGroup(0, paintBindGroup);
+                     const d = Math.ceil(uiControls.brushSize * 2.0);
+                     passPaint.dispatchWorkgroups(Math.ceil(d/4), Math.ceil(d/4), Math.ceil(d/4));
+                     passPaint.end();
+                 }
+
+                 const passLight = commandEncoder.beginComputePass();
+                 passLight.setPipeline(lightingPipeline); passLight.setBindGroup(0, lightBindGroup);
+                 passLight.dispatchWorkgroups(VOXEL_GRID_SIZE/4, VOXEL_GRID_SIZE/4, VOXEL_GRID_SIZE/4);
+                 passLight.end();
+
+                 const passRender = commandEncoder.beginRenderPass({ colorAttachments: [{ view: context.getCurrentTexture().createView(), clearValue: [0.1, 0.1, 0.2, 1.0], loadOp: 'clear', storeOp: 'store' }] });
+                 passRender.setPipeline(renderPipeline); passRender.setBindGroup(0, renderBindGroup);
+                 passRender.draw(3);
+                 passRender.end();
+
+                 device.queue.submit([commandEncoder.finish()]);
+
+                 document.getElementById('fps').textContent = (1000 / (now - lastFrameTime)).toFixed(1);
+                 lastFrameTime = now;
+                 frameCount++;
+                 requestAnimationFrame(frame);
+             }
+             frame(); // Start the render loop
+         } // End of initAndRun
+
+         // Call the main async function and catch any errors
+         initAndRun().catch(error => {
+             console.error("VibeSand critical runtime failure:", error);
+         });
       </script>
    </body>
 </html>
