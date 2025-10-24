@@ -7,80 +7,533 @@
       <title>VibeSand - Ultimate GPU Playground</title>
       <style>
          :root {
-         --base-padding: 10px;
-         --toggle-button-height: 2.5rem;
-         --accent-color: #00aaff;
-         --panel-bg-color: rgba(40, 45, 55, 0.95);
-         --text-color-light: #ffffff;
-         --text-color-muted: #b0b0b0;
-         --info-color: #40d0ff;
-         --highlight-color: #ffae5a;
-         --border-radius: 0.3rem;
-         --box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.3);
-         --box-shadow-light: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.2);
-         --transition-speed: 0.3s;
+         --base-padding: 16px;
+         --accent-color: #00d4ff;
+         --accent-glow: rgba(0, 212, 255, 0.3);
+         --glass-bg: rgba(15, 20, 30, 0.65);
+         --glass-border: rgba(255, 255, 255, 0.12);
+         --text-primary: #ffffff;
+         --text-secondary: #a8b4c0;
+         --text-muted: #6b7785;
+         --border-radius: 12px;
+         --border-radius-sm: 8px;
+         --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
          }
-         html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background-color: #1a1a2e; font-family: sans-serif; color: white; font-size: 16px; }
-         #canvas-container { width: 100%; height: 100%; display: block; position: relative; }
-         canvas { display: block; width: 100%; height: 100%; background-color: #0d0d1a; cursor: crosshair; }
-         #info {
-         position: absolute; top: calc(var(--base-padding) + var(--toggle-button-height) + var(--base-padding));
-         left: 10px; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 5px; font-size: 0.9em; z-index: 50; line-height: 1.6;
+         
+         * { box-sizing: border-box; }
+         
+         html, body { 
+            width: 100%; 
+            height: 100%; 
+            margin: 0; 
+            overflow: hidden; 
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: var(--text-primary);
+            font-size: 14px;
          }
-         #info button, #info select, #info input[type="range"] { margin-top: 5px; padding: 3px 6px; margin-right: 5px; background-color: #333; color: #fff; border: 1px solid #555; border-radius:var(--border-radius); }
-         #info .tool-buttons button.active { background-color: #4CAF50; color: white; border: 1px solid #3e8e41; }
-         #info label { display: block; margin-top: 8px; }
-         #info input[type="range"] { width: 100px; vertical-align: middle; margin-left: 5px;}
-         #info input[type="checkbox"] { vertical-align: middle; margin-right: 5px;}
-         #instructions { position: fixed; bottom: 10px; left: 10px; right: 10px; text-align: center; color: rgba(255, 255, 255, 0.7); font-size: 0.9em; z-index: 40;}
-         .info-toggle-button {
-         position: fixed; top: var(--base-padding); left: var(--base-padding);
-         background-color: rgba(50, 50, 55, 0.8); color: var(--text-color-light);
-         border: 1px solid rgba(255, 255, 255, 0.15); padding: 0.5rem 1rem;
-         border-radius: var(--border-radius); cursor: pointer; z-index: 102;
-         font-size: 0.85em; transition: all var(--transition-speed) ease;
-         backdrop-filter: blur(4px); box-shadow: var(--box-shadow-light);
-         font-family: var(--font-family); line-height: 1.3; height: var(--toggle-button-height);
-         box-sizing: border-box; display: flex; align-items: center; justify-content: center;
+         
+         #canvas-container { 
+            width: 100%; 
+            height: 100%; 
+            display: block; 
+            position: relative; 
          }
-         .info-toggle-button:hover { background-color: rgba(70, 70, 75, 0.9); box-shadow: 0 0.15rem 0.5rem rgba(0, 0, 0, 0.3); }
+         
+         canvas { 
+            display: block; 
+            width: 100%; 
+            height: 100%; 
+            background-color: #0d0d1a; 
+            cursor: crosshair; 
+         }
+         
+         /* Frosted Glass Panel Base */
+         .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 
+                        0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+         }
+         
+         /* Control Panel - Responsive Layout */
+         #controlPanel {
+            position: fixed;
+            z-index: 100;
+            transition: var(--transition);
+            padding: 20px;
+            max-height: calc(100vh - 32px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+         }
+         
+         #controlPanel::-webkit-scrollbar {
+            width: 6px;
+         }
+         
+         #controlPanel::-webkit-scrollbar-track {
+            background: transparent;
+         }
+         
+         #controlPanel::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+         }
+         
+         #controlPanel::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+         }
+         
+         /* Landscape: Sidebar on left */
+         @media (orientation: landscape) {
+            #controlPanel {
+               top: 16px;
+               left: 16px;
+               width: 280px;
+               max-height: calc(100vh - 32px);
+            }
+         }
+         
+         /* Portrait: Bottom bar */
+         @media (orientation: portrait) {
+            #controlPanel {
+               bottom: 16px;
+               left: 16px;
+               right: 16px;
+               width: auto;
+               max-height: 45vh;
+            }
+         }
+         
+         /* Panel Header */
+         .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--glass-border);
+         }
+         
+         .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+         }
+         
+         .stats-display {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+         }
+         
+         .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+         }
+         
+         .stat-label {
+            color: var(--text-muted);
+         }
+         
+         /* Control Sections */
+         .control-section {
+            margin-bottom: 20px;
+         }
+         
+         .section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+         }
+         
+         /* Button Groups */
+         .button-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+         }
+         
+         .glass-button {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: 8px 14px;
+            border-radius: var(--border-radius-sm);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            flex: 1;
+            min-width: fit-content;
+         }
+         
+         .glass-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+         }
+         
+         .glass-button.active {
+            background: linear-gradient(135deg, var(--accent-color), #0099cc);
+            border-color: var(--accent-color);
+            color: white;
+            box-shadow: 0 4px 12px var(--accent-glow);
+         }
+         
+         .glass-button.active:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px var(--accent-glow);
+         }
+         
+         /* Slider Controls */
+         .slider-control {
+            margin-bottom: 14px;
+         }
+         
+         .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: var(--text-secondary);
+         }
+         
+         .slider-value {
+            font-weight: 600;
+            color: var(--accent-color);
+            font-size: 12px;
+         }
+         
+         input[type="range"] {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+         }
+         
+         input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            cursor: pointer;
+            box-shadow: 0 2px 8px var(--accent-glow);
+            transition: var(--transition);
+         }
+         
+         input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 12px var(--accent-glow);
+         }
+         
+         input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px var(--accent-glow);
+            transition: var(--transition);
+         }
+         
+         input[type="range"]::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 12px var(--accent-glow);
+         }
+         
+         /* Select Dropdown */
+         select {
+            width: 100%;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-sm);
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+         }
+         
+         select:hover, select:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--accent-color);
+            outline: none;
+         }
+         
+         /* Checkbox */
+         .checkbox-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 0;
+            cursor: pointer;
+            user-select: none;
+         }
+         
+         .checkbox-control input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--accent-color);
+         }
+         
+         .checkbox-control label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            flex: 1;
+         }
+         
+         /* Info Toggle Button */
+         #infoToggleButton {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 101;
+            padding: 10px 16px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-sm);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+         }
+         
+         #infoToggleButton:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+         }
+         
+         /* Info Panel */
          #descriptionArea {
-         position: absolute;
-         top: calc(var(--base-padding) * 2 + var(--toggle-button-height));
-         left: var(--base-padding);
-         width: clamp(380px, 30vw, 520px);
-         max-height: calc(100vh - (var(--base-padding) * 3 + var(--toggle-button-height)) - 50px);
-         background: var(--panel-bg-color);
-         padding: 1.2rem 1.5rem; box-sizing: border-box;
-         border-radius: var(--border-radius); border: 1px solid rgba(255, 255, 255, 0.1);
-         z-index: 100; pointer-events: auto; font-size: 0.85em;
-         overflow-y: auto; box-shadow: var(--box-shadow); line-height: 1.65;
-         opacity: 1; visibility: visible; transform: translateY(0%);
-         transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease, visibility 0s linear 0s;
+            position: fixed;
+            top: 60px;
+            right: 16px;
+            width: min(400px, calc(100vw - 32px));
+            max-height: calc(100vh - 92px);
+            padding: 24px;
+            z-index: 100;
+            overflow-y: auto;
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0s;
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
          }
+         
+         #descriptionArea::-webkit-scrollbar {
+            width: 6px;
+         }
+         
+         #descriptionArea::-webkit-scrollbar-track {
+            background: transparent;
+         }
+         
+         #descriptionArea::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+         }
+         
          #descriptionArea.hidden {
-         opacity: 0 !important;
-         transform: translateY(-20px);
-         visibility: hidden !important; pointer-events: none !important;
-         transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease, visibility 0s linear var(--transition-speed);
+            opacity: 0;
+            transform: translateY(-20px);
+            visibility: hidden;
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
          }
-         #descriptionArea h2 { margin-top: 0; margin-bottom: 0.8rem; color: var(--info-color); text-align: left; font-weight: 600; font-size: 1.2em; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.4em;}
-         #descriptionArea h4 { margin-top: 1em; margin-bottom: 0.5rem; color: var(--highlight-color); font-weight: 600; font-size: 1em; }
-         #descriptionArea p, #descriptionArea ul { margin-bottom: 0.8rem; color: var(--text-color-muted); }
-         #descriptionArea ul { list-style: disc; padding-left: 1.4rem; margin-top:0.2em; }
-         #descriptionArea li { margin-bottom: 0.4rem; }
-         #descriptionArea code { background-color: rgba(0,0,0,0.3); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.9em; color: var(--highlight-color); font-family: 'Consolas', 'Courier New', monospace; }
-         #descriptionArea a { color: var(--accent-color); text-decoration: none; }
-         #descriptionArea a:hover { text-decoration: underline; }
-         .credits { font-size: 0.9em; text-align: center; margin-top: 1.5rem; color: #888; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.8rem; }
+         
+         #descriptionArea h2 {
+            margin: 0 0 8px 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-color);
+         }
+         
+         #descriptionArea h4 {
+            margin: 16px 0 8px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+         }
+         
+         #descriptionArea p {
+            margin: 0 0 12px 0;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+         }
+         
+         #descriptionArea ul {
+            margin: 0 0 12px 0;
+            padding-left: 20px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+         }
+         
+         #descriptionArea li {
+            margin-bottom: 6px;
+         }
+         
+         #descriptionArea code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            color: var(--accent-color);
+         }
+         
+         #descriptionArea a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: var(--transition);
+         }
+         
+         #descriptionArea a:hover {
+            text-decoration: underline;
+         }
+         
+         .credits {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--glass-border);
+            font-size: 12px;
+            text-align: center;
+            color: var(--text-muted);
+         }
+         
+         /* Instructions */
+         #instructions {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-sm);
+            font-size: 12px;
+            color: var(--text-secondary);
+            z-index: 40;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            white-space: nowrap;
+         }
+         
+         @media (orientation: portrait) {
+            #instructions {
+               bottom: auto;
+               top: 16px;
+               left: 50%;
+            }
+         }
+         
+         /* First Person HUD */
+         #firstPersonHUD {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+            z-index: 60;
+         }
+         
+         #firstPersonHUD::before,
+         #firstPersonHUD::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+         }
+         
+         #firstPersonHUD::before {
+            width: 2px;
+            height: 20px;
+            left: 9px;
+            top: 0;
+         }
+         
+         #firstPersonHUD::after {
+            width: 20px;
+            height: 2px;
+            left: 0;
+            top: 9px;
+         }
+         
+         /* Responsive adjustments */
+         @media (max-width: 768px) {
+            #controlPanel {
+               padding: 16px;
+            }
+            
+            .button-group {
+               gap: 6px;
+            }
+            
+            .glass-button {
+               padding: 7px 12px;
+               font-size: 12px;
+            }
+            
+            @media (orientation: landscape) {
+               #controlPanel {
+                  width: 240px;
+               }
+            }
+         }
+         
+         @media (max-width: 480px) {
+            #descriptionArea {
+               width: calc(100vw - 32px);
+            }
+            
+            @media (orientation: portrait) {
+               #controlPanel {
+                  max-height: 50vh;
+               }
+            }
+         }
       </style>
    </head>
    <body>
-      <button id="infoToggleButton" class="info-toggle-button">Hide Info</button>
-      <div id="descriptionArea">
-         <h2>VibeSand 0.2 - Water, lights, and speed update!</h2>
-         <p style="font-size: 0.9em; color: var(--text-color-muted); margin-top:-0.5em; margin-bottom:1em;">GPU-Powered Voxel Playground</p>
-         <p style="color: var(--highlight-color); font-weight: bold; margin-bottom: 1em;">Performance Tip: Use 'Render Scale' in UI if slow</p>
+      <button id="infoToggleButton">ℹ️ Info</button>
+      <div id="descriptionArea" class="glass-panel">
+         <h2>VibeSand 0.2</h2>
+         <p style="font-size: 12px; margin-top: -4px; margin-bottom: 16px;">GPU-Powered Voxel Playground</p>
+         <p style="color: var(--accent-color); font-weight: 600; margin-bottom: 12px;">💡 Performance Tip: Adjust Render Scale if slow</p>
          <p><strong>VibeSand</strong> is a WebGPU voxel engine. It simulates millions of particles entirely on your GPU. Watch sand form natural piles, water fill basins and flow over edges, and sculpt the world in real time, all illuminated by dynamic lights.</p>
          <h4>Things to Try:</h4>
          <ul style="font-size: 0.9em;">
@@ -93,121 +546,406 @@
             <li>Build dams; see how water pressure affects flow when you release it.</li>
          </ul>
          <h4>Key Features</h4>
-         <ul>
-            <li><strong>Dynamic Particles & Lighting:</strong> Sand slides and tumbles naturally. Water spreads via a 2-cell pressure check, tumbles over edges, and features an enhanced surface shimmer and internal brightness. The scene is illuminated by a "rain" of dynamic, colorful point lights.</li>
-            <li><strong>Full GPU Pipeline:</strong> Physics, tool targeting, lighting, and rendering all run as GPU shaders for maximum performance.</li>
-            <li><strong>Instant Voxel Tools:</strong> Sculpt with sand, stone, water, or erase. Clear visual previews guide your actions.</li>
-            <li><strong>Single-Pass Ubershader:</strong> A DDA raymarching fragment shader renders everything in one go: voxels, dynamic lighting, procedural sky, tool highlights, and water shimmer.</li>
+         <ul style="font-size: 12px;">
+            <li><strong>Dynamic Particles & Lighting:</strong> Sand slides naturally, water flows with enhanced shimmer, illuminated by colorful point lights</li>
+            <li><strong>Full GPU Pipeline:</strong> Physics, targeting, lighting, and rendering all run on GPU shaders</li>
+            <li><strong>Interactive Tools:</strong> Sculpt with sand, stone, water, or erase with clear visual previews</li>
+            <li><strong>Single-Pass Rendering:</strong> DDA raymarching renders everything in one go</li>
          </ul>
          <h4>Controls</h4>
-         <ul>
-            <li><strong>Left Click:</strong> Use selected tool.</li>
-            <li><strong>Right Click + Drag:</strong> Orbit camera.</li>
-            <li><strong>Middle Mouse / Space + Left Click + Drag:</strong> Pan camera.</li>
-            <li><strong>Mouse Wheel:</strong> Zoom.</li>
-         </ul>
-         <h4 style="margin-top:1.5em;">Under the Hood</h4>
-         <ul>
-            <li><strong>Bit-Packed Voxels:</strong> Each voxel's state (type, color variant, physics status, RGB light) is stored in a single <code>u32</code>.</li>
-            <li><strong>Single-Buffer Physics:</strong> Simulation uses one data buffer. An "updated" flag per voxel ensures stability during multi-step physics iterations.</li>
-            <li>
-               <strong>Multi-Pass Compute Architecture:</strong>
-               <ul>
-                  <li><strong>Targeting:</strong> A GPU compute shader raycasts to find the cursor's 3D position. No CPU readback is involved. Its raymarch loop respects the <code>Max Ray Steps</code>.</li>
-                  <li><strong>Physics Simulation:</strong> Particle interactions like gravity, sliding, tumbling, and fluid spread are processed in-place on the single buffer.</li>
-                  <li><strong>Tool Application:</strong> Voxel data is modified by tools after all physics steps for the frame are complete.</li>
-                  <li><strong>Dynamic Lighting:</strong> Light contributions from a configurable number of moving point sources (the "light rain") are calculated and packed into each voxel's <code>u32</code>.</li>
-               </ul>
-            </li>
-            <li><strong>Optimized Ubershader Rendering:</strong> The DDA raymarcher, implemented as a single comprehensive fragment shader, renders the scene. It uses a precise ray start bias to prevent visual artifacts, respects the <code>Max Ray Steps</code>, and integrates all visual elements including enhanced water rendering in one pass.</li>
-         </ul>
-         <h4 style="margin-top:1.5em;">Future Ideas & Roadmap</h4>
-         <ul style="font-size: 0.9em;">
-             <li><strong>Reactive Elements:</strong> Gunpowder that ignites from fire, with potential for small explosions.</li>
-            <li>
-               <strong>Interactive Light Sources:</strong>
-               <ul>
-                  <li>Lights attached to dynamic events like Bombs, Blasters, and Meteors.</li>
-                  <li>Option for the mouse cursor/tool to act as a controllable light source.</li>
-               </ul>
-            </li>
-            <li>
-               <strong>Performance Enhancements:</strong>
-               <ul>
-                  <li>Automatic resolution scaling based on target FPS.</li>
-                  <li>Further compute shader optimizations.</li>
-               </ul>
-            </li>
-            <li><strong>Destructive Events:</strong> Tools like Bombs, Blasters, and Meteors (beyond just their lighting).</li>
-            <li><strong>Advanced Erosion:</strong> Rain tool carving terrain; water currents displacing sand; wind effects.</li>
-            <li><strong>First-Person Controller:</strong> For immersive exploration.</li>
-            <li><strong>World Scalability:</strong> Chunking systems and sparse voxel techniques (e.g., Brickmaps).</li>
-            <li>Further refinement of particle interactions and fluid dynamics.</li>
-            <li>Staggered CPU Readback for Voxel Type Counts (e.g., 50k Stone, 1M Water, 500k Sand).</li>
+         <ul style="font-size: 12px;">
+            <li><strong>Orbital Mode:</strong> Right-click to orbit, Middle/Space+Left to pan, Wheel to zoom</li>
+            <li><strong>First Person Mode:</strong> WASD to move, Space to jump, Mouse to look (Smooth Minecraft-like movement: instant response, realistic physics, auto-climbs stairs)</li>
          </ul>
          <p class="credits">
             Vibecoded <span id="currentDate"></span> by
-            <a href="https://tront.xyz" target="_blank" rel="noopener noreferrer">Trent Sterling</a> &amp; AI Assistant (Gemini 2.5 Pro).
-         </p>
-         <p class="credits" style="font-size:0.8em; margin-top:0.2em;">
-            <a href="https://blog.tront.xyz" target="_blank" rel="noopener noreferrer">blog.tront.xyz</a>
+            <a href="https://tront.xyz" target="_blank">Trent Sterling</a> & AI
          </p>
       </div>
-      <div id="info">
-         <p>Voxels: <span id="voxelCount"></span></p>
-         <p>FPS: <span id="fps"></span></p>
-         <button id="resetSimButton">Reset Sim</button>
-         <div class="tool-buttons" style="margin-top: 10px;">
-            World Type: <button id="worldTypeTerrain" class="active">Terrain</button> <button id="worldTypeFlat">Flat</button>
+      
+      <div id="controlPanel" class="glass-panel">
+         <div class="panel-header">
+            <div class="panel-title">
+               🎮 VibeSand
+            </div>
+            <div class="stats-display">
+               <div class="stat-item">
+                  <span class="stat-label">FPS:</span>
+                  <span id="fps">0</span>
+               </div>
+               <div class="stat-item">
+                  <span class="stat-label">Voxels:</span>
+                  <span id="voxelCount">0</span>
+               </div>
+            </div>
          </div>
-         <button id="clearLooseButton">Clear Loose</button>
-         <div class="tool-buttons" style="margin-top: 10px;">
-            Paint Tool:
-            <button id="toolPaintSand" class="active">Sand</button>
-            <button id="toolPaintStone">Stone</button>
-            <button id="toolPaintWater">Water</button>
-            <button id="toolDestroy">Destroy</button>
+         
+         <div class="control-section">
+            <div class="section-title">World</div>
+            <div class="button-group">
+               <button id="worldTypeTerrain" class="glass-button active">🏔️ Terrain</button>
+               <button id="worldTypeFlat" class="glass-button">⬜ Flat</button>
+            </div>
+            <div class="button-group" style="margin-top: 8px;">
+               <button id="resetSimButton" class="glass-button" style="flex: 2;">🔄 Reset</button>
+               <button id="clearLooseButton" class="glass-button" style="flex: 1;">🧹 Clear</button>
+            </div>
          </div>
-         <div>
-            <label for="sunSpeed">Sun Speed: <span id="sunSpeedValue">0.0200</span></label>
-            <input type="range" id="sunSpeed" min="0" max="0.02" step="0.0001" value="0.02">
+         
+         <div class="control-section">
+            <div class="section-title">Tool</div>
+            <div class="button-group">
+               <button id="toolPaintSand" class="glass-button active">🏖️ Sand</button>
+               <button id="toolPaintStone" class="glass-button">🪨 Stone</button>
+            </div>
+            <div class="button-group" style="margin-top: 8px;">
+               <button id="toolPaintWater" class="glass-button">💧 Water</button>
+               <button id="toolDestroy" class="glass-button">💥 Destroy</button>
+            </div>
          </div>
-         <div>
-            <label for="brushSize">Brush Size: <span id="brushSizeValue">10.5</span></label>
-            <input type="range" id="brushSize" min="1" max="25" step="0.5" value="10.5">
+         
+         <div class="control-section">
+            <div class="section-title">Brush</div>
+            <div class="slider-control">
+               <div class="slider-label">
+                  <span>Size</span>
+                  <span class="slider-value" id="brushSizeValue">10.5</span>
+               </div>
+               <input type="range" id="brushSize" min="1" max="25" step="0.5" value="10.5">
+            </div>
          </div>
-         <div>
-            <label for="simSteps">Sim Steps: <span id="simStepsValue">1</span></label>
-            <input type="range" id="simSteps" min="0" max="25" step="1" value="1">
+         
+         <div class="control-section">
+            <div class="section-title">Simulation</div>
+            <div class="slider-control">
+               <div class="slider-label">
+                  <span>Steps/Frame</span>
+                  <span class="slider-value" id="simStepsValue">1</span>
+               </div>
+               <input type="range" id="simSteps" min="0" max="25" step="1" value="1">
+            </div>
+            <div class="slider-control">
+               <div class="slider-label">
+                  <span>Sun Speed</span>
+                  <span class="slider-value" id="sunSpeedValue">0.0200</span>
+               </div>
+               <input type="range" id="sunSpeed" min="0" max="0.02" step="0.0001" value="0.02">
+            </div>
          </div>
-         <div>
-            <label for="maxRaySteps">Max Ray Steps: <span id="maxRayStepsValue">384</span></label>
-            <input type="range" id="maxRaySteps" min="64" max="384" step="32" value="384">
+         
+         <div class="control-section">
+            <div class="section-title">Rendering</div>
+            <div class="slider-control">
+               <div class="slider-label">
+                  <span>Max Ray Steps</span>
+                  <span class="slider-value" id="maxRayStepsValue">384</span>
+               </div>
+               <input type="range" id="maxRaySteps" min="64" max="384" step="32" value="384">
+            </div>
+            <div class="slider-control">
+               <div class="slider-label">
+                  <span>Render Scale</span>
+                  <span class="slider-value" id="resolutionScaleValue">100%</span>
+               </div>
+               <select id="resolutionScale">
+                  <option value="1.0">Native (100%)</option>
+                  <option value="0.75">High (75%)</option>
+                  <option value="0.5">Medium (50%)</option>
+                  <option value="0.25">Low (25%)</option>
+               </select>
+            </div>
          </div>
-         <div>
-            <label for="resolutionScale">Render Scale: <span id="resolutionScaleValue">Native</span></label>
-            <select id="resolutionScale">
-               <option value="1.0">Native (100%)</option>
-               <option value="0.75">High (75%)</option>
-               <option value="0.5">Medium (50%)</option>
-               <option value="0.25">Low (25%)</option>
-            </select>
+         
+         <div class="control-section">
+            <div class="section-title">Camera</div>
+            <div class="button-group">
+               <button id="cameraModeOrbital" class="glass-button active">🔄 Orbital</button>
+               <button id="cameraModeFirstPerson" class="glass-button">🎮 FPS</button>
+            </div>
          </div>
-         <div><label><input type="checkbox" id="continuousPaintToggle" checked>Continuous Paint</label></div>
-         <div><label><input type="checkbox" id="targetFarFaceToggle" checked>Target Far Face (on air)</label></div>
+         
+         <div class="control-section">
+            <div class="section-title">Options</div>
+            <div class="checkbox-control">
+               <input type="checkbox" id="continuousPaintToggle" checked>
+               <label for="continuousPaintToggle">Continuous Paint</label>
+            </div>
+            <div class="checkbox-control">
+               <input type="checkbox" id="targetFarFaceToggle" checked>
+               <label for="targetFarFaceToggle">Target Far Face (on air)</label>
+            </div>
+         </div>
       </div>
+      
+      <div id="firstPersonHUD" style="display: none;"></div>
       <div id="canvas-container">
          <canvas id="webgpu-canvas"></canvas>
       </div>
-      <div id="instructions">DDA Voxel Renderer. Right-click to orbit, Middle-mouse/Space+Left-click to pan.</div>
+      <div id="instructions">
+         <span id="orbitalInstructions">Right-click to orbit • Middle-mouse/Space+Left to pan</span>
+         <span id="firstPersonInstructions" style="display:none;">WASD to move • Space to jump • Mouse to look • Click to lock cursor</span>
+      </div>
       <script type="module">
+         // ==================================================
+         // 📚 可调参数文档 | Adjustable Parameters Documentation
+         // ==================================================
+         /*
+         
+         ⚙️ 核心参数 | Core Parameters
+         ================================
+         
+         1. VOXEL_GRID_SIZE (体素网格大小)
+            位置: 第769行附近
+            当前值: 128
+            范围: 32, 64, 128, 256 (必须是2的幂次方)
+            效果: 
+            - 更大 → 更多细节，更大的世界，但性能显著降低
+            - 更小 → 更好的性能，但世界更小，细节更少
+            注意: 修改后需要重新生成世界
+         
+         2. NUM_LIGHTS (光源数量)
+            位置: 第786行附近
+            当前值: 32
+            范围: 8-64
+            效果:
+            - 更多 → 更丰富的照明效果，但降低性能
+            - 更少 → 提高性能，但照明效果较少
+            建议: 16-32之间平衡性能和视觉效果
+         
+         3. PAN_SENSITIVITY (相机平移灵敏度)
+            位置: 第782行附近
+            当前值: 0.1
+            范围: 0.05-0.5
+            效果:
+            - 更大 → 鼠标拖动时相机移动更快
+            - 更小 → 相机移动更慢，更精确控制
+         
+         
+         💡 光源参数 | Light Parameters
+         ================================
+         
+         4. lights[i].radius (光源半径)
+            位置: 第798行附近
+            当前值: 20.0 + Math.random() * 15 (20-35)
+            范围: 10-50
+            效果:
+            - 更大 → 光照覆盖更大的区域
+            - 更小 → 光照更集中
+            示例修改: radius: 30.0 (固定半径30)
+         
+         5. lights[i].velocity (光源下落速度)
+            位置: 第800行附近
+            当前值: -20.0 - Math.random() * 20.0 (-20到-40)
+            范围: -60 到 -5
+            效果:
+            - 更负 → 光源下落更快
+            - 接近0 → 光源下落更慢或悬浮
+            示例修改: velocity: -10.0 (慢速下落)
+         
+         6. lights[i].color (光源颜色)
+            位置: 第795行附近
+            当前: HSVtoRGB(Math.random(), 0.9, 1.0) (随机彩色)
+            效果:
+            - HSVtoRGB(0, 0.9, 1.0) → 纯红色光源
+            - HSVtoRGB(0.33, 0.9, 1.0) → 纯绿色光源
+            - HSVtoRGB(0.66, 0.9, 1.0) → 纯蓝色光源
+            - HSVtoRGB(0, 0, 1.0) → 白色光源
+            示例: 所有光源都是暖黄色
+            color: HSVtoRGB(0.15, 0.8, 1.0)
+         
+         
+         ☀️ 环境参数 | Environment Parameters
+         ================================
+         
+         7. sunSpeed (太阳旋转速度)
+            位置: UI控制，第812行附近
+            当前值: 0.02
+            范围: 0-0.05
+            效果:
+            - 更大 → 日夜循环更快
+            - 0 → 太阳静止不动
+            - 负值 → 太阳反向旋转
+         
+         8. sunAngle (初始太阳角度)
+            位置: 第801行附近
+            当前值: Math.PI / 4
+            范围: 0 到 2*Math.PI
+            效果:
+            - 0 → 太阳在东方
+            - Math.PI/2 → 太阳在南方
+            - Math.PI → 太阳在西方
+            - 3*Math.PI/2 → 太阳在北方
+         
+         
+         🎨 渲染参数 | Rendering Parameters
+         ================================
+         
+         9. maxRaySteps (最大光线追踪步数)
+            位置: UI控制，第833行附近
+            当前值: 384
+            范围: 64-512
+            效果:
+            - 更多 → 可以看得更远，但性能降低
+            - 更少 → 提高性能，但远处物体可能消失
+            建议: 低端GPU使用128，高端GPU使用384
+         
+         10. resolutionScale (渲染分辨率缩放)
+             位置: UI控制，第824行附近
+             当前值: 1.0 (100%)
+             范围: 0.25-1.0 (25%-100%)
+             效果:
+             - 1.0 → 原生分辨率，最佳画质
+             - 0.5 → 50%分辨率，性能提升4倍
+             - 0.25 → 25%分辨率，性能提升16倍
+             注意: 降低分辨率会使画面模糊
+         
+         11. clearValue (背景颜色)
+             位置: 第1934行附近
+             当前值: [0.1, 0.1, 0.2, 1.0] (深蓝色)
+             格式: [红, 绿, 蓝, 透明度] (0-1范围)
+             效果示例:
+             - [0, 0, 0, 1] → 黑色背景
+             - [1, 1, 1, 1] → 白色背景
+             - [0.5, 0, 0, 1] → 深红色背景
+         
+         
+         ⚡ 物理参数 | Physics Parameters
+         ================================
+         
+         12. simSteps (每帧模拟步数)
+             位置: UI控制，第830行附近
+             当前值: 1
+             范围: 0-25
+             效果:
+             - 0 → 暂停物理模拟
+             - 1 → 正常速度
+             - 5+ → 快速物理模拟
+             注意: 更多步数会降低帧率
+         
+         13. brushSize (画笔大小)
+             位置: UI控制，第815行附近
+             当前值: 10.5
+             范围: 1-25
+             效果:
+             - 更大 → 绘制更大的区域
+             - 更小 → 更精细的绘制
+         
+         
+         📷 相机参数 | Camera Parameters
+         ================================
+         
+         14. camera.radius (轨道相机距离)
+             位置: 第835行附近
+             当前值: VOXEL_GRID_SIZE * 1.8
+             范围: 50-500
+             效果:
+             - 更大 → 相机离场景更远
+             - 更小 → 相机离场景更近
+         
+         15. camera.target (相机目标点)
+             位置: 第838行附近
+             当前值: [VOXEL_GRID_SIZE/2, 30, VOXEL_GRID_SIZE/2]
+             效果: 相机围绕这个点旋转
+             示例: [64, 50, 64] (更高的观察点)
+         
+         16. firstPersonCamera.speed (第一人称移动速度)
+             位置: 第823行附近
+             当前值: 20.0
+             范围: 5.0-50.0
+             效果:
+             - 更大 → 移动更快
+             - 更小 → 移动更慢，更精确控制
+         
+         
+         🎨 视觉效果参数 | Visual Effect Parameters
+         =========================================
+         
+         17. 水的颜色 (Water Color)
+             位置: renderShaderCode第1279行附近
+             当前值: vec3(0.15, 0.45, 0.85) (蓝色)
+             效果:
+             - vec3(0.1, 0.8, 0.8) → 青色水
+             - vec3(0.2, 0.2, 0.9) → 深蓝色水
+             - vec3(0.5, 0.1, 0.6) → 紫色水(幻想效果)
+         
+         18. 沙子颜色 (Sand Color)
+             位置: renderShaderCode第1277行附近
+             当前值: vec3(0.8, 0.7, 0.4) (黄色)
+             效果:
+             - vec3(1.0, 0.9, 0.6) → 亮黄色沙子
+             - vec3(0.6, 0.4, 0.2) → 棕色沙子
+             - vec3(0.9, 0.3, 0.3) → 红色沙子(火星效果)
+         
+         19. 石头颜色 (Stone Color)
+             位置: renderShaderCode第1275行附近
+             当前值: vec3(0.45) (灰色)
+             效果:
+             - vec3(0.3) → 更深的灰色
+             - vec3(0.6) → 更浅的灰色
+             - vec3(0.4, 0.5, 0.4) → 绿灰色(苔藓石头)
+         
+         
+         ⚙️ 高级效果参数 | Advanced Effect Parameters
+         =============================================
+         
+         20. 云层密度 (Cloud Density)
+             位置: renderShaderCode第1372行附近
+             当前: smoothstep(0.4, 0.7, cloud_density)
+             效果:
+             - smoothstep(0.3, 0.6, ...) → 更多云
+             - smoothstep(0.5, 0.8, ...) → 更少云
+         
+         21. 云层速度 (Cloud Speed)
+             位置: renderShaderCode第1363行附近
+             当前: time * 0.02 和 time * 0.05
+             效果:
+             - 增加系数 → 云移动更快
+             - 减少系数 → 云移动更慢
+         
+         22. 太阳大小和强度 (Sun Size and Intensity)
+             位置: renderShaderCode第1353-1356行附近
+             当前: pow(..., 128.0) (主盘), pow(..., 8.0) (光晕)
+             效果:
+             - 增加指数 → 太阳更小更亮
+             - 减少指数 → 太阳更大更柔和
+         
+         
+         💡 实用建议 | Practical Tips
+         ============================
+         
+         性能优化组合 (Performance Optimization):
+         - VOXEL_GRID_SIZE: 64
+         - NUM_LIGHTS: 16
+         - maxRaySteps: 128
+         - resolutionScale: 0.5
+         - simSteps: 1
+         
+         视觉质量组合 (Visual Quality):
+         - VOXEL_GRID_SIZE: 128
+         - NUM_LIGHTS: 32
+         - maxRaySteps: 384
+         - resolutionScale: 1.0
+         - simSteps: 2
+         
+         创意实验组合 (Creative Experiments):
+         1. 彩虹雨效果: 保持light color随机，增加NUM_LIGHTS到48
+         2. 月光效果: sunSpeed: 0, 所有lights为蓝白色
+         3. 火星场景: 沙子改为红色，天空改为红褐色
+         4. 水下世界: 水改为绿色，增加水的亮度参数
+         
+         */
+         
          // --- Start of UI elements that can be initialized without WebGPU ---
-         const infoToggleButtonElement = document.getElementById('infoToggleButton'); // Renamed to avoid conflict
-         const descriptionAreaElement = document.getElementById('descriptionArea'); // Renamed to avoid conflict
+         const infoToggleButtonElement = document.getElementById('infoToggleButton');
+         const descriptionAreaElement = document.getElementById('descriptionArea');
          if (infoToggleButtonElement && descriptionAreaElement) {
+             // Start with info panel hidden
+             descriptionAreaElement.classList.add('hidden');
+             infoToggleButtonElement.textContent = '📖 Show Info';
+             
              infoToggleButtonElement.onclick = () => {
                  descriptionAreaElement.classList.toggle('hidden');
-                 infoToggleButtonElement.textContent = descriptionAreaElement.classList.contains('hidden') ? 'Show Info' : 'Hide Info';
+                 infoToggleButtonElement.textContent = descriptionAreaElement.classList.contains('hidden') ? '📖 Show Info' : '✖️ Hide Info';
              };
          }
 
@@ -234,18 +972,28 @@
          }
          // --- End of non-WebGPU UI ---
 
+         // ==================================================
+         // WebGPU 初始化和主函数 | WebGPU Initialization and Main Function
+         // ==================================================
          async function initAndRun() {
+             // 步骤1: 获取HTML画布元素 | Step 1: Get the HTML canvas element
+             // 画布是我们绘制3D图形的地方 | The canvas is where we'll draw our 3D graphics
              const canvas = document.getElementById('webgpu-canvas');
              if (!canvas) {
                  displayErrorAndStop("Initialization Error", "The canvas element (#webgpu-canvas) was not found in the HTML. The page structure might be broken.");
                  return; // Will not be reached
              }
 
+             // 步骤2: 检查浏览器是否支持WebGPU | Step 2: Check if browser supports WebGPU
+             // navigator.gpu 是浏览器提供的WebGPU API入口 | navigator.gpu is the browser's WebGPU API entry point
              if (!navigator.gpu) {
                  displayErrorAndStop("WebGPU Not Supported", "Your browser does not support WebGPU, or it is disabled. VibeSand requires WebGPU to run.");
                  return;
              }
 
+             // 步骤3: 请求GPU适配器 (Adapter) | Step 3: Request GPU Adapter
+             // Adapter代表系统中的一个物理GPU | Adapter represents a physical GPU in the system
+             // 在有多个GPU的系统中，浏览器会选择最合适的一个 | On systems with multiple GPUs, browser picks the best one
              let adapter;
              try {
                  adapter = await navigator.gpu.requestAdapter();
@@ -259,6 +1007,9 @@
                  return;
              }
 
+             // 步骤4: 从适配器请求GPU设备 (Device) | Step 4: Request GPU Device from Adapter
+             // Device是我们实际与GPU通信的对象 | Device is the object we actually use to communicate with the GPU
+             // 一个设备可以创建缓冲区、管线、纹理等GPU资源 | A device can create buffers, pipelines, textures, and other GPU resources
              let device;
              try {
                  device = await adapter.requestDevice();
@@ -272,23 +1023,55 @@
                  return;
              }
 
-             // --- Original script from this point onwards ---
+             // 步骤5: 配置画布的WebGPU上下文 | Step 5: Configure canvas WebGPU context
+             // context是画布和GPU之间的桥梁 | context is the bridge between canvas and GPU
              const context = canvas.getContext('webgpu');
+             // 获取首选的像素格式 (通常是 'bgra8unorm' 或 'rgba8unorm')
+             // Get preferred pixel format (usually 'bgra8unorm' or 'rgba8unorm')
              const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
+             // 配置上下文：指定使用哪个设备、像素格式、透明度模式
+             // Configure context: specify which device to use, pixel format, alpha mode
              context.configure({ device, format: presentationFormat, alphaMode: 'premultiplied' });
 
+             // ==================================================
+             // 🎨 可调参数区域 | Adjustable Parameters Section
+             // ==================================================
+             // 这些参数可以修改以获得不同的视觉效果 | These parameters can be modified for different visual effects
+             
+             // ⚙️ 体素网格大小 | Voxel Grid Size
+             // 范围: 32-256 (必须是2的幂次方，如32, 64, 128, 256)
+             // Range: 32-256 (must be power of 2, like 32, 64, 128, 256)
+             // 更大的网格 = 更多细节，但性能更低 | Larger grid = more detail, but lower performance
+             // 更小的网格 = 更好性能，但细节较少 | Smaller grid = better performance, but less detail
              const VOXEL_GRID_SIZE = 128;
              const NUM_VOXELS = VOXEL_GRID_SIZE ** 3;
              document.getElementById('voxelCount').textContent = NUM_VOXELS.toLocaleString();
+             
+             // 🖱️ 相机平移灵敏度 | Camera Pan Sensitivity  
+             // 范围: 0.05-0.5 | Range: 0.05-0.5
+             // 更大的值 = 平移更快 | Larger value = faster panning
              const PAN_SENSITIVITY = 0.1;
+             
 
-             const TOOL_PAINT_SAND = 0;
-             const TOOL_PAINT_STONE = 1;
-             const TOOL_DESTROY = 2;
-             const TOOL_PAINT_WATER = 3;
+             // 🛠️ 工具类型常量 | Tool Type Constants
+             // 这些常量定义了不同的绘制工具 | These constants define different painting tools
+             const TOOL_PAINT_SAND = 0;   // 沙子工具 | Sand tool
+             const TOOL_PAINT_STONE = 1;  // 石头工具 | Stone tool
+             const TOOL_DESTROY = 2;       // 销毁/擦除工具 | Destroy/erase tool
+             const TOOL_PAINT_WATER = 3;   // 水工具 | Water tool
 
+             // ==================================================
+             // 💡 动态光源系统 | Dynamic Light System
+             // ==================================================
+             // 💡 光源数量 | Number of Lights
+             // 范围: 8-64 | Range: 8-64
+             // 更多光源 = 更丰富的照明，但性能更低 | More lights = richer lighting, but lower performance
+             // 建议: 保持在16-32之间以获得良好的性能/质量平衡 | Recommended: keep between 16-32 for good performance/quality balance
              const NUM_LIGHTS = 32;
              const lights = [];
+             
+             // HSV转RGB的辅助函数 | HSV to RGB helper function
+             // 用于生成彩色光源 | Used to generate colorful lights
              function HSVtoRGB(h, s, v) {
                  let r, g, b, i, f, p, q, t;
                  i = Math.floor(h * 6); f = h * 6 - i;
@@ -300,23 +1083,84 @@
                  }
                  return [r, g, b];
              }
+             
+             // 初始化所有光源 | Initialize all lights
              for (let i = 0; i < NUM_LIGHTS; i++) {
                  lights.push({
+                     // 🎨 光源位置 | Light position (可以修改初始位置 | can modify initial position)
                      position: [Math.random() * VOXEL_GRID_SIZE, Math.random() * VOXEL_GRID_SIZE, Math.random() * VOXEL_GRID_SIZE],
+                     // 🌈 光源颜色 (HSV色轮随机选择) | Light color (randomly selected from HSV color wheel)
+                     // 修改 Math.random() 为固定值(0-1)可以得到特定颜色的光源 | Change Math.random() to fixed value (0-1) for specific color
+                     // 例如 0=红色, 0.33=绿色, 0.66=蓝色 | e.g., 0=red, 0.33=green, 0.66=blue
                      color: HSVtoRGB(Math.random(), 0.9, 1.0),
+                     // 🔦 光源半径 | Light radius
+                     // 范围: 10-50 | Range: 10-50  
+                     // 修改这里可以改变光照范围 | Modify here to change lighting range
                      radius: 20.0 + Math.random() * 15,
+                     // ⬇️ 光源下落速度 (负值表示向下) | Light falling velocity (negative = downward)
+                     // 范围: -60 到 -10 | Range: -60 to -10
+                     // 更负的值 = 下落更快 | More negative = falls faster
                      velocity: -20.0 - Math.random() * 20.0,
                  });
              }
 
+             // ==================================================
+             // 🎮 应用状态和配置 | Application State and Configuration
+             // ==================================================
+             
+             // ☀️ 太阳角度 (用于日夜循环) | Sun angle (for day/night cycle)
+             // 范围: 0 到 2π | Range: 0 to 2π
              let sunAngle = Math.PI / 4;
+             
+             // 当前选中的工具 | Currently selected tool
              let currentTool = TOOL_PAINT_SAND;
+             
+             // 地形类型: 1=山地地形, 0=平坦地形 | Terrain type: 1=mountainous terrain, 0=flat terrain
              let currentTerrainType = 1;
+             
+             // UI控制参数 | UI control parameters
              let uiControls = {
-                 sunSpeed: 0.02, brushSize: 10.5, continuousPaint: true, targetFarFaceOnAirHit: true, resolutionScale: 1.0, simSteps: 1, maxRaySteps: 384,
+                 // ☀️ 太阳旋转速度 | Sun rotation speed
+                 // 范围: 0-0.05 | Range: 0-0.05
+                 // 更大的值 = 日夜循环更快 | Larger value = faster day/night cycle
+                 sunSpeed: 0.02,
+                 
+                 // 🖌️ 画笔大小 | Brush size
+                 // 范围: 1-25 | Range: 1-25
+                 brushSize: 10.5,
+                 
+                 // 是否连续绘制 | Whether to paint continuously
+                 continuousPaint: true,
+                 
+                 // 当光线打到空气时是否瞄准远面 | Whether to target far face when ray hits air
+                 targetFarFaceOnAirHit: true,
+                 
+                 // 📐 渲染分辨率缩放 | Render resolution scale
+                 // 范围: 0.25-1.0 (25%-100%) | Range: 0.25-1.0 (25%-100%)
+                 // 降低可以提高性能 | Lower to improve performance
+                 resolutionScale: 1.0,
+                 
+                 // 🔄 每帧模拟步数 | Simulation steps per frame
+                 // 范围: 0-25 | Range: 0-25
+                 // 更多步数 = 更快的物理模拟，但性能更低 | More steps = faster physics simulation, but lower performance
+                 simSteps: 1,
+                 
+                 // 🔍 最大光线追踪步数 | Max ray marching steps
+                 // 范围: 64-384 | Range: 64-384
+                 // 更多步数 = 更远的渲染距离，但性能更低 | More steps = further render distance, but lower performance
+                 maxRaySteps: 384,
              };
+             
+             // 📷 轨道相机参数 | Orbital camera parameters
              let camera = {
-                 alpha: -0.5, beta: 0.3, radius: VOXEL_GRID_SIZE * 1.8, target: [VOXEL_GRID_SIZE / 2, 30, VOXEL_GRID_SIZE / 2],
+                 // 水平旋转角度 | Horizontal rotation angle
+                 alpha: -0.5,
+                 // 垂直旋转角度 | Vertical rotation angle
+                 beta: 0.3,
+                 // 相机距离目标点的距离 | Camera distance from target
+                 radius: VOXEL_GRID_SIZE * 1.8,
+                 // 相机看向的目标点 | Camera target point
+                 target: [VOXEL_GRID_SIZE / 2, 30, VOXEL_GRID_SIZE / 2],
              };
              let mouseState = {
                  buttons: [false, false, false], x: 0, y: 0, lastX: 0, lastY: 0, isPainting: false, isOrbiting: false, isPanning: false, hasFiredSingleShot: false,
@@ -326,80 +1170,172 @@
              let isPreviewVisible = true;
              let currentCamX=0, currentCamY=0, currentCamZ=0;
              let currentForward=[0,0,1], currentRight=[1,0,0], currentUp=[0,1,0];
+             let cameraMode = 'orbital'; // 'orbital' or 'firstperson'
+            
+            // ==================================================
+            // 🎮 NEW CPU-Based Player Controller | 新的CPU玩家控制器
+            // ==================================================
+            // Smooth, responsive Minecraft-like movement with continuous collision
+            // 流畅、响应灵敏的类Minecraft移动，带连续碰撞检测
+            let player = {
+                // 连续位置 (浮点数，非体素对齐) | Continuous position (float, not voxel-aligned)
+                position: [VOXEL_GRID_SIZE / 2, VOXEL_GRID_SIZE - 10, VOXEL_GRID_SIZE / 2],
+                // 速度向量 | Velocity vector
+                velocity: [0, 0, 0],
+                // 视角方向 | View direction
+                yaw: -Math.PI / 2,
+                pitch: 0,
+                // 物理状态 | Physics state
+                isGrounded: false,
+                // 碰撞盒尺寸 | Collision box dimensions
+                width: 0.6,    // X and Z axis width (player width)
+                height: 1.8,   // Y axis height
+                eyeHeight: 1.62, // Eye position from feet (slightly below full height)
+                // 移动参数 | Movement parameters
+                walkSpeed: 4.317,      // blocks per second (Minecraft walking speed)
+                sprintSpeed: 5.612,    // blocks per second (not implemented yet)
+                jumpVelocity: 8.0,     // blocks per second upward
+                gravity: 32.0,         // blocks per second² downward
+                // 地面移动 | Ground movement
+                groundAcceleration: 100.0,  // How fast to reach target speed
+                groundFriction: 20.0,       // How fast to stop
+                // 空中移动 | Air movement  
+                airAcceleration: 20.0,      // Air control (less than ground)
+                airFriction: 2.0,           // Minimal air drag
+                // 阶梯自动攀爬 | Step climbing
+                stepHeight: 0.6,       // Can step up this high automatically
+            };
+            
+             let keyState = {
+                w: false, a: false, s: false, d: false, space: false, shift: false,
+             };
 
+             // ==================================================
+             // 📜 WGSL着色器代码 - 公共部分 | WGSL Shader Code - Common Section
+             // ==================================================
+             // WGSL (WebGPU Shading Language) 是WebGPU使用的着色器语言
+             // WGSL (WebGPU Shading Language) is the shader language used by WebGPU
+             // 着色器在GPU上运行，速度非常快 | Shaders run on the GPU and are very fast
+             
              const commonShaderCode = `
+                 // 📦 体素数据结构 | Voxel Data Structure
+                 // 每个体素用一个32位无符号整数存储 | Each voxel is stored as a 32-bit unsigned integer
+                 // 这个整数包含: 类型、变体、更新标志、RGB光照信息 | This integer contains: type, variant, update flag, RGB lighting
                  struct VoxelData {
-                     data: atomic<u32>,
+                     data: atomic<u32>,  // atomic类型允许多个线程同时安全访问 | atomic type allows safe concurrent access
                  };
 
+                 // 💡 点光源结构 | Point Light Structure
                  struct PointLight {
-                     pos: vec3<f32>, radius: f32,
-                     color: vec3<f32>, intensity: f32,
+                     pos: vec3<f32>,      // 光源3D位置 | Light 3D position
+                     radius: f32,         // 光源影响半径 | Light influence radius
+                     color: vec3<f32>,    // 光源RGB颜色 | Light RGB color
+                     intensity: f32,      // 光源强度 | Light intensity
                  };
+                 
+                 // 🌍 场景全局数据 | Scene Global Data
                  struct SceneUniforms {
-                     lights: array<PointLight, ${NUM_LIGHTS}>,
-                     light_count: u32,
+                     lights: array<PointLight, ${NUM_LIGHTS}>,  // 所有光源的数组 | Array of all lights
+                     light_count: u32,                           // 光源数量 | Number of lights
                  };
 
+                 // 📷 渲染通道统一变量 | Render Pass Uniforms
+                 // 这些变量在每一帧都会更新，传递相机和渲染设置到着色器
+                 // These variables update every frame, passing camera and render settings to shaders
                  struct RenderPassUniforms {
-                     camera_position: vec3<f32>, camera_zoom: f32,
-                     camera_right: vec3<f32>, _padr: f32,
-                     camera_up: vec3<f32>, _padu: f32,
-                     camera_target_pos: vec3<f32>, _padt: f32,
-                     sun_direction: vec3<f32>,  _pads: f32,
-                     canvas_actual_dims: vec2<f32>,
-                     max_ray_steps: u32, _pad_mrs: u32,
+                     camera_position: vec3<f32>,    // 相机位置 | Camera position
+                     camera_zoom: f32,               // 相机缩放/FOV | Camera zoom/FOV
+                     camera_right: vec3<f32>,        // 相机右向量 | Camera right vector
+                     _padr: f32,                     // 填充对齐 | Padding for alignment
+                     camera_up: vec3<f32>,           // 相机上向量 | Camera up vector
+                     _padu: f32,                     // 填充对齐 | Padding for alignment
+                     camera_target_pos: vec3<f32>,   // 相机看向的目标点 | Camera target point
+                     _padt: f32,                     // 填充对齐 | Padding for alignment
+                     sun_direction: vec3<f32>,       // 太阳方向向量 | Sun direction vector
+                     _pads: f32,                     // 填充对齐 | Padding for alignment
+                     canvas_actual_dims: vec2<f32>,  // 画布实际像素尺寸 | Canvas actual pixel dimensions
+                     max_ray_steps: u32,             // 光线追踪最大步数 | Ray marching max steps
+                     _pad_mrs: u32,                  // 填充对齐 | Padding for alignment
                  };
 
+                 // 🖥️ 计算通道统一变量 | Compute Pass Uniforms
+                 // 用于物理模拟和交互的参数 | Parameters for physics simulation and interaction
                  struct ComputePassUniforms {
-                     camera_position: vec3<f32>, camera_zoom: f32,
-                     camera_right: vec3<f32>, _padr2: f32,
-                     camera_up: vec3<f32>, _padu2: f32,
-                     camera_target_pos: vec3<f32>, _padt2: f32,
-                     mouse_pos: vec2<f32>, canvas_dims: vec2<f32>,
-                     brush_size: f32, is_painting: u32,
-                     tool_type: u32, preview_active: u32,
-                     target_far_face_on_air_hit: u32, frame_num: u32,
-                     max_ray_steps_compute: u32, _pad_mrs_compute: u32,
+                     camera_position: vec3<f32>,     // 相机位置 | Camera position
+                     camera_zoom: f32,               // 相机缩放 | Camera zoom
+                     camera_right: vec3<f32>,        // 相机右向量 | Camera right vector
+                     _padr2: f32,
+                     camera_up: vec3<f32>,           // 相机上向量 | Camera up vector
+                     _padu2: f32,
+                     camera_target_pos: vec3<f32>,   // 相机目标 | Camera target
+                     _padt2: f32,
+                     mouse_pos: vec2<f32>,           // 鼠标位置 | Mouse position
+                     canvas_dims: vec2<f32>,         // 画布尺寸 | Canvas dimensions
+                     brush_size: f32,                // 画笔大小 | Brush size
+                     is_painting: u32,               // 是否正在绘制 | Whether painting
+                     tool_type: u32,                 // 工具类型 | Tool type
+                     preview_active: u32,            // 预览是否激活 | Whether preview is active
+                     target_far_face_on_air_hit: u32, // 目标选择模式 | Target selection mode
+                     frame_num: u32,                 // 帧编号 | Frame number
+                     max_ray_steps_compute: u32,     // 计算用的最大步数 | Max steps for compute
+                     _pad_mrs_compute: u32,
                  };
 
-                 struct TargetingOutput { aim_pos: vec4<f32>, hit: u32 };
+                 // 🎯 目标输出结构 | Targeting Output Structure
+                 // 用于存储光线追踪找到的目标位置 | Used to store target position found by ray tracing
+                 struct TargetingOutput { 
+                     aim_pos: vec4<f32>,  // 瞄准位置 | Aim position
+                     hit: u32             // 是否命中 | Whether hit
+                 };
 
-                 const VOXEL_TYPE_AIR = 0u;
-                 const VOXEL_TYPE_STONE = 1u;
-                 const VOXEL_TYPE_SAND = 2u;
-                 const VOXEL_TYPE_WATER = 3u;
+                 // 🧱 体素类型常量 | Voxel Type Constants
+                 // 这些常量定义了不同类型的体素 | These constants define different voxel types
+                 const VOXEL_TYPE_AIR = 0u;      // 空气(透明) | Air (transparent)
+                 const VOXEL_TYPE_STONE = 1u;    // 石头(固体) | Stone (solid)
+                 const VOXEL_TYPE_SAND = 2u;     // 沙子(会下落) | Sand (falls)
+                 const VOXEL_TYPE_WATER = 3u;    // 水(流动) | Water (flows)
 
+                 // 🛠️ 工具类型常量 | Tool Type Constants
                  const TOOL_TYPE_SAND = 0u;
                  const TOOL_TYPE_STONE = 1u;
                  const TOOL_TYPE_DESTROY = 2u;
                  const TOOL_TYPE_WATER = 3u;
 
+                 // 📏 网格尺寸 | Grid dimension
                  const GRID_DIM = ${VOXEL_GRID_SIZE}u;
 
-                 const MASK_TYPE = 7u;
-                 const SHIFT_TYPE = 0u;
-                 const MASK_VARIANT = 7u;
-                 const SHIFT_VARIANT = 3u;
-                 const MASK_UPDATED = 1u;
-                 const SHIFT_UPDATED = 6u;
+                 // 🔢 位操作掩码和偏移 | Bit manipulation masks and shifts
+                 // 用于将多个值打包到单个32位整数中 | Used to pack multiple values into a single 32-bit integer
+                 // 这样可以节省GPU内存 | This saves GPU memory
+                 const MASK_TYPE = 7u;           // 0b111 - 类型占用3位 | Type uses 3 bits
+                 const SHIFT_TYPE = 0u;          // 类型从第0位开始 | Type starts at bit 0
+                 const MASK_VARIANT = 7u;        // 0b111 - 变体占用3位 | Variant uses 3 bits
+                 const SHIFT_VARIANT = 3u;       // 变体从第3位开始 | Variant starts at bit 3
+                 const MASK_UPDATED = 1u;        // 0b1 - 更新标志占用1位 | Updated flag uses 1 bit
+                 const SHIFT_UPDATED = 6u;       // 标志从第6位开始 | Flag starts at bit 6
 
-                 const MASK_LIGHT = 255u;
-                 const SHIFT_LIGHT_R = 8u;
-                 const SHIFT_LIGHT_G = 16u;
-                 const SHIFT_LIGHT_B = 24u;
+                 const MASK_LIGHT = 255u;        // 0b11111111 - 每个光照通道8位 | Each light channel 8 bits
+                 const SHIFT_LIGHT_R = 8u;       // 红色通道从第8位开始 | Red channel starts at bit 8
+                 const SHIFT_LIGHT_G = 16u;      // 绿色通道从第16位开始 | Green channel starts at bit 16
+                 const SHIFT_LIGHT_B = 24u;      // 蓝色通道从第24位开始 | Blue channel starts at bit 24
 
+                 // 📦 解包后的体素结构 | Unpacked Voxel Structure
+                 // 将32位整数解包成易于使用的结构 | Unpacks 32-bit integer into easy-to-use structure
                  struct UnpackedVoxel {
-                     v_type: u32, v_variant: u32,
-                     is_updated: u32,
-                     light: vec3<f32>,
+                     v_type: u32,        // 体素类型 | Voxel type
+                     v_variant: u32,     // 颜色变体 | Color variant
+                     is_updated: u32,    // 本帧是否已更新 | Whether updated this frame
+                     light: vec3<f32>,   // RGB光照值 | RGB lighting value
                  };
 
+                 // 🔓 解包函数：从32位整数提取体素信息 | Unpack function: extract voxel info from 32-bit integer
                  fn unpackVoxel(data: u32) -> UnpackedVoxel {
                      var result: UnpackedVoxel;
+                     // 使用位操作提取每个字段 | Use bit operations to extract each field
                      result.v_type = (data >> SHIFT_TYPE) & MASK_TYPE;
                      result.v_variant = (data >> SHIFT_VARIANT) & MASK_VARIANT;
                      result.is_updated = (data >> SHIFT_UPDATED) & MASK_UPDATED;
+                     // 提取RGB光照值并归一化到0-1范围 | Extract RGB lighting and normalize to 0-1 range
                      let r = f32((data >> SHIFT_LIGHT_R) & MASK_LIGHT);
                      let g = f32((data >> SHIFT_LIGHT_G) & MASK_LIGHT);
                      let b = f32((data >> SHIFT_LIGHT_B) & MASK_LIGHT);
@@ -407,10 +1343,13 @@
                      return result;
                  }
 
+                 // 🔒 打包函数：将体素信息压缩到32位整数 | Pack function: compress voxel info into 32-bit integer
                  fn packVoxel(v_type: u32, v_variant: u32, is_updated: u32, light: vec3<f32>) -> u32 {
+                     // 将光照值从0-1范围转换到0-255范围 | Convert lighting from 0-1 range to 0-255 range
                      let r = u32(clamp(light.r * 255.0, 0.0, 255.0));
                      let g = u32(clamp(light.g * 255.0, 0.0, 255.0));
                      let b = u32(clamp(light.b * 255.0, 0.0, 255.0));
+                     // 使用位或操作将所有字段组合到一个整数中 | Use bit OR to combine all fields into one integer
                      return ((v_type & MASK_TYPE) << SHIFT_TYPE) |
                             ((v_variant & MASK_VARIANT) << SHIFT_VARIANT) |
                             ((is_updated & MASK_UPDATED) << SHIFT_UPDATED) |
@@ -419,22 +1358,32 @@
                             ((b & MASK_LIGHT) << SHIFT_LIGHT_B);
                  }
 
+                 // 快速提取函数：只获取类型和更新标志 | Fast extract functions: get only type and update flag
                  fn getVoxelType(data: u32) -> u32 { return (data >> SHIFT_TYPE) & MASK_TYPE; }
                  fn getVoxelIsUpdated(data: u32) -> u32 { return (data >> SHIFT_UPDATED) & MASK_UPDATED; }
 
+                 // 📍 坐标转索引函数 | Coordinate to index functions
+                 // 将3D坐标(x,y,z)转换为1D数组索引 | Convert 3D coordinates (x,y,z) to 1D array index
+                 // 使用公式: index = x + y*WIDTH + z*WIDTH*HEIGHT | Formula: index = x + y*WIDTH + z*WIDTH*HEIGHT
                  fn pos_to_idx(pos: vec3<u32>) -> u32 {
-                     if (any(pos >= vec3(GRID_DIM))) { return 0xFFFFFFFFu; }
+                     // 检查坐标是否越界 | Check if coordinates are out of bounds
+                     if (any(pos >= vec3(GRID_DIM))) { return 0xFFFFFFFFu; }  // 返回无效索引 | Return invalid index
                      return pos.x + pos.y * GRID_DIM + pos.z * GRID_DIM * GRID_DIM;
                  }
-                  fn pos_to_idx_i32(pos: vec3<i32>) -> u32 {
+                 
+                 // 带符号整数版本 | Signed integer version
+                 fn pos_to_idx_i32(pos: vec3<i32>) -> u32 {
                      if (any(pos < vec3(0)) || any(pos >= vec3<i32>(i32(GRID_DIM)))) { return 0xFFFFFFFFu; }
                      return u32(pos.x + pos.y * i32(GRID_DIM) + pos.z * i32(GRID_DIM) * i32(GRID_DIM));
                  }
+                 
+                 // 🎲 3D哈希函数：将3D坐标转换为伪随机浮点数 | 3D hash function: convert 3D coordinates to pseudo-random float
+                 // 用于生成随机变体和噪声 | Used to generate random variants and noise
                  fn hash3d_to_float(p: vec3<u32>) -> f32 {
-                     var p_mut = p * vec3(374761393u, 668265263u, 104395301u);
+                     var p_mut = p * vec3(374761393u, 668265263u, 104395301u);  // 大质数 | Large primes
                      p_mut = (p_mut ^ p_mut.yzx ^ p_mut.zxy) >> vec3(8u);
                      p_mut = p_mut * vec3(374761393u, 668265263u, 104395301u);
-                     return f32(p_mut.x ^ p_mut.y ^ p_mut.z) / 4294967295.0;
+                     return f32(p_mut.x ^ p_mut.y ^ p_mut.z) / 4294967295.0;  // 归一化到0-1 | Normalize to 0-1
                  }
              `;
 
@@ -517,10 +1466,11 @@
                          return;
                      }
 
-                     if (global_id.y == 0u) {
-                         atomicStore(&voxels[current_idx].data, 0u);
-                         return;
-                     }
+                    // Delete loose voxels at bottom
+                    if (global_id.y == 0u) {
+                        atomicStore(&voxels[current_idx].data, 0u);
+                        return;
+                    }
 
                      // PRIORITY 1: Direct Vertical Fall
                      let pos_below = global_id - vec3(0u, 1u, 0u);
@@ -529,7 +1479,7 @@
                          let type_below = getVoxelType(atomicLoad(&voxels[idx_below].data));
                          if (type_below == VOXEL_TYPE_AIR) {
                              if (attempt_move(current_idx, idx_below, initial_data)) { return; }
-                         } else if (current_type == VOXEL_TYPE_SAND && type_below == VOXEL_TYPE_WATER) {
+                         } else if ((current_type == VOXEL_TYPE_SAND ) && type_below == VOXEL_TYPE_WATER) {
                              if (attempt_swap(current_idx, idx_below, initial_data)) { return; }
                          }
                      }
@@ -538,7 +1488,7 @@
 
                      // PRIORITY 2: Diagonal Fall
                      if (global_id.y > 0u) {
-                         if (current_type == VOXEL_TYPE_SAND) {
+                         if (current_type == VOXEL_TYPE_SAND ) {
                              let DIAGONAL_SLIDES_SAND = array<vec3<i32>, 8>(
                                  vec3(1,-1,0), vec3(-1,-1,0), vec3(0,-1,1), vec3(0,-1,-1),
                                  vec3(1,-1,1), vec3(-1,-1,1), vec3(1,-1,-1), vec3(-1,-1,-1)
@@ -551,7 +1501,7 @@
                                      let type_diag = getVoxelType(atomicLoad(&voxels[check_idx].data));
                                      if (type_diag == VOXEL_TYPE_AIR) {
                                          if(attempt_move(current_idx, check_idx, initial_data)) { return; }
-                                     } else if (type_diag == VOXEL_TYPE_WATER) { // Sand swaps with water diagonally
+                                     } else if (type_diag == VOXEL_TYPE_WATER) { // Sand/Player swaps with water diagonally
                                          if(attempt_swap(current_idx, check_idx, initial_data)) { return; }
                                      }
                                  }
@@ -704,59 +1654,6 @@
                  }
              `;
 
-             const targetingShaderCode = `
-                 ${commonShaderCode}
-                 @group(0) @binding(0) var<storage, read_write> voxels: array<VoxelData>;
-                 @group(0) @binding(1) var<uniform> tool_info: ComputePassUniforms;
-                 @group(0) @binding(2) var<storage, read_write> output: TargetingOutput;
-                 fn intersect_aabb(ro: vec3<f32>, rd: vec3<f32>, min_b: vec3<f32>, max_b: vec3<f32>) -> vec2<f32> {
-                     let inv_rd = 1.0 / rd; let t1 = (min_b - ro) * inv_rd; let t2 = (max_b - ro) * inv_rd;
-                     let t_min = max(max(min(t1.x, t2.x), min(t1.y, t2.y)), min(t1.z, t2.z));
-                     let t_max = min(min(max(t1.x, t2.x), max(t1.y, t2.y)), max(t1.z, t2.z));
-                     return vec2(t_min, t_max);
-                 }
-                 @compute @workgroup_size(1, 1, 1)
-                 fn main() {
-                     output.hit = 0u;
-                     var ray_origin = tool_info.camera_position;
-                     let cam_fwd = normalize(tool_info.camera_target_pos - ray_origin);
-                     let aspect_ratio = tool_info.canvas_dims.x / tool_info.canvas_dims.y;
-                     let ray_dir = normalize(tool_info.camera_right * ((tool_info.mouse_pos.x/tool_info.canvas_dims.x)-0.5)*2.0*aspect_ratio + tool_info.camera_up * ((tool_info.mouse_pos.y/tool_info.canvas_dims.y)-0.5)*-2.0 + cam_fwd*tool_info.camera_zoom);
-                     let t_bounds = intersect_aabb(ray_origin, ray_dir, vec3(0.0), vec3(f32(GRID_DIM)));
-
-                     if (t_bounds.x >= t_bounds.y || t_bounds.y < 0.0 ) { return; }
-
-                     var dda_pos = ray_origin + ray_dir * (max(0.0, t_bounds.x) - 0.001);
-                     var map_pos = vec3<i32>(floor(dda_pos));
-                     let step = vec3<i32>(sign(ray_dir));
-                     let delta = abs(1.0 / (ray_dir + 1e-6));
-                     var side = (sign(ray_dir) * (vec3<f32>(map_pos) - dda_pos) + (sign(ray_dir) * 0.5 + 0.5)) * delta;
-                     var last_map_pos = map_pos;
-
-                     for (var i = 0u; i < tool_info.max_ray_steps_compute; i = i + 1u) {
-                         last_map_pos = map_pos;
-                         if (side.x < side.y && side.x < side.z) { side.x += delta.x; map_pos.x += step.x; }
-                         else if (side.y < side.z) { side.y += delta.y; map_pos.y += step.y; }
-                         else { side.z += delta.z; map_pos.z += step.z; }
-
-                         let idx = pos_to_idx(vec3<u32>(map_pos));
-                         if (idx != 0xFFFFFFFFu && getVoxelType(atomicLoad(&voxels[idx].data)) != VOXEL_TYPE_AIR) {
-                             var hit_pos_f = select(vec3<f32>(last_map_pos), vec3<f32>(map_pos), tool_info.tool_type == TOOL_TYPE_DESTROY);
-                             output.aim_pos = vec4(hit_pos_f + 0.5, 0.0);
-                             output.hit = 1u;
-                             return;
-                         }
-                         if (any(map_pos < vec3<i32>(0)) || any(map_pos >= vec3<i32>(i32(GRID_DIM)))) { break; }
-                     }
-
-                     let dist_to_bbox_hit: f32 = select(max(0.0, t_bounds.x), t_bounds.y, tool_info.target_far_face_on_air_hit == 1u);
-                     let hit_pos_on_bbox = ray_origin + ray_dir * dist_to_bbox_hit;
-                     let target_point_for_placement: vec3<f32> = select(hit_pos_on_bbox + ray_dir * 0.501, hit_pos_on_bbox - ray_dir * 0.501, tool_info.target_far_face_on_air_hit == 1u);
-                     output.aim_pos = vec4(clamp(target_point_for_placement, vec3(0.0), vec3(f32(GRID_DIM) - 1.0)), 0.0);
-                     output.hit = 1u;
-                 }
-             `;
-
              const renderShaderCode = `
                  ${commonShaderCode}
                  @group(0) @binding(0) var<storage, read_write> voxels: array<VoxelData>;
@@ -787,6 +1684,103 @@
                      let oc = ro - c; let b = dot(oc, rd); let h = b*b - dot(oc, oc) + r*r;
                      if (h < 0.0) { return -1.0; } else { return -b - sqrt(h); }
                  }
+                 
+                 // Hash function for procedural noise
+                 fn hash13(p3: vec3<f32>) -> f32 {
+                     var p = fract(p3 * 0.1031);
+                     p += dot(p, p.zyx + 31.32);
+                     return fract((p.x + p.y) * p.z);
+                 }
+                 
+                 // 3D value noise for cloud generation
+                 fn noise3d(p: vec3<f32>) -> f32 {
+                     let i = floor(p);
+                     let f = fract(p);
+                     let u = f * f * (3.0 - 2.0 * f);
+                     
+                     return mix(
+                         mix(
+                             mix(hash13(i + vec3(0.0, 0.0, 0.0)), hash13(i + vec3(1.0, 0.0, 0.0)), u.x),
+                             mix(hash13(i + vec3(0.0, 1.0, 0.0)), hash13(i + vec3(1.0, 1.0, 0.0)), u.x),
+                             u.y
+                         ),
+                         mix(
+                             mix(hash13(i + vec3(0.0, 0.0, 1.0)), hash13(i + vec3(1.0, 0.0, 1.0)), u.x),
+                             mix(hash13(i + vec3(0.0, 1.0, 1.0)), hash13(i + vec3(1.0, 1.0, 1.0)), u.x),
+                             u.y
+                         ),
+                         u.z
+                     );
+                 }
+                 
+                 // Fractal Brownian Motion for clouds
+                 fn fbm(p: vec3<f32>) -> f32 {
+                     var value = 0.0;
+                     var amplitude = 0.5;
+                     var frequency = 1.0;
+                     var p_var = p;
+                     
+                     for (var i = 0; i < 4; i = i + 1) {
+                         value += amplitude * noise3d(p_var * frequency);
+                         frequency *= 2.0;
+                         amplitude *= 0.5;
+                     }
+                     
+                     return value;
+                 }
+                 
+                 // Enhanced sky rendering with sun and clouds
+                 fn compute_sky_color(ray_dir: vec3<f32>, sun_dir: vec3<f32>, time: f32) -> vec3<f32> {
+                     // Atmospheric gradient - horizon to zenith
+                     let y_factor = max(ray_dir.y, 0.0);
+                     let horizon_color = vec3(0.6, 0.75, 0.9);  // Light blue at horizon
+                     let zenith_color = vec3(0.2, 0.4, 0.8);     // Deeper blue at zenith
+                     var sky_color = mix(horizon_color, zenith_color, pow(y_factor, 0.6));
+                     
+                     // Add sunset/sunrise gradient near horizon
+                     let sunset_factor = pow(1.0 - y_factor, 3.0) * max(sun_dir.y + 0.2, 0.0);
+                     let sunset_color = vec3(1.0, 0.6, 0.3);
+                     sky_color = mix(sky_color, sunset_color, sunset_factor * 0.4);
+                     
+                     // Sun disk
+                     let sun_dot = dot(ray_dir, normalize(sun_dir));
+                     let sun_intensity = pow(max(sun_dot, 0.0), 128.0);
+                     let sun_glow = pow(max(sun_dot, 0.0), 8.0) * 0.15;
+                     let sun_corona = pow(max(sun_dot, 0.0), 2.0) * 0.05;
+                     sky_color += vec3(1.0, 0.95, 0.8) * (sun_intensity + sun_glow + sun_corona);
+                     
+                     // Procedural clouds (only in upper hemisphere for performance)
+                     if (ray_dir.y > 0.05) {
+                         // Map ray direction to cloud texture coordinates
+                         let cloud_scale = 0.8;
+                         let cloud_pos = vec3(ray_dir.x / (ray_dir.y + 0.1), time * 0.02, ray_dir.z / (ray_dir.y + 0.1)) * cloud_scale;
+                         
+                         // Generate cloud density with multiple octaves
+                         var cloud_density = fbm(cloud_pos);
+                         
+                         // Add second layer of smaller clouds
+                         let cloud_detail = noise3d(cloud_pos * 3.0 + vec3(time * 0.05, 0.0, 0.0)) * 0.3;
+                         cloud_density = cloud_density * 0.7 + cloud_detail;
+                         
+                         // Sharpen clouds (make them more defined)
+                         cloud_density = smoothstep(0.4, 0.7, cloud_density);
+                         
+                         // Cloud color influenced by sun
+                         let cloud_sun_dot = dot(normalize(vec3(ray_dir.x, 0.0, ray_dir.z)), normalize(vec3(sun_dir.x, 0.0, sun_dir.z)));
+                         let cloud_lighting = 0.7 + 0.3 * max(cloud_sun_dot, 0.0);
+                         
+                         let cloud_color = vec3(0.9, 0.92, 0.95) * cloud_lighting;
+                         
+                         // Fade clouds based on view angle (less visible when looking straight up or down)
+                         let cloud_fade = smoothstep(0.05, 0.3, ray_dir.y) * (1.0 - smoothstep(0.7, 0.95, ray_dir.y));
+                         cloud_density *= cloud_fade;
+                         
+                         // Blend clouds with sky
+                         sky_color = mix(sky_color, cloud_color, cloud_density * 0.8);
+                     }
+                     
+                     return sky_color;
+                 }
                  @vertex fn vs_main(@builtin(vertex_index) vi: u32) -> @builtin(position) vec4<f32> {
                      return vec4(vec2(f32(vi/2u)*4.0-1.0, f32(vi%2u)*4.0-1.0), 0.0, 1.0);
                  }
@@ -796,7 +1790,7 @@
                      let ray_dir = normalize(scene.camera_right*((fc.x/scene.canvas_actual_dims.x)-0.5)*2.0*aspect + scene.camera_up*((fc.y/scene.canvas_actual_dims.y)-0.5)*-2.0 + cam_fwd*scene.camera_zoom);
                      let t_bounds = intersect_aabb(scene.camera_position, ray_dir, vec3(0.0), vec3(f32(GRID_DIM)));
 
-                     var sky_color = mix(vec3(0.1, 0.1, 0.2), vec3(0.5, 0.7, 1.0), max(ray_dir.y * 0.5 + 0.5, 0.0));
+                     var sky_color = compute_sky_color(ray_dir, scene.sun_direction, f32(tool_info.frame_num));
                      var final_color = vec4(sky_color, 1.0);
 
                      var dda_hit_this_ray = false;
@@ -892,41 +1886,584 @@
                  }
              `;
 
-             const VOXEL_BUFFER_SIZE = NUM_VOXELS * 4;
-             const voxelBuffer = device.createBuffer({ size: VOXEL_BUFFER_SIZE, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST });
-             const generationUniformsBuffer = device.createBuffer({ size: 4, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
-             const renderPassUniformsBuffer = device.createBuffer({ size: 104, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
-             const computePassUniformsBuffer = device.createBuffer({ size: 144, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
-             const targetingOutputBuffer = device.createBuffer({ size: 32, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | GPUBufferUsage.COPY_SRC });
-             const lightsUniformBuffer = device.createBuffer({ size: 32 * NUM_LIGHTS + 16, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
 
-             const generationPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: generationShaderCode }), entryPoint: 'main' }});
-             const simulationPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: simulationShaderCode }), entryPoint: 'main' }});
-             const resetFlagsPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: resetFlagsShaderCode }), entryPoint: 'main' }});
-             const lightingPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: lightingShaderCode }), entryPoint: 'main' }});
-             const paintPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: paintShaderCode }), entryPoint: 'main' }});
-             const clearLooseVoxelsPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: clearLooseVoxelsShaderCode }), entryPoint: 'main' }});
-             const targetingPipeline = device.createComputePipeline({ layout: 'auto', compute: { module: device.createShaderModule({ code: targetingShaderCode }), entryPoint: 'main' }});
-             let renderPipeline = device.createRenderPipeline({
-                 layout: 'auto',
-                 vertex: { module: device.createShaderModule({ code: renderShaderCode }), entryPoint: 'vs_main' },
-                 fragment: { module: device.createShaderModule({ code: renderShaderCode }), entryPoint: 'fs_main', targets: [{ format: presentationFormat,
-                     blend: {
-                         color: { srcFactor: 'src-alpha', dstFactor: 'one-minus-src-alpha', operation: 'add' },
-                         alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha', operation: 'add' }
-                     }
-                  }] },
-                 primitive: { topology: 'triangle-list' },
+            // 🎯 目标定位着色器代码 | Targeting shader code
+            // 用途: 从鼠标位置发射光线，找到体素网格的交点 | Purpose: Cast ray from mouse position to find voxel grid intersection
+            const targetingShaderCode = `
+                ${commonShaderCode}
+                @group(0) @binding(0) var<storage, read> voxels: array<VoxelData>;
+                @group(0) @binding(1) var<uniform> uniforms: ComputePassUniforms;
+                @group(0) @binding(2) var<storage, read_write> output: TargetingOutput;
+
+                // 🎯 主计算入口 | Main compute entry point
+                // 单线程执行：从鼠标位置发射光线，找到命中点 | Single thread: cast ray from mouse, find hit point
+                @compute @workgroup_size(1)
+                fn main() {
+                    // 📷 计算相机前向向量 | Calculate camera forward vector
+                    let cam_fwd = normalize(uniforms.camera_target_pos - uniforms.camera_position);
+                    
+                    // 📐 计算屏幕宽高比 | Calculate aspect ratio
+                    let aspect = uniforms.canvas_dims.x / uniforms.canvas_dims.y;
+                    
+                    // 🖱️ 将鼠标位置从屏幕空间转换到NDC空间 | Convert mouse position from screen to NDC space
+                    let ndc_x = (uniforms.mouse_pos.x / uniforms.canvas_dims.x - 0.5) * 2.0 * aspect;
+                    let ndc_y = (uniforms.mouse_pos.y / uniforms.canvas_dims.y - 0.5) * -2.0;
+                    
+                    // 🎯 构建光线方向 | Construct ray direction
+                    let ray_dir = normalize(
+                        uniforms.camera_right * ndc_x + 
+                        uniforms.camera_up * ndc_y + 
+                        cam_fwd * uniforms.camera_zoom
+                    );
+                    
+                    // 📦 计算光线与体素网格AABB的交点 | Calculate ray-AABB intersection with voxel grid
+                    let grid_min = vec3<f32>(0.0);
+                    let grid_max = vec3<f32>(f32(GRID_DIM));
+                    let t1 = (grid_min - uniforms.camera_position) / ray_dir;
+                    let t2 = (grid_max - uniforms.camera_position) / ray_dir;
+                    let t_min = max(max(min(t1.x, t2.x), min(t1.y, t2.y)), min(t1.z, t2.z));
+                    let t_max = min(min(max(t1.x, t2.x), max(t1.y, t2.y)), max(t1.z, t2.z));
+                    
+                    // 🔍 初始化输出 | Initialize output
+                    output.hit = 0u;
+                    output.aim_pos = vec4<f32>(0.0);
+                    
+                    // 🚫 如果光线没有击中网格边界，直接返回 | Return if ray doesn't hit grid bounds
+                    if (t_min >= t_max || t_max <= 0.0) {
+                        return;
+                    }
+                    
+                    // 🎲 DDA光线追踪算法 | DDA ray marching algorithm
+                    // 从光线与网格的交点开始 | Start from ray-grid intersection
+                    var dda_pos = uniforms.camera_position + ray_dir * (max(0.0, t_min) + 0.001);
+                    var map_pos = vec3<i32>(floor(dda_pos));
+                    
+                    // 📏 计算DDA步进参数 | Calculate DDA stepping parameters
+                    let step = vec3<i32>(sign(ray_dir));
+                    let delta = abs(1.0 / (ray_dir + vec3<f32>(1e-6)));
+                    var side = (vec3<f32>(step) * (vec3<f32>(map_pos) - dda_pos) + (vec3<f32>(step) * 0.5 + 0.5)) * delta;
+                    
+                    // 🔄 光线步进循环 | Ray stepping loop
+                    for (var i = 0u; i < uniforms.max_ray_steps_compute; i = i + 1u) {
+                        // 计算法线（用于确定击中面） | Calculate normal (to determine hit face)
+                        var normal: vec3<f32>;
+                        
+                        // 🪜 沿最近的轴步进 | Step along the closest axis
+                        if (side.x < side.y && side.x < side.z) {
+                            side.x += delta.x;
+                            map_pos.x += step.x;
+                            normal = vec3<f32>(-f32(step.x), 0.0, 0.0);
+                        } else if (side.y < side.z) {
+                            side.y += delta.y;
+                            map_pos.y += step.y;
+                            normal = vec3<f32>(0.0, -f32(step.y), 0.0);
+                        } else {
+                            side.z += delta.z;
+                            map_pos.z += step.z;
+                            normal = vec3<f32>(0.0, 0.0, -f32(step.z));
+                        }
+                        
+                        // 🔍 检查是否在网格范围内 | Check if within grid bounds
+                        let idx = pos_to_idx_i32(map_pos);
+                        if (idx != 0xFFFFFFFFu) {
+                            // 📦 读取体素数据 | Read voxel data
+                            let voxel_data = atomicLoad(&voxels[idx].data);
+                            let voxel_type = getVoxelType(voxel_data);
+                            
+                            // 💥 检测击中 | Check for hit
+                            if (voxel_type != VOXEL_TYPE_AIR) {
+                                // 🎯 计算击中位置 | Calculate hit position
+                                var hit_pos = vec3<f32>(map_pos) + vec3<f32>(0.5);
+                                
+                                // 🔧 根据用户设置调整目标位置 | Adjust target position based on user settings
+                                // 如果设置为目标远端面，向外偏移半个体素；否则向内偏移
+                                // If set to target far face, offset outward by half voxel; otherwise offset inward
+                                if (uniforms.target_far_face_on_air_hit == 1u) {
+                                    hit_pos += normal * 0.5;
+                                } else {
+                                    hit_pos -= normal * 0.5;
+                                }
+                                
+                                // ✅ 记录击中 | Record hit
+                                output.hit = 1u;
+                                output.aim_pos = vec4<f32>(hit_pos, 1.0);
+                                return;
+                            }
+                        } else {
+                            // 🚫 超出边界，停止追踪 | Out of bounds, stop tracing
+                            break;
+                        }
+                    }
+                }
+            `;
+             // ==================================================
+             // 📦 GPU缓冲区创建 | GPU Buffer Creation
+             // ==================================================
+             // 缓冲区(Buffer)是GPU内存中的数据块 | Buffers are data blocks in GPU memory
+             // 它们用于在CPU和GPU之间传递数据 | They're used to pass data between CPU and GPU
+             
+             // 📏 计算体素缓冲区大小 | Calculate voxel buffer size
+             // 每个体素4字节(32位) | Each voxel is 4 bytes (32 bits)
+             const VOXEL_BUFFER_SIZE = NUM_VOXELS * 4;
+             
+             // 🧱 体素缓冲区：存储所有体素数据 | Voxel buffer: stores all voxel data
+             // 用途: STORAGE(计算着色器读写) | COPY_SRC/DST(可以复制)
+             // Usage: STORAGE (compute shader read/write) | COPY_SRC/DST (can be copied)
+             const voxelBuffer = device.createBuffer({ 
+                 size: VOXEL_BUFFER_SIZE,  // 缓冲区大小(字节) | Buffer size in bytes
+                 usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST 
+             });
+             
+             // 🌍 世界生成参数缓冲区 | World generation parameters buffer
+             // 只存储一个u32值：地形类型 | Stores only one u32 value: terrain type
+             const generationUniformsBuffer = device.createBuffer({ 
+                 size: 4,  // 4字节 = 1个u32 | 4 bytes = 1 u32
+                 usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST 
+             });
+             
+             // 📷 渲染通道统一缓冲区 | Render pass uniform buffer
+             // 存储相机位置、方向、太阳方向等渲染参数 | Stores camera position, direction, sun direction, etc.
+             const renderPassUniformsBuffer = device.createBuffer({ 
+                 size: 104,  // 26个float(每个4字节) = 104字节 | 26 floats (4 bytes each) = 104 bytes
+                 usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST 
+             });
+             
+             // 🖥️ 计算通道统一缓冲区 | Compute pass uniform buffer
+             // 存储物理模拟和工具交互所需的参数 | Stores parameters for physics simulation and tool interaction
+             const computePassUniformsBuffer = device.createBuffer({ 
+                 size: 144,  // 36个float/uint = 144字节 | 36 floats/uints = 144 bytes
+                 usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST 
+             });
+             
+             // 🎯 目标输出缓冲区 | Targeting output buffer
+             // 存储光线追踪找到的目标位置 | Stores target position found by ray tracing
+             const targetingOutputBuffer = device.createBuffer({ 
+                 size: 32,  // vec4<f32> + u32 + 填充 | vec4<f32> + u32 + padding
+                 usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | GPUBufferUsage.COPY_SRC 
+             });
+             
+             // 🧍 玩家位置输出缓冲区 | Player position output buffer
+             // 存储GPU找到的玩家体素位置 | Stores player voxel position found by GPU
+             
+             // 💡 光源统一缓冲区 | Lights uniform buffer
+             // 存储所有动态点光源的数据 | Stores data for all dynamic point lights
+             const lightsUniformBuffer = device.createBuffer({ 
+                 size: 32 * NUM_LIGHTS + 16,  // 每个光源32字节 + 16字节元数据 | 32 bytes per light + 16 bytes metadata
+                 usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST 
              });
 
-             const generationBindGroup = device.createBindGroup({ layout: generationPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }, { binding: 1, resource: { buffer: generationUniformsBuffer } } ]});
-             const simulationBindGroup = device.createBindGroup({ layout: simulationPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }, { binding: 1, resource: { buffer: computePassUniformsBuffer } }]});
-             const resetFlagsBindGroup = device.createBindGroup({ layout: resetFlagsPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }]});
-             const lightBindGroup = device.createBindGroup({ layout: lightingPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }, { binding: 1, resource: { buffer: lightsUniformBuffer } }]});
-             const paintBindGroup = device.createBindGroup({ layout: paintPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }, { binding: 1, resource: { buffer: computePassUniformsBuffer } }, { binding: 2, resource: { buffer: targetingOutputBuffer } }]});
-             const clearLooseBindGroup = device.createBindGroup({ layout: clearLooseVoxelsPipeline.getBindGroupLayout(0), entries: [{ binding: 0, resource: { buffer: voxelBuffer } }]});
-             const targetingBindGroup = device.createBindGroup({ layout: targetingPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }, { binding: 1, resource: { buffer: computePassUniformsBuffer } }, { binding: 2, resource: { buffer: targetingOutputBuffer } }]});
-             const renderBindGroup = device.createBindGroup({ layout: renderPipeline.getBindGroupLayout(0), entries: [ { binding: 0, resource: { buffer: voxelBuffer } }, { binding: 1, resource: { buffer: renderPassUniformsBuffer } }, { binding: 2, resource: { buffer: computePassUniformsBuffer } }, { binding: 3, resource: { buffer: targetingOutputBuffer } } ]});
+             // ==================================================
+             // 🔧 GPU管线创建 | GPU Pipeline Creation
+             // ==================================================
+             // 管线(Pipeline)定义了GPU如何处理数据 | Pipelines define how GPU processes data
+             // 每个管线包含着色器代码和配置 | Each pipeline contains shader code and configuration
+             
+             // 🌍 世界生成管线 | World generation pipeline
+             // 用途: 初始化体素网格，生成地形或平坦世界 | Purpose: Initialize voxel grid, generate terrain or flat world
+             const generationPipeline = device.createComputePipeline({ 
+                 layout: 'auto',  // 自动推断布局 | Auto-infer layout
+                 compute: { 
+                     module: device.createShaderModule({ code: generationShaderCode }),  // 编译着色器代码 | Compile shader code
+                     entryPoint: 'main'  // 入口函数名 | Entry function name
+                 }
+             });
+             
+             // ⚡ 物理模拟管线 | Physics simulation pipeline
+             // 用途: 模拟沙子下落、水流动等物理效果 | Purpose: Simulate sand falling, water flowing, etc.
+             const simulationPipeline = device.createComputePipeline({ 
+                 layout: 'auto', 
+                 compute: { 
+                     module: device.createShaderModule({ code: simulationShaderCode }), 
+                     entryPoint: 'main' 
+                 }
+             });
+             
+             // 🔄 重置标志管线 | Reset flags pipeline
+             // 用途: 清除每帧的"已更新"标志，准备下一帧物理模拟 | Purpose: Clear "updated" flags each frame for next physics step
+             const resetFlagsPipeline = device.createComputePipeline({ 
+                 layout: 'auto', 
+                 compute: { 
+                     module: device.createShaderModule({ code: resetFlagsShaderCode }), 
+                     entryPoint: 'main' 
+                 }
+             });
+             
+             // 💡 光照计算管线 | Lighting calculation pipeline
+             // 用途: 计算动态点光源对体素的照明 | Purpose: Calculate dynamic point light illumination on voxels
+             const lightingPipeline = device.createComputePipeline({ 
+                 layout: 'auto', 
+                 compute: { 
+                     module: device.createShaderModule({ code: lightingShaderCode }), 
+                     entryPoint: 'main' 
+                 }
+             });
+             
+             // 🖌️ 绘制工具管线 | Paint tool pipeline
+             // 用途: 应用用户的绘制操作(添加/删除体素) | Purpose: Apply user's painting operations (add/remove voxels)
+             const paintPipeline = device.createComputePipeline({ 
+                 layout: 'auto', 
+                 compute: { 
+                     module: device.createShaderModule({ code: paintShaderCode }), 
+                     entryPoint: 'main' 
+                 }
+             });
+             
+             // 🧹 清除松散体素管线 | Clear loose voxels pipeline
+             // 用途: 移除所有沙子和水，只保留石头 | Purpose: Remove all sand and water, keep only stone
+             const clearLooseVoxelsPipeline = device.createComputePipeline({ 
+                 layout: 'auto', 
+                 compute: { 
+                     module: device.createShaderModule({ code: clearLooseVoxelsShaderCode }), 
+                     entryPoint: 'main' 
+                 }
+             });
+             
+             // 🎯 目标定位管线 | Targeting pipeline
+             // 用途: GPU光线追踪找到鼠标指向的3D位置 | Purpose: GPU ray tracing to find 3D position under mouse cursor
+             const targetingPipeline = device.createComputePipeline({ 
+                 layout: 'auto', 
+                 compute: { 
+                     module: device.createShaderModule({ code: targetingShaderCode }), 
+                     entryPoint: 'main' 
+                 }
+             });
+             
+             
+             // 🎨 渲染管线 | Render pipeline
+             // 用途: 将3D体素世界渲染到2D屏幕 | Purpose: Render 3D voxel world to 2D screen
+             // 这是唯一的渲染管线，其他都是计算管线 | This is the only render pipeline, others are compute pipelines
+             let renderPipeline = device.createRenderPipeline({
+                 layout: 'auto',
+                 vertex: { 
+                     module: device.createShaderModule({ code: renderShaderCode }), 
+                     entryPoint: 'vs_main'  // 顶点着色器入口 | Vertex shader entry
+                 },
+                 fragment: { 
+                     module: device.createShaderModule({ code: renderShaderCode }), 
+                     entryPoint: 'fs_main',  // 片段着色器入口 | Fragment shader entry
+                     targets: [{ 
+                         format: presentationFormat,  // 输出格式 | Output format
+                         // 混合模式: 支持透明度 | Blend mode: supports transparency
+                         blend: {
+                             color: { srcFactor: 'src-alpha', dstFactor: 'one-minus-src-alpha', operation: 'add' },
+                             alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha', operation: 'add' }
+                         }
+                      }] 
+                 },
+                 primitive: { topology: 'triangle-list' },  // 绘制三角形 | Draw triangles
+             });
+
+             // ==================================================
+             // 🔗 绑定组创建 | Bind Group Creation
+             // ==================================================
+             // 绑定组(Bind Group)将缓冲区绑定到着色器 | Bind groups connect buffers to shaders
+             // 每个管线需要知道从哪里读取数据，绑定组提供这个映射 | Each pipeline needs to know where to read data, bind groups provide this mapping
+             
+             // 🌍 世界生成绑定组 | World generation bind group
+             // 绑定: 体素缓冲区(读写) + 生成参数(只读) | Binds: voxel buffer (read/write) + generation params (read-only)
+             const generationBindGroup = device.createBindGroup({ 
+                 layout: generationPipeline.getBindGroupLayout(0),  // 从管线获取布局 | Get layout from pipeline
+                 entries: [ 
+                     { binding: 0, resource: { buffer: voxelBuffer } },           // @binding(0): 体素数据 | voxel data
+                     { binding: 1, resource: { buffer: generationUniformsBuffer } } // @binding(1): 生成参数 | generation params
+                 ]
+             });
+             
+             // ⚡ 物理模拟绑定组 | Physics simulation bind group
+             // 绑定: 体素缓冲区(读写) + 计算参数(只读) | Binds: voxel buffer (read/write) + compute params (read-only)
+             const simulationBindGroup = device.createBindGroup({ 
+                 layout: simulationPipeline.getBindGroupLayout(0), 
+                 entries: [ 
+                     { binding: 0, resource: { buffer: voxelBuffer } }, 
+                     { binding: 1, resource: { buffer: computePassUniformsBuffer } }
+                 ]
+             });
+             
+             // 🔄 重置标志绑定组 | Reset flags bind group
+             // 只需要体素缓冲区 | Only needs voxel buffer
+             const resetFlagsBindGroup = device.createBindGroup({ 
+                 layout: resetFlagsPipeline.getBindGroupLayout(0), 
+                 entries: [ 
+                     { binding: 0, resource: { buffer: voxelBuffer } }
+                 ]
+             });
+             
+             // 💡 光照计算绑定组 | Lighting calculation bind group
+             // 绑定: 体素缓冲区(读写) + 光源数据(只读) | Binds: voxel buffer (read/write) + light data (read-only)
+             const lightBindGroup = device.createBindGroup({ 
+                 layout: lightingPipeline.getBindGroupLayout(0), 
+                 entries: [ 
+                     { binding: 0, resource: { buffer: voxelBuffer } }, 
+                     { binding: 1, resource: { buffer: lightsUniformBuffer } }
+                 ]
+             });
+             
+             // 🖌️ 绘制工具绑定组 | Paint tool bind group
+             // 绑定: 体素缓冲区(读写) + 工具参数(只读) + 目标位置(只读) | Binds: voxel buffer + tool params + target position
+             const paintBindGroup = device.createBindGroup({ 
+                 layout: paintPipeline.getBindGroupLayout(0), 
+                 entries: [ 
+                     { binding: 0, resource: { buffer: voxelBuffer } }, 
+                     { binding: 1, resource: { buffer: computePassUniformsBuffer } }, 
+                     { binding: 2, resource: { buffer: targetingOutputBuffer } }
+                 ]
+             });
+             
+             // 🧹 清除松散体素绑定组 | Clear loose voxels bind group
+             const clearLooseBindGroup = device.createBindGroup({ 
+                 layout: clearLooseVoxelsPipeline.getBindGroupLayout(0), 
+                 entries: [
+                     { binding: 0, resource: { buffer: voxelBuffer } }
+                 ]
+             });
+             
+             // 🎯 目标定位绑定组 | Targeting bind group
+             // 绑定: 体素缓冲区(只读) + 计算参数(只读) + 输出缓冲区(写入) | Binds: voxel buffer + compute params + output buffer
+             const targetingBindGroup = device.createBindGroup({ 
+                 layout: targetingPipeline.getBindGroupLayout(0), 
+                 entries: [ 
+                     { binding: 0, resource: { buffer: voxelBuffer } }, 
+                     { binding: 1, resource: { buffer: computePassUniformsBuffer } }, 
+                     { binding: 2, resource: { buffer: targetingOutputBuffer } }
+                 ]
+             });
+             
+             
+             // 🎨 渲染绑定组 | Render bind group
+             // 绑定: 体素缓冲区(只读) + 渲染参数(只读) + 工具参数(只读) + 目标位置(只读)
+             // Binds: voxel buffer + render params + tool params + target position
+             const renderBindGroup = device.createBindGroup({ 
+                 layout: renderPipeline.getBindGroupLayout(0), 
+                 entries: [ 
+                     { binding: 0, resource: { buffer: voxelBuffer } }, 
+                     { binding: 1, resource: { buffer: renderPassUniformsBuffer } }, 
+                     { binding: 2, resource: { buffer: computePassUniformsBuffer } }, 
+                     { binding: 3, resource: { buffer: targetingOutputBuffer } } 
+                 ]
+             });
+
+            // ==================================================
+            // 🎯 CPU-Based Player Physics and Collision | CPU玩家物理和碰撞
+            // ==================================================
+            
+            // Helper to read voxel from GPU buffer (CPU side, async - only for debugging)
+            // We'll use a synchronous approach by maintaining a CPU shadow copy during generation
+            let voxelShadow = null; // Will store voxel data for CPU collision checks
+            
+            /**
+             * Check if a voxel position is solid (blocks movement)
+             * @param {number} x - Voxel X coordinate
+             * @param {number} y - Voxel Y coordinate
+             * @param {number} z - Voxel Z coordinate
+             * @returns {boolean} - True if solid
+             */
+            function isVoxelSolid(x, y, z) {
+                // Clamp to grid bounds
+                if (x < 0 || x >= VOXEL_GRID_SIZE || y < 0 || y >= VOXEL_GRID_SIZE || z < 0 || z >= VOXEL_GRID_SIZE) {
+                    return true; // Out of bounds is solid
+                }
+                
+                const vx = Math.floor(x);
+                const vy = Math.floor(y);
+                const vz = Math.floor(z);
+                
+                // Calculate voxel index
+                const idx = vx + vy * VOXEL_GRID_SIZE + vz * VOXEL_GRID_SIZE * VOXEL_GRID_SIZE;
+                
+                // Read from shadow buffer if available
+                if (voxelShadow && idx < voxelShadow.length) {
+                    const voxelData = voxelShadow[idx];
+                    const voxelType = voxelData & 0x7; // Extract type from bits 0-2
+                    // Types: 0=AIR, 1=STONE, 2=SAND, 3=WATER, 4=PLAYER
+                    // Solid types: STONE (1), SAND (2)
+                    return voxelType === 1 || voxelType === 2;
+                }
+                
+                // Default to not solid if no shadow buffer (shouldn't happen)
+                return false;
+            }
+            
+            /**
+             * Check if AABB collides with any solid voxels
+             * @param {number} minX - Min X of bounding box
+             * @param {number} minY - Min Y of bounding box
+             * @param {number} minZ - Min Z of bounding box
+             * @param {number} maxX - Max X of bounding box
+             * @param {number} maxY - Max Y of bounding box
+             * @param {number} maxZ - Max Z of bounding box
+             * @returns {boolean} - True if collision detected
+             */
+            function checkAABBCollision(minX, minY, minZ, maxX, maxY, maxZ) {
+                // Check all voxels that the AABB overlaps
+                const startX = Math.floor(minX);
+                const startY = Math.floor(minY);
+                const startZ = Math.floor(minZ);
+                const endX = Math.floor(maxX);
+                const endY = Math.floor(maxY);
+                const endZ = Math.floor(maxZ);
+                
+                for (let x = startX; x <= endX; x++) {
+                    for (let y = startY; y <= endY; y++) {
+                        for (let z = startZ; z <= endZ; z++) {
+                            if (isVoxelSolid(x, y, z)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                
+                return false;
+            }
+            
+            /**
+             * Update player physics and movement (Minecraft-style)
+             * @param {number} deltaTime - Time since last frame in seconds
+             */
+            function updatePlayerPhysics(deltaTime) {
+                if (cameraMode !== 'firstperson') return;
+                
+                // Clamp deltaTime to prevent huge jumps (max 0.1s = 10 FPS minimum)
+                deltaTime = Math.min(deltaTime, 0.1);
+                
+                // ==== Input Processing ====
+                // Calculate desired movement direction from WASD keys
+                let moveX = 0, moveZ = 0;
+                if (keyState.w) { moveX += Math.cos(player.yaw); moveZ += Math.sin(player.yaw); }
+                if (keyState.s) { moveX -= Math.cos(player.yaw); moveZ -= Math.sin(player.yaw); }
+                if (keyState.a) { moveX -= Math.sin(player.yaw); moveZ += Math.cos(player.yaw); }
+                if (keyState.d) { moveX += Math.sin(player.yaw); moveZ -= Math.cos(player.yaw); }
+                
+                // Normalize input to prevent faster diagonal movement
+                const inputMagnitude = Math.sqrt(moveX * moveX + moveZ * moveZ);
+                if (inputMagnitude > 0) {
+                    moveX /= inputMagnitude;
+                    moveZ /= inputMagnitude;
+                }
+                
+                // ==== Ground Detection ====
+                // Check if player is on ground by testing slightly below feet
+                const feetY = player.position[1];
+                const halfWidth = player.width / 2;
+                player.isGrounded = checkAABBCollision(
+                    player.position[0] - halfWidth,
+                    feetY - 0.1,
+                    player.position[2] - halfWidth,
+                    player.position[0] + halfWidth,
+                    feetY,
+                    player.position[2] + halfWidth
+                );
+                
+                // ==== Horizontal Movement ====
+                const targetSpeed = player.walkSpeed;
+                const targetVelX = moveX * targetSpeed;
+                const targetVelZ = moveZ * targetSpeed;
+                
+                if (player.isGrounded) {
+                    // Ground movement: fast acceleration and friction
+                    const accel = player.groundAcceleration * deltaTime;
+                    const friction = player.groundFriction * deltaTime;
+                    
+                    // Accelerate towards target velocity
+                    player.velocity[0] += (targetVelX - player.velocity[0]) * Math.min(accel, 1.0);
+                    player.velocity[2] += (targetVelZ - player.velocity[2]) * Math.min(accel, 1.0);
+                    
+                    // Apply friction when not pressing any movement keys
+                    if (inputMagnitude === 0) {
+                        player.velocity[0] *= Math.max(0, 1 - friction);
+                        player.velocity[2] *= Math.max(0, 1 - friction);
+                    }
+                } else {
+                    // Air movement: limited control
+                    const airAccel = player.airAcceleration * deltaTime;
+                    player.velocity[0] += (targetVelX - player.velocity[0]) * Math.min(airAccel, 1.0);
+                    player.velocity[2] += (targetVelZ - player.velocity[2]) * Math.min(airAccel, 1.0);
+                }
+                
+                // ==== Jumping ====
+                if (keyState.space && player.isGrounded) {
+                    player.velocity[1] = player.jumpVelocity;
+                    player.isGrounded = false; // Prevent double jumping
+                }
+                
+                // ==== Gravity ====
+                if (!player.isGrounded) {
+                    player.velocity[1] -= player.gravity * deltaTime;
+                    // Terminal velocity (prevent infinite falling speed)
+                    player.velocity[1] = Math.max(player.velocity[1], -78.4); // Minecraft terminal velocity
+                }
+                
+                // ==== Collision Detection and Position Update ====
+                const newHalfWidth = player.width / 2;
+                
+                // Move X axis with collision
+                let newX = player.position[0] + player.velocity[0] * deltaTime;
+                if (!checkAABBCollision(
+                    newX - newHalfWidth, player.position[1], player.position[2] - newHalfWidth,
+                    newX + newHalfWidth, player.position[1] + player.height, player.position[2] + newHalfWidth
+                )) {
+                    player.position[0] = newX;
+                } else {
+                    player.velocity[0] = 0; // Stop horizontal movement on collision
+                }
+                
+                // Move Z axis with collision
+                let newZ = player.position[2] + player.velocity[2] * deltaTime;
+                if (!checkAABBCollision(
+                    player.position[0] - newHalfWidth, player.position[1], newZ - newHalfWidth,
+                    player.position[0] + newHalfWidth, player.position[1] + player.height, newZ + newHalfWidth
+                )) {
+                    player.position[2] = newZ;
+                } else {
+                    player.velocity[2] = 0; // Stop horizontal movement on collision
+                }
+                
+                // Move Y axis with collision
+                let newY = player.position[1] + player.velocity[1] * deltaTime;
+                if (!checkAABBCollision(
+                    player.position[0] - newHalfWidth, newY, player.position[2] - newHalfWidth,
+                    player.position[0] + newHalfWidth, newY + player.height, player.position[2] + newHalfWidth
+                )) {
+                    player.position[1] = newY;
+                } else {
+                    // Hit ceiling or floor
+                    if (player.velocity[1] < 0) {
+                        // Hit floor, snap to ground
+                        player.position[1] = Math.floor(player.position[1] + 0.001);
+                        player.isGrounded = true;
+                    }
+                    player.velocity[1] = 0;
+                }
+                
+                // ==== Step Climbing ====
+                // If blocked horizontally and on ground, try to step up
+                if ((player.velocity[0] !== 0 || player.velocity[2] !== 0) && player.isGrounded) {
+                    for (let stepUp = 0.1; stepUp <= player.stepHeight; stepUp += 0.1) {
+                        const testY = player.position[1] + stepUp;
+                        // Check if we can move horizontally at this height
+                        const canStepX = !checkAABBCollision(
+                            newX - newHalfWidth, testY, player.position[2] - newHalfWidth,
+                            newX + newHalfWidth, testY + player.height, player.position[2] + newHalfWidth
+                        );
+                        const canStepZ = !checkAABBCollision(
+                            player.position[0] - newHalfWidth, testY, newZ - newHalfWidth,
+                            player.position[0] + newHalfWidth, testY + player.height, newZ + newHalfWidth
+                        );
+                        if (canStepX || canStepZ) {
+                            // Step up!
+                            player.position[1] = testY;
+                            if (canStepX) player.position[0] = newX;
+                            if (canStepZ) player.position[2] = newZ;
+                            break;
+                        }
+                    }
+                }
+                
+                // ==== Boundary Clamping ====
+                // Prevent player from going out of world bounds
+                player.position[0] = Math.max(newHalfWidth, Math.min(VOXEL_GRID_SIZE - newHalfWidth, player.position[0]));
+                player.position[1] = Math.max(0, Math.min(VOXEL_GRID_SIZE - player.height, player.position[1]));
+                player.position[2] = Math.max(newHalfWidth, Math.min(VOXEL_GRID_SIZE - newHalfWidth, player.position[2]));
+            }
 
              function resizeCanvasAndContext() {
                  const newScale = parseFloat(document.getElementById('resolutionScale').value);
@@ -952,6 +2489,33 @@
                  genPass.end();
                  device.queue.submit([commandEncoder.finish()]);
                  frameCount = 0;
+                 
+                 // Create shadow copy of voxel buffer for CPU collision detection
+                 // This needs to be done async after generation completes
+                 createVoxelShadow();
+             }
+             
+             // Helper function to create CPU shadow copy of voxel buffer
+             async function createVoxelShadow() {
+                 // Create a staging buffer for reading back voxel data
+                 const stagingBuffer = device.createBuffer({
+                     size: VOXEL_BUFFER_SIZE,
+                     usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST
+                 });
+                 
+                 // Copy voxel buffer to staging buffer
+                 const commandEncoder = device.createCommandEncoder();
+                 commandEncoder.copyBufferToBuffer(voxelBuffer, 0, stagingBuffer, 0, VOXEL_BUFFER_SIZE);
+                 device.queue.submit([commandEncoder.finish()]);
+                 
+                 // Read back the data
+                 await stagingBuffer.mapAsync(GPUMapMode.READ);
+                 const arrayBuffer = stagingBuffer.getMappedRange();
+                 voxelShadow = new Uint32Array(arrayBuffer).slice(); // Copy the data
+                 stagingBuffer.unmap();
+                 stagingBuffer.destroy();
+                 
+                 console.log('Voxel shadow buffer created for collision detection');
              }
 
              runGeneration();
@@ -995,6 +2559,29 @@
              document.getElementById('targetFarFaceToggle').addEventListener('change', (e) => { uiControls.targetFarFaceOnAirHit = e.target.checked; });
              document.getElementById('resolutionScale').addEventListener('change', resizeCanvasAndContext);
 
+             // Camera mode switching
+             document.getElementById('cameraModeOrbital').addEventListener('click', () => {
+                cameraMode = 'orbital';
+                document.getElementById('cameraModeOrbital').classList.add('active');
+                document.getElementById('cameraModeFirstPerson').classList.remove('active');
+                document.getElementById('firstPersonHUD').style.display = 'none';
+                document.getElementById('orbitalInstructions').style.display = 'inline';
+                document.getElementById('firstPersonInstructions').style.display = 'none';
+                canvas.style.cursor = 'crosshair';
+                if (document.pointerLockElement === canvas) {
+                   document.exitPointerLock();
+                }
+             });
+             document.getElementById('cameraModeFirstPerson').addEventListener('click', () => {
+                cameraMode = 'firstperson';
+                document.getElementById('cameraModeFirstPerson').classList.add('active');
+                document.getElementById('cameraModeOrbital').classList.remove('active');
+                document.getElementById('firstPersonHUD').style.display = 'block';
+                document.getElementById('orbitalInstructions').style.display = 'none';
+                document.getElementById('firstPersonInstructions').style.display = 'inline';
+                canvas.style.cursor = 'none';
+             });
+
              // Use the specific element references from the top for these two
              const localInfoToggleButton = document.getElementById('infoToggleButton'); // This one is already setup at the top
              const localDescriptionArea = document.getElementById('descriptionArea'); // This one is already setup at the top
@@ -1005,19 +2592,57 @@
              canvas.addEventListener('contextmenu', e => {e.preventDefault(); hideInfoPanel(); });
              canvas.addEventListener('mouseenter', () => isPreviewVisible = true);
              canvas.addEventListener('mouseleave', () => isPreviewVisible = false);
-             window.addEventListener('keydown', (e) => { if (e.code === 'Space') spacebarDown = true; });
-             window.addEventListener('keyup', (e) => { if (e.code === 'Space') { spacebarDown = false; if (mouseState.isPanning && mouseState.buttons[0]) mouseState.isPanning = false; }});
+             
+             // Keyboard controls
+             window.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') spacebarDown = true;
+                if (cameraMode === 'firstperson') {
+                   if (e.code === 'KeyW') keyState.w = true;
+                   if (e.code === 'KeyA') keyState.a = true;
+                   if (e.code === 'KeyS') keyState.s = true;
+                   if (e.code === 'KeyD') keyState.d = true;
+                   if (e.code === 'Space') { keyState.space = true; e.preventDefault(); }
+                   // Shift is no longer used for movement in physics mode
+                   // if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') keyState.shift = true;
+                }
+             });
+             window.addEventListener('keyup', (e) => {
+                if (e.code === 'Space') { spacebarDown = false; if (mouseState.isPanning && mouseState.buttons[0]) mouseState.isPanning = false; }
+                if (cameraMode === 'firstperson') {
+                   if (e.code === 'KeyW') keyState.w = false;
+                   if (e.code === 'KeyA') keyState.a = false;
+                   if (e.code === 'KeyS') keyState.s = false;
+                   if (e.code === 'KeyD') keyState.d = false;
+                   if (e.code === 'Space') keyState.space = false;
+                   // Shift is no longer used for movement in physics mode
+                   // if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') keyState.shift = false;
+                }
+             });
              canvas.addEventListener('mousedown', (e) => {
                  hideInfoPanel();
                  mouseState.buttons[e.button] = true;
                  mouseState.lastX = e.clientX; mouseState.lastY = e.clientY;
-                 if (e.button === 0 && !spacebarDown) {
+                 
+                 // In first-person mode, request pointer lock on click
+                 if (cameraMode === 'firstperson' && document.pointerLockElement !== canvas) {
+                    canvas.requestPointerLock();
+                 }
+                 
+                 if (e.button === 0 && !spacebarDown && cameraMode === 'orbital') {
                      if (uiControls.continuousPaint) mouseState.isPainting = true;
                      else if (!mouseState.hasFiredSingleShot) { mouseState.isPainting = true; mouseState.hasFiredSingleShot = true; }
                      else { mouseState.isPainting = false; }
                  }
-                 mouseState.isOrbiting = (e.button === 2);
-                 mouseState.isPanning = (e.button === 1 || (spacebarDown && e.button === 0));
+                 
+                 // Paint in first-person mode
+                 if (e.button === 0 && cameraMode === 'firstperson') {
+                     if (uiControls.continuousPaint) mouseState.isPainting = true;
+                     else if (!mouseState.hasFiredSingleShot) { mouseState.isPainting = true; mouseState.hasFiredSingleShot = true; }
+                     else { mouseState.isPainting = false; }
+                 }
+                 
+                 mouseState.isOrbiting = (e.button === 2 && cameraMode === 'orbital');
+                 mouseState.isPanning = (cameraMode === 'orbital' && (e.button === 1 || (spacebarDown && e.button === 0)));
              });
              window.addEventListener('mouseup', (e) => {
                  mouseState.buttons[e.button] = false;
@@ -1026,19 +2651,33 @@
                  mouseState.isPanning = false;
              });
              window.addEventListener('mousemove', (e) => {
-                 const dx = e.clientX - mouseState.lastX; const dy = e.clientY - mouseState.lastY;
-                 const rect = canvas.getBoundingClientRect();
-                 mouseState.x = (e.clientX - rect.left); mouseState.y = (e.clientY - rect.top);
-                 if (mouseState.isOrbiting) {
-                     camera.alpha -= dx * 0.005;
-                     camera.beta = Math.max(-1.56, Math.min(1.56, camera.beta + dy * 0.005));
+                 if (cameraMode === 'firstperson' && document.pointerLockElement === canvas) {
+                    // First-person mouse look
+                    const sensitivity = 0.002;
+                    player.yaw -= e.movementX * sensitivity;
+                    player.pitch -= e.movementY * sensitivity;
+                    player.pitch = Math.max(-Math.PI / 2 + 0.01, Math.min(Math.PI / 2 - 0.01, player.pitch));
+                 } else if (cameraMode === 'orbital') {
+                    const dx = e.clientX - mouseState.lastX; const dy = e.clientY - mouseState.lastY;
+                    const rect = canvas.getBoundingClientRect();
+                    mouseState.x = (e.clientX - rect.left); mouseState.y = (e.clientY - rect.top);
+                    if (mouseState.isOrbiting) {
+                        camera.alpha -= dx * 0.005;
+                        camera.beta = Math.max(-1.56, Math.min(1.56, camera.beta + dy * 0.005));
+                    }
+                    else if (mouseState.isPanning) {
+                        camera.target[0] -= (currentRight[0]*dx - currentUp[0]*dy) * PAN_SENSITIVITY;
+                        camera.target[1] -= (currentRight[1]*dx - currentUp[1]*dy) * PAN_SENSITIVITY;
+                        camera.target[2] -= (currentRight[2]*dx - currentUp[2]*dy) * PAN_SENSITIVITY;
+                    }
+                    mouseState.lastX = e.clientX; mouseState.lastY = e.clientY;
                  }
-                 else if (mouseState.isPanning) {
-                     camera.target[0] -= (currentRight[0]*dx - currentUp[0]*dy) * PAN_SENSITIVITY;
-                     camera.target[1] -= (currentRight[1]*dx - currentUp[1]*dy) * PAN_SENSITIVITY;
-                     camera.target[2] -= (currentRight[2]*dx - currentUp[2]*dy) * PAN_SENSITIVITY;
+                 
+                 // Always update mouse position for cursor tracking (when not in pointer lock)
+                 if (document.pointerLockElement !== canvas) {
+                    const rect = canvas.getBoundingClientRect();
+                    mouseState.x = (e.clientX - rect.left); mouseState.y = (e.clientY - rect.top);
                  }
-                 mouseState.lastX = e.clientX; mouseState.lastY = e.clientY;
              });
              canvas.addEventListener('wheel', (e) => { e.preventDefault(); camera.radius=Math.max(10, Math.min(VOXEL_GRID_SIZE*5, camera.radius+e.deltaY*0.1)); }, {passive: false});
 
@@ -1052,114 +2691,213 @@
              }
              resizeCanvasAndContext();
 
+            // 🎮 Update first-person camera and player movement
+            // 更新第一人称相机和玩家移动 | Update first-person camera and player movement
+            // 相机绑定到玩家体素位置，键盘控制玩家体素移动 | Camera binds to player voxel position, keyboard controls player voxel movement
              let lastFrameTime = performance.now();
+             
+             // ==================================================
+             // 🎬 主渲染循环 | Main Render Loop
+             // ==================================================
+             // 这个函数每帧都会被调用(通常60次/秒) | This function is called every frame (typically 60 times/second)
+             // 它更新物理、光照、渲染整个场景 | It updates physics, lighting, and renders the entire scene
              async function frame() {
-                 currentCamX = camera.target[0] + camera.radius * Math.cos(camera.beta) * Math.sin(camera.alpha);
-                 currentCamY = camera.target[1] + camera.radius * Math.sin(camera.beta);
-                 currentCamZ = camera.target[2] + camera.radius * Math.cos(camera.beta) * Math.cos(camera.alpha);
-
-                 const fwd_un = [camera.target[0]-currentCamX, camera.target[1]-currentCamY, camera.target[2]-currentCamZ];
-                 let fwd_n_raw = Math.hypot(...fwd_un);
-                 let fwd_n_val = fwd_n_raw === 0 ? 1.0 : fwd_n_raw;
-                 currentForward = [fwd_un[0]/fwd_n_val, fwd_un[1]/fwd_n_val, fwd_un[2]/fwd_n_val];
-
-                 const wUp = [0,1,0];
-                 currentRight = [currentForward[1]*wUp[2]-currentForward[2]*wUp[1], currentForward[2]*wUp[0]-currentForward[0]*wUp[2], currentForward[0]*wUp[1]-currentForward[1]*wUp[0]];
-                 let r_n_raw = Math.hypot(...currentRight);
-                 let r_n_val = r_n_raw === 0 ? 1.0 : r_n_raw;
-                 currentRight = [currentRight[0]/r_n_val, currentRight[1]/r_n_val, currentRight[2]/r_n_val];
-
-                 currentUp = [currentRight[1]*currentForward[2]-currentRight[2]*currentForward[1], currentRight[2]*currentForward[0]-currentRight[0]*currentForward[2], currentRight[0]*currentForward[1]-currentRight[1]*currentForward[0]];
-                 let up_n_raw = Math.hypot(...currentUp);
-                 let up_n_val = up_n_raw === 0 ? 1.0 : up_n_raw;
-                 currentUp = [currentUp[0]/up_n_val, currentUp[1]/up_n_val, currentUp[2]/up_n_val];
-
-                 sunAngle += uiControls.sunSpeed * 0.2;
-                 const sunDirection = [Math.cos(sunAngle), 0.707, Math.sin(sunAngle)];
+                 // ⏱️ 计算帧时间差(deltaTime) | Calculate frame time delta (deltaTime)
                  const now = performance.now();
-                 const deltaTime = (now - lastFrameTime) / 1000.0;
+                 const deltaTime = (now - lastFrameTime) / 1000.0;  // 转换为秒 | Convert to seconds
+                 
+                 // 🎮 更新第一人称相机(如果在FPS模式) | Update first-person camera (if in FPS mode)
+                 updatePlayerPhysics(deltaTime);
+                 
+                 // 📷 根据相机模式计算相机位置和方向 | Calculate camera position and orientation based on mode
+                 if (cameraMode === 'firstperson') {
+                    // 第一人称模式: 直接使用位置和朝向 | First-person mode: use position and orientation directly
+                    currentCamX = player.position[0];
+                    currentCamY = player.position[1] + player.eyeHeight;
+                    currentCamZ = player.position[2];
+                    
+                    // 从yaw(水平)和pitch(垂直)角度计算前向量 | Calculate forward vector from yaw and pitch angles
+                    currentForward = [
+                       Math.cos(player.pitch) * Math.cos(player.yaw),
+                       Math.sin(player.pitch),
+                       Math.cos(player.pitch) * Math.sin(player.yaw)
+                    ];
+                    
+                    // 计算右向量(直接从yaw角度计算) | Calculate right vector (directly from yaw angle)
+                    currentRight = [
+                       Math.sin(player.yaw),
+                       0,
+                       -Math.cos(player.yaw)
+                    ];
+                    
+                    // 计算上向量(叉乘) | Calculate up vector (cross product)
+                    currentUp = [
+                       currentForward[1] * currentRight[2] - currentForward[2] * currentRight[1],
+                       currentForward[2] * currentRight[0] - currentForward[0] * currentRight[2],
+                       currentForward[0] * currentRight[1] - currentForward[1] * currentRight[0]
+                    ];
+                    // 归一化上向量 | Normalize up vector
+                    let up_n_raw = Math.hypot(...currentUp);
+                    let up_n_val = up_n_raw === 0 ? 1.0 : up_n_raw;
+                    currentUp = [currentUp[0]/up_n_val, currentUp[1]/up_n_val, currentUp[2]/up_n_val];
+                    
+                 } else {
+                    // 轨道相机模式: 围绕目标点旋转 | Orbital camera mode: rotate around target point
+                    // 使用球坐标转换为笛卡尔坐标 | Convert spherical coordinates to Cartesian
+                    currentCamX = camera.target[0] + camera.radius * Math.cos(camera.beta) * Math.sin(camera.alpha);
+                    currentCamY = camera.target[1] + camera.radius * Math.sin(camera.beta);
+                    currentCamZ = camera.target[2] + camera.radius * Math.cos(camera.beta) * Math.cos(camera.alpha);
+
+                    // 计算相机前向量(从相机指向目标) | Calculate camera forward (from camera to target)
+                    const fwd_un = [camera.target[0]-currentCamX, camera.target[1]-currentCamY, camera.target[2]-currentCamZ];
+                    let fwd_n_raw = Math.hypot(...fwd_un);
+                    let fwd_n_val = fwd_n_raw === 0 ? 1.0 : fwd_n_raw;
+                    currentForward = [fwd_un[0]/fwd_n_val, fwd_un[1]/fwd_n_val, fwd_un[2]/fwd_n_val];
+
+                    const wUp = [0,1,0];
+                    // 计算右向量 | Calculate right vector
+                    currentRight = [currentForward[1]*wUp[2]-currentForward[2]*wUp[1], currentForward[2]*wUp[0]-currentForward[0]*wUp[2], currentForward[0]*wUp[1]-currentForward[1]*wUp[0]];
+                    let r_n_raw = Math.hypot(...currentRight);
+                    let r_n_val = r_n_raw === 0 ? 1.0 : r_n_raw;
+                    currentRight = [currentRight[0]/r_n_val, currentRight[1]/r_n_val, currentRight[2]/r_n_val];
+
+                    // 计算上向量 | Calculate up vector
+                    currentUp = [currentRight[1]*currentForward[2]-currentRight[2]*currentForward[1], currentRight[2]*currentForward[0]-currentRight[0]*currentForward[2], currentRight[0]*currentForward[1]-currentRight[1]*currentForward[0]];
+                    let up_n_raw = Math.hypot(...currentUp);
+                    let up_n_val = up_n_raw === 0 ? 1.0 : up_n_raw;
+                    currentUp = [currentUp[0]/up_n_val, currentUp[1]/up_n_val, currentUp[2]/up_n_val];
+                 }
+
+                 // ☀️ 更新太阳角度(日夜循环) | Update sun angle (day/night cycle)
+                 // 🎨 可调参数: sunSpeed控制日夜循环速度 | Adjustable: sunSpeed controls day/night cycle speed
+                 sunAngle += uiControls.sunSpeed * 0.2;
+                 // 从角度计算太阳方向向量 | Calculate sun direction vector from angle
+                 const sunDirection = [Math.cos(sunAngle), 0.707, Math.sin(sunAngle)];
+                 
+                 // 计算相机目标位置 | Calculate camera target position
+                 const cameraTarget = cameraMode === 'firstperson' 
+                    ? [currentCamX + currentForward[0], currentCamY + currentForward[1], currentCamZ + currentForward[2]]
+                    : camera.target;
+                 
+                 // 💡 更新动态光源位置 | Update dynamic light positions
                  const lightData = new Float32Array(8 * NUM_LIGHTS);
                  for(let i = 0; i < NUM_LIGHTS; i++) {
+                     // 光源向下移动 | Lights move downward
                      lights[i].position[1] += lights[i].velocity * deltaTime;
+                     // 如果光源落到底部，重置到顶部 | If light falls below bottom, reset to top
                      if (lights[i].position[1] < -lights[i].radius) {
                          lights[i].position[0] = Math.random() * VOXEL_GRID_SIZE;
                          lights[i].position[1] = VOXEL_GRID_SIZE + lights[i].radius;
                          lights[i].position[2] = Math.random() * VOXEL_GRID_SIZE;
                      }
+                     // 将光源数据写入Float32Array | Write light data to Float32Array
                      const offset = i * 8;
-                     lightData.set(lights[i].position, offset); lightData[offset + 3] = lights[i].radius;
-                     lightData.set(lights[i].color, offset + 4); lightData[offset + 7] = 1.0;
+                     lightData.set(lights[i].position, offset); 
+                     lightData[offset + 3] = lights[i].radius;
+                     lightData.set(lights[i].color, offset + 4); 
+                     lightData[offset + 7] = 1.0;  // 强度 | Intensity
                  }
+                 // 📤 上传光源数据到GPU | Upload light data to GPU
                  device.queue.writeBuffer(lightsUniformBuffer, 0, lightData.buffer);
                  device.queue.writeBuffer(lightsUniformBuffer, 32 * NUM_LIGHTS, new Uint32Array([NUM_LIGHTS]));
 
+                 // 📷 准备渲染参数并上传到GPU | Prepare render parameters and upload to GPU
                  const renderUBO = new Float32Array(renderPassUniformsBuffer.size/4);
                  const renderUBOInt = new Uint32Array(renderUBO.buffer);
-                 renderUBO.set([currentCamX,currentCamY,currentCamZ], 0); renderUBO.set([2.0], 3); renderUBO.set(currentRight, 4); renderUBO.set(currentUp, 8);
-                 renderUBO.set(camera.target, 12); renderUBO.set(sunDirection, 16); renderUBO.set([canvas.width,canvas.height], 20);
-                 renderUBOInt[22] = uiControls.maxRaySteps;
+                 renderUBO.set([currentCamX,currentCamY,currentCamZ], 0); 
+                 renderUBO.set([2.0], 3);  // FOV/zoom
+                 renderUBO.set(currentRight, 4); 
+                 renderUBO.set(currentUp, 8);
+                 renderUBO.set(cameraTarget, 12); 
+                 renderUBO.set(sunDirection, 16); 
+                 renderUBO.set([canvas.width,canvas.height], 20);
+                 renderUBOInt[22] = uiControls.maxRaySteps;  // 最大光线步数 | Max ray steps
                  device.queue.writeBuffer(renderPassUniformsBuffer, 0, renderUBO);
 
+                 // 🖥️ 准备计算参数并上传到GPU | Prepare compute parameters and upload to GPU
                  const computeUBO = new Float32Array(computePassUniformsBuffer.size/4);
                  const computeUBOInt = new Uint32Array(computeUBO.buffer);
-                 computeUBO.set([currentCamX,currentCamY,currentCamZ], 0); computeUBO.set([2.0], 3); computeUBO.set(currentRight, 4); computeUBO.set(currentUp, 8);
-                 computeUBO.set(camera.target, 12);
-                 const mx = mouseState.x * (canvas.width / canvas.clientWidth);
-                 const my = mouseState.y * (canvas.height / canvas.clientHeight);
-                 computeUBO.set([mx, my], 16); computeUBO.set([canvas.width, canvas.height], 18); computeUBO.set([uiControls.brushSize], 20);
-                 let paintingGPU = (mouseState.buttons[0] && !spacebarDown) && (uiControls.continuousPaint || mouseState.isPainting);
+                 computeUBO.set([currentCamX,currentCamY,currentCamZ], 0); 
+                 computeUBO.set([2.0], 3); 
+                 computeUBO.set(currentRight, 4); 
+                 computeUBO.set(currentUp, 8);
+                computeUBO.set(cameraTarget, 12);
+                 // 在第一人称模式下，始终瞄准屏幕中心 | In first-person mode, always aim at screen center
+                 const mx = cameraMode === 'firstperson' ? canvas.width / 2 : mouseState.x * (canvas.width / canvas.clientWidth);
+                 const my = cameraMode === 'firstperson' ? canvas.height / 2 : mouseState.y * (canvas.height / canvas.clientHeight);
+                 computeUBO.set([mx, my], 16); 
+                 computeUBO.set([canvas.width, canvas.height], 18); 
+                 computeUBO.set([uiControls.brushSize], 20);
+                 let paintingGPU = (mouseState.buttons[0] && (cameraMode === 'firstperson' || !spacebarDown)) && (uiControls.continuousPaint || mouseState.isPainting);
                  computeUBOInt[21] = paintingGPU ? 1:0;
-                 computeUBOInt[22] = currentTool; computeUBOInt[23] = isPreviewVisible ? 1:0;
+                 computeUBOInt[22] = currentTool; 
+                 computeUBOInt[23] = isPreviewVisible ? 1:0;
                  computeUBOInt[24] = uiControls.targetFarFaceOnAirHit ? 1:0;
                  computeUBOInt[25] = frameCount;
                  computeUBOInt[26] = uiControls.maxRaySteps;
                  device.queue.writeBuffer(computePassUniformsBuffer, 0, computeUBO);
                  if (!uiControls.continuousPaint && mouseState.isPainting) mouseState.isPainting = false;
 
+                 // ==================================================
+                 // 🚀 GPU命令编码和执行 | GPU Command Encoding and Execution
+                 // ==================================================
+                 // CommandEncoder记录要发送到GPU的命令 | CommandEncoder records commands to send to GPU
                  const commandEncoder = device.createCommandEncoder();
 
+                 // 🎯 第1步: 目标定位通道 | Step 1: Targeting pass
+                 // 使用GPU光线追踪找到鼠标指向的3D位置 | Use GPU ray tracing to find 3D position under mouse
                  const passTarget = commandEncoder.beginComputePass();
-                 passTarget.setPipeline(targetingPipeline); passTarget.setBindGroup(0, targetingBindGroup);
-                 passTarget.dispatchWorkgroups(1); passTarget.end();
+                 passTarget.setPipeline(targetingPipeline); 
+                 passTarget.setBindGroup(0, targetingBindGroup);
+                 passTarget.dispatchWorkgroups(1);  // 只需要1个工作组 | Only need 1 workgroup
+                 passTarget.end();
 
-                 if (uiControls.simSteps > 0) {
-                     for (let i = 0; i < uiControls.simSteps; i++) {
-                         const passReset = commandEncoder.beginComputePass();
-                         passReset.setPipeline(resetFlagsPipeline); passReset.setBindGroup(0, resetFlagsBindGroup);
-                         passReset.dispatchWorkgroups(VOXEL_GRID_SIZE / 8, VOXEL_GRID_SIZE / 8, VOXEL_GRID_SIZE / 4); passReset.end();
 
-                         const passSim = commandEncoder.beginComputePass();
-                         passSim.setPipeline(simulationPipeline); passSim.setBindGroup(0, simulationBindGroup);
-                         passSim.dispatchWorkgroups(VOXEL_GRID_SIZE/4, VOXEL_GRID_SIZE/4, VOXEL_GRID_SIZE/4); passSim.end();
-                     }
-                 }
-
+                 // 🖌️ 第3步: 绘制工具应用 | Step 3: Paint tool application
                  if (paintingGPU) {
                      const passPaint = commandEncoder.beginComputePass();
-                     passPaint.setPipeline(paintPipeline); passPaint.setBindGroup(0, paintBindGroup);
+                     passPaint.setPipeline(paintPipeline); 
+                     passPaint.setBindGroup(0, paintBindGroup);
                      const d = Math.ceil(uiControls.brushSize * 2.0);
                      passPaint.dispatchWorkgroups(Math.ceil(d/4), Math.ceil(d/4), Math.ceil(d/4));
                      passPaint.end();
                  }
 
+                 // 💡 第4步: 光照计算通道 | Step 4: Lighting calculation pass
                  const passLight = commandEncoder.beginComputePass();
-                 passLight.setPipeline(lightingPipeline); passLight.setBindGroup(0, lightBindGroup);
+                 passLight.setPipeline(lightingPipeline); 
+                 passLight.setBindGroup(0, lightBindGroup);
                  passLight.dispatchWorkgroups(VOXEL_GRID_SIZE/4, VOXEL_GRID_SIZE/4, VOXEL_GRID_SIZE/4);
                  passLight.end();
 
-                 const passRender = commandEncoder.beginRenderPass({ colorAttachments: [{ view: context.getCurrentTexture().createView(), clearValue: [0.1, 0.1, 0.2, 1.0], loadOp: 'clear', storeOp: 'store' }] });
-                 passRender.setPipeline(renderPipeline); passRender.setBindGroup(0, renderBindGroup);
-                 passRender.draw(3);
+                 // 🎨 第5步: 渲染通道 | Step 5: Render pass
+                 // 这是唯一的渲染通道，将3D场景绘制到屏幕 | This is the only render pass, draws 3D scene to screen
+                 const passRender = commandEncoder.beginRenderPass({ 
+                     colorAttachments: [{ 
+                         view: context.getCurrentTexture().createView(),  // 获取画布纹理 | Get canvas texture
+                         clearValue: [0.1, 0.1, 0.2, 1.0],  // 清除颜色(深蓝色) | Clear color (dark blue)
+                         loadOp: 'clear',   // 清除之前的内容 | Clear previous content
+                         storeOp: 'store'   // 保存渲染结果 | Store render result
+                     }] 
+                 });
+                 passRender.setPipeline(renderPipeline); 
+                 passRender.setBindGroup(0, renderBindGroup);
+                 passRender.draw(3);  // 绘制3个顶点(全屏三角形) | Draw 3 vertices (fullscreen triangle)
                  passRender.end();
 
+                 // 🚀 提交所有命令到GPU执行 | Submit all commands to GPU for execution
                  device.queue.submit([commandEncoder.finish()]);
+                 
 
+                 // 📊 更新FPS显示 | Update FPS display
                  document.getElementById('fps').textContent = (1000 / (now - lastFrameTime)).toFixed(1);
                  lastFrameTime = now;
                  frameCount++;
+                 
+                 // 🔄 请求下一帧 | Request next frame
                  requestAnimationFrame(frame);
              }
-             frame(); // Start the render loop
+             frame(); // 启动渲染循环 | Start the render loop
          } // End of initAndRun
 
          // Call the main async function and catch any errors
