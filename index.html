@@ -14,6 +14,9 @@
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>VibeSand - Ultimate GPU Playground</title>
+      <link rel="canonical" href="https://tront.xyz/vibesand/">
+      <meta property="og:url" content="https://tront.xyz/vibesand/">
+      <meta property="og:image" content="https://tront.xyz/vibesand/preview.png">
       <style>
          :root {
          --base-padding: 10px;
@@ -73,7 +76,19 @@
          visibility: hidden !important; pointer-events: none !important;
          transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease, visibility 0s linear var(--transition-speed);
          }
-         #descriptionArea h2 { margin-top: 0; margin-bottom: 0.8rem; color: var(--info-color); text-align: left; font-weight: 600; font-size: 1.2em; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.4em;}
+         #descriptionArea h1, #descriptionArea h2 { margin-top: 0; margin-bottom: 0.8rem; color: var(--info-color); text-align: left; font-weight: 600; font-size: 1.2em; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.4em;}
+         #descriptionArea { max-width: calc(100vw - 20px); }
+         .demo-preview { display: none; margin: 1rem 0; }
+         .demo-preview img { display: block; width: 100%; height: auto; }
+         .demo-preview figcaption { margin-top: .4rem; color: var(--text-color-muted); }
+         #compatibilityNotice { padding: .8rem 1rem; border-left: 3px solid var(--highlight-color); background: #0003; }
+         #compatibilityNotice h2 { border: 0; padding: 0; color: var(--highlight-color); }
+         body.demo-unavailable { height: auto; overflow: auto; }
+         .demo-unavailable #canvas-container, .demo-unavailable #info,
+         .demo-unavailable #instructions, .demo-unavailable #infoToggleButton { display: none; }
+         .demo-unavailable #descriptionArea { position: relative; top: auto; left: auto; width: min(820px, calc(100% - 24px)); max-height: none; margin: 24px auto; }
+         .demo-unavailable .demo-preview { display: block; }
+         .demo-unavailable .tront-about { position: relative; left: auto; bottom: auto; max-width: 820px; margin: 24px auto; padding: 0 12px; }
          #descriptionArea h4 { margin-top: 1em; margin-bottom: 0.5rem; color: var(--highlight-color); font-weight: 600; font-size: 1em; }
          #descriptionArea p, #descriptionArea ul { margin-bottom: 0.8rem; color: var(--text-color-muted); }
          #descriptionArea ul { list-style: disc; padding-left: 1.4rem; margin-top:0.2em; }
@@ -87,7 +102,17 @@
    <body>
       <button id="infoToggleButton" class="info-toggle-button">Hide Info</button>
       <div id="descriptionArea">
-         <h2>VibeSand 0.2 - Water, lights, and speed update!</h2>
+         <h1>VibeSand 0.2 - Water, lights, and speed update!</h1>
+         <section id="compatibilityNotice" role="status" hidden>
+            <h2 id="compatibilityTitle">Interactive simulation requirements</h2>
+            <p id="compatibilityMessage"></p>
+            <p>The project preview and technical description remain available below. To run the simulation, use a browser and graphics device with WebGPU enabled. <a href="https://webgpureport.org" target="_blank" rel="noopener noreferrer">Check WebGPU support</a>.</p>
+         </section>
+         <noscript><style>.demo-preview { display: block; }</style><p>The interactive simulation needs JavaScript and WebGPU. You can still read about the project and view its preview.</p></noscript>
+         <figure class="demo-preview">
+            <img src="preview.png" alt="VibeSand's voxel sandbox running in a browser">
+            <figcaption>A preview of VibeSand. The simulation uses GPU compute shaders to update sand, water, and lighting.</figcaption>
+         </figure>
          <p style="font-size: 0.9em; color: var(--text-color-muted); margin-top:-0.5em; margin-bottom:1em;">GPU-Powered Voxel Playground</p>
          <p style="color: var(--highlight-color); font-weight: bold; margin-bottom: 1em;">Performance Tip: Use 'Render Scale' in UI if slow</p>
          <p><strong>VibeSand</strong> is a WebGPU voxel engine. It simulates millions of particles entirely on your GPU. Watch sand form natural piles, water fill basins and flow over edges, and sculpt the world in real time, all illuminated by dynamic lights.</p>
@@ -232,14 +257,11 @@
 
          function displayErrorAndStop(title, message) {
              console.error(`VibeSand Error: ${title} - ${message}`);
-             document.body.innerHTML = `
-                 <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #1a1a2e; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif; padding: 20px; box-sizing: border-box; text-align: center; z-index: 200;">
-                     <h1 style="color: var(--highlight-color, #ffae5a); margin-bottom: 20px;">${title}</h1>
-                     <p style="font-size: 1.1em; max-width: 600px; line-height: 1.6;">${message}</p>
-                     <p style="margin-top: 25px; font-size: 0.9em;">Please ensure your browser (e.g., Chrome, Edge) is up-to-date and WebGPU is enabled. You can check <a href="https://webgpureport.org" target="_blank" style="color: var(--accent-color, #00aaff); text-decoration: underline;">WebGPUReport.org</a> for your browser's status.</p>
-                     <p style="margin-top: 15px; font-size: 0.9em;">On systems with multiple GPUs (like laptops), make sure your browser is using the dedicated (high-performance) graphics card for WebGPU.</p>
-                 </div>`;
-             throw new Error(`VibeSand HALTED: ${title}`); // Stop further script execution
+             document.body.classList.add('demo-unavailable');
+             document.getElementById('descriptionArea').classList.remove('hidden');
+             document.getElementById('compatibilityTitle').textContent = title;
+             document.getElementById('compatibilityMessage').textContent = message;
+             document.getElementById('compatibilityNotice').hidden = false;
          }
          // --- End of non-WebGPU UI ---
 
@@ -247,7 +269,7 @@
              const canvas = document.getElementById('webgpu-canvas');
              if (!canvas) {
                  displayErrorAndStop("Initialization Error", "The canvas element (#webgpu-canvas) was not found in the HTML. The page structure might be broken.");
-                 return; // Will not be reached
+                 return;
              }
 
              if (!navigator.gpu) {
@@ -1174,6 +1196,7 @@
          // Call the main async function and catch any errors
          initAndRun().catch(error => {
              console.error("VibeSand critical runtime failure:", error);
+             displayErrorAndStop('Simulation unavailable', 'The simulation could not start on this device. The project information and preview remain available.');
          });
       </script>
    <!-- tront-about:start -->
